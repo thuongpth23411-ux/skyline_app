@@ -15,4 +15,8 @@
     <string name="already_account">Bạn đã có tài khoản?</string>
     <string name="login_now">Đăng nhập ngay</string>
     <string name="experience_skyline">Trải nghiệm cùng Skyline Airways</string>
+    <string name="explore_now">Khám phá ngay</string>
+    <string name="notification">Thông báo</string>
+    <string name="learn_more">Tìm hiểu thêm</string>
+    <string name="login_prompt">Bạn đã có tài khoản? Đăng nhập ngay</string>
 </resources>

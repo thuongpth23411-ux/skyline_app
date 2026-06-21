@@ -1,18 +1,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="98dp" android:background="@drawable/bg_bottom_nav" android:elevation="12dp" android:gravity="center" android:orientation="horizontal" android:paddingTop="12dp" android:paddingBottom="10dp">
     <LinearLayout android:id="@+id/navHome" style="@style/NavItemStyle">
-        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_home"/>
+        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_home" android:contentDescription="@string/home"/>
         <TextView style="@style/NavTextStyle" android:text="@string/home"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/navBook" style="@style/NavItemStyle">
-        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_plane"/>
+        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_plane" android:contentDescription="@string/book"/>
         <TextView style="@style/NavTextStyle" android:text="@string/book"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/navFlights" style="@style/NavItemStyle">
-        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_ticket"/>
+        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_ticket" android:contentDescription="@string/flights"/>
         <TextView style="@style/NavTextStyle" android:text="@string/flights"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/navProfile" style="@style/NavItemStyle">
-        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_profile"/>
+        <ImageView style="@style/NavIconStyle" android:src="@drawable/ic_profile" android:contentDescription="@string/profile"/>
         <TextView style="@style/NavTextStyle" android:text="@string/profile"/>
     </LinearLayout>
 </LinearLayout>
