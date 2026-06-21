@@ -43,16 +43,18 @@ class HomeActivity : AppCompatActivity() {
             Promotion(
                 "Xin chào Bangkok! Ưu đãi ngay 20%",
                 "11/06/2026 - 10/07/2026",
-                R.drawable.img_promo_bangkok
+                R.drawable.img_promo_bangkok,
             ),
             Promotion(
                 "Thứ 6 mở app – giảm đến 10%",
                 "17/06/2026 - 01/07/2026",
-                R.drawable.img_brand_banner
-            )
+                R.drawable.img_brand_banner,
+            ),
         )
 
-        binding.promoPager.adapter = PromotionAdapter(promotions) {
+        binding.promoPager.adapter = PromotionAdapter(
+            promotions,
+        ) {
             toast("Đã chọn: ${it.title}")
         }
 
@@ -73,13 +75,13 @@ class HomeActivity : AppCompatActivity() {
             Destination(
                 "Việt Nam",
                 "Phú Quốc – “đảo ngọc” xinh đẹp của Việt Nam",
-                R.drawable.img_destination_phuquoc
+                R.drawable.img_destination_phuquoc,
             ),
             Destination(
                 "Việt Nam",
                 "Đà Nẵng – thành phố đáng sống nhất Việt Nam",
-                R.drawable.img_destination_danang
-            )
+                R.drawable.img_destination_danang,
+            ),
         )
 
         binding.destinationRecycler.apply {
@@ -88,7 +90,9 @@ class HomeActivity : AppCompatActivity() {
                 LinearLayoutManager.HORIZONTAL,
                 false
             )
-            adapter = DestinationAdapter(destinations) {
+            adapter = DestinationAdapter(
+                destinations,
+            ) {
                 toast("Khám phá ${it.title}")
             }
         }
@@ -100,20 +104,20 @@ class HomeActivity : AppCompatActivity() {
                 "Mức giá tốt, dịch vụ chu đáo.",
                 "Hạng Phổ thông",
                 "Thoải mái trong mọi hành trình",
-                R.drawable.img_experience_economy
+                R.drawable.img_experience_economy,
             ),
             Experience(
                 "Bay phong cách, tận hưởng khác biệt",
                 "Hạng Business",
                 "Trải nghiệm đẳng cấp cho mỗi hành trình.",
-                R.drawable.img_experience_first
+                R.drawable.img_experience_first,
             ),
             Experience(
                 "Nâng tầm trải nghiệm",
                 "Hạng Thương gia",
                 "Không gian riêng tư, dịch vụ tinh tế.",
-                R.drawable.img_experience_first
-            )
+                R.drawable.img_experience_first,
+            ),
         )
 
         binding.experienceRecycler.apply {
@@ -122,7 +126,9 @@ class HomeActivity : AppCompatActivity() {
                 LinearLayoutManager.HORIZONTAL,
                 false
             )
-            adapter = ExperienceAdapter(experiences) {
+            adapter = ExperienceAdapter(
+                experiences,
+            ) {
                 toast("Đã chọn ${it.title}")
             }
         }
@@ -157,7 +163,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 background = ContextCompat.getDrawable(
                     this@HomeActivity,
-                    R.drawable.bg_dot
+                    R.drawable.bg_dot,
                 )
             }
             container.addView(dot)
@@ -169,7 +175,7 @@ class HomeActivity : AppCompatActivity() {
             val dot = container.getChildAt(index)
             dot.background = ContextCompat.getDrawable(
                 this,
-                if (index == selected) R.drawable.bg_dot_active else R.drawable.bg_dot
+                if (index == selected) R.drawable.bg_dot_active else R.drawable.bg_dot,
             )
         }
     }
