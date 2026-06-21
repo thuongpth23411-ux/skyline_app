@@ -5,11 +5,11 @@
     <string name="flights">Chuyến bay</string>
     <string name="profile">Hồ sơ</string>
     <string name="friday_deal">Thứ 6 deal</string>
-    <string name="deal_date">17/06/2026 - 01/07/2026</string>
+    <string name="deal_date">17/06/2026 – 01/07/2026</string>
     <string name="view_all">Xem tất cả</string>
     <string name="promotion_program">Chương trình ưu đãi</string>
     <string name="discover_destinations">Khám phá điểm đến</string>
-    <string name="join_member_title">Trở thành thành viên\nđể nhận nhiều ưu đãi hấp dẫn</string>
+    <string name="join_member_title">Trở thành hội viên\nđể nhận nhiều ưu đãi hấp dẫn</string>
     <string name="join_member_desc">Theo dõi hành trình, nhận ưu đãi \ntích lũy dặm thưởng ngay</string>
     <string name="register">Đăng ký</string>
     <string name="already_account">Bạn đã có tài khoản?</string>

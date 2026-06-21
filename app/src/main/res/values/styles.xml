@@ -17,4 +17,10 @@
         <item name="android:textColor">@color/skyline_blue</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="BottomNavItemStyle" parent="NavItemStyle">
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:textColor">@color/skyline_blue</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
