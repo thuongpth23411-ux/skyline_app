@@ -5,17 +5,21 @@ require("dotenv").config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-.then(async () => {
-    console.log("✅ Connected MongoDB");
+// Routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
-    await createSampleUser();
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+    console.log("✅ Connected MongoDB");
 })
 .catch((err) => {
-    console.log(err);
+    console.error("❌ MongoDB connection error:", err);
 });
 
 app.get("/", (req, res) => {
@@ -23,25 +27,6 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
-//Testtttt
-const User = require("./models/User");
-
-async function createSampleUser() {
-    const count = await User.countDocuments();
-
-    if (count === 0) {
-        await User.create({
-            fullName: "Admin",
-            email: "admin@gmail.com",
-            password: "123456",
-            phone: "0123456789"
-        });
-
-        console.log("✅ Sample user created");
-    }
-}

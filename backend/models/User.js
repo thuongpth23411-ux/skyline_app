@@ -20,6 +20,19 @@ const userSchema = new mongoose.Schema(
 
     phone: {
         type: String
+    },
+
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+
+    otp: {
+        type: String
+    },
+
+    otpExpires: {
+        type: Date
     }
 },
 {
