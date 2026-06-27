@@ -11,7 +11,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="100dp"
+        android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,31 +21,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="28dp">
+            >
 
             <!-- Header -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="82dp"
+                android:layout_height="60dp"
                 android:paddingStart="@dimen/screen_horizontal"
                 android:paddingEnd="@dimen/screen_horizontal">
 
                 <ImageView
                     android:id="@+id/imgLogo"
-                    android:layout_width="260dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_width="130dp"
+                    android:layout_height="97dp"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/app_name"
-                    android:scaleType="fitStart"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/logo_skyline"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnNotification" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
                     android:id="@+id/btnNotification"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:background="@drawable/bg_circle_white"
                     android:contentDescription="@string/notification"
                     android:padding="12dp"
@@ -167,21 +168,27 @@
                 android:layout_marginEnd="20dp" />
 
             <!-- Experience Section -->
-            <include
-                android:id="@+id/experienceHeader"
-                layout="@layout/view_section_header"
+            <TextView
+                android:id="@+id/tvExperienceTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/experienceRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
+                android:layout_marginTop="28dp"
                 android:paddingStart="20dp"
-                android:paddingEnd="20dp" />
+                android:paddingEnd="20dp"
+                android:text="@string/experience_skyline"
+                android:textColor="@color/skyline_text"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/experiencePager"
+                android:layout_width="match_parent"
+                android:layout_height="460dp"
+                android:layout_marginTop="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingStart="60dp"
+                android:paddingEnd="60dp" />
 
             <!-- Brand Banner / About Us Section -->
             <com.google.android.material.card.MaterialCardView
@@ -190,7 +197,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="28dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="70dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp">
 
@@ -212,7 +219,7 @@
                         android:layout_height="54dp"
                         android:layout_gravity="bottom|start"
                         android:layout_margin="20dp"
-                        android:backgroundTint="#00172F"
+                        android:backgroundTint="#3B5998"
                         android:paddingStart="24dp"
                         android:paddingEnd="24dp"
                         android:text="@string/explore_now"

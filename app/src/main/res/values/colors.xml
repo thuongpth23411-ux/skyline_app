@@ -11,4 +11,9 @@
     <color name="dot_inactive">#D2DDEC</color>
     <color name="nav_unselected">#174D8E</color>
     <color name="card_overlay">#B3001B3A</color>
+    <color name="auth_blue">#1E63F2</color>
+    <color name="auth_blue_dark">#0B2C86</color>
+    <color name="auth_hint">#8390AD</color>
+    <color name="auth_border">#C9DAFF</color>
+    <color name="auth_gold">#A8793D</color>
 </resources>

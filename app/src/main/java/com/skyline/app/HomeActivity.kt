@@ -1,5 +1,6 @@
 package com.skyline.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
@@ -35,7 +36,6 @@ class HomeActivity : AppCompatActivity() {
     private fun setupSectionTitles() {
         binding.promotionHeader.tvSectionTitle.text = getString(R.string.promotion_program)
         binding.destinationHeader.tvSectionTitle.text = getString(R.string.discover_destinations)
-        binding.experienceHeader.tvSectionTitle.text = getString(R.string.experience_skyline)
     }
 
     private fun setupPromotionPager() {
@@ -120,17 +120,20 @@ class HomeActivity : AppCompatActivity() {
             ),
         )
 
-        binding.experienceRecycler.apply {
-            layoutManager = LinearLayoutManager(
-                this@HomeActivity,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
+        binding.experiencePager.apply {
             adapter = ExperienceAdapter(
                 experiences,
             ) {
                 toast("Đã chọn ${it.title}")
             }
+            offscreenPageLimit = 3
+            val pageTransformer = ViewPager2.PageTransformer { page, position ->
+                val scaleFactor = 0.85f + (1 - Math.abs(position)) * 0.15f
+                page.scaleX = scaleFactor
+                page.scaleY = scaleFactor
+                page.alpha = 0.6f + (1 - Math.abs(position)) * 0.4f
+            }
+            setPageTransformer(pageTransformer)
         }
     }
 
@@ -140,17 +143,16 @@ class HomeActivity : AppCompatActivity() {
 
         promotionHeader.tvViewAll.setOnClickListener { toast("Tất cả ưu đãi") }
         destinationHeader.tvViewAll.setOnClickListener { toast("Tất cả điểm đến") }
-        experienceHeader.tvViewAll.setOnClickListener { toast("Tất cả trải nghiệm") }
 
-        binding.btnAboutUs.setOnClickListener { toast("Chuyển sang trang Về chúng tôi") }
+        binding.btnAboutUs.setOnClickListener { startActivity(Intent(this@HomeActivity, AboutActivity::class.java)) }
 
-        memberCard.btnRegister.setOnClickListener { toast("Đăng ký thành viên") }
-        memberCard.tvLogin.setOnClickListener { toast("Đăng nhập") }
+        memberCard.btnRegister.setOnClickListener { startActivity(Intent(this@HomeActivity, RegisterEmailActivity::class.java)) }
+        memberCard.tvLogin.setOnClickListener { startActivity(Intent(this@HomeActivity, LoginActivity::class.java)) }
 
         bottomNavigation.navHome.setOnClickListener { scrollContent.smoothScrollTo(0, 0) }
         bottomNavigation.navBook.setOnClickListener { toast("Mở màn hình Đặt vé") }
         bottomNavigation.navFlights.setOnClickListener { toast("Mở màn hình Chuyến bay") }
-        bottomNavigation.navProfile.setOnClickListener { toast("Mở màn hình Hồ sơ") }
+        bottomNavigation.navProfile.setOnClickListener { startActivity(Intent(this@HomeActivity, LoginActivity::class.java)) }
     }
 
     private fun createDots(container: LinearLayout, count: Int) {

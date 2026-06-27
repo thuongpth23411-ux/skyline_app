@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_auth_screen">
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="28dp" android:paddingBottom="28dp"><androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="86dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+            <ImageView
+                android:id="@+id/authLogo"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/logo_skyline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageButton
+                android:id="@+id/btnHome"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@null"
+                android:src="@drawable/ic_home"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <Space android:layout_width="match_parent" android:layout_height="90dp" />
+        <FrameLayout android:layout_width="112dp" android:layout_height="112dp" android:layout_gravity="center_horizontal"><View android:layout_width="112dp" android:layout_height="112dp" android:alpha="0.12" android:background="@drawable/bg_success_circle"/><FrameLayout android:layout_width="80dp" android:layout_height="80dp" android:layout_gravity="center" android:background="@drawable/bg_success_circle"><ImageView android:layout_width="44dp" android:layout_height="44dp" android:layout_gravity="center" android:src="@drawable/ic_check_auth"/></FrameLayout></FrameLayout>
+        <TextView android:id="@+id/tvTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="24dp" android:layout_marginEnd="24dp" android:layout_marginTop="56dp" android:gravity="center" android:text="Đặt lại mật khẩu thành công!" android:textColor="@color/auth_blue_dark" android:textSize="25sp" android:textStyle="bold" />
+        <TextView android:id="@+id/tvDesc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="32dp" android:layout_marginEnd="32dp" android:layout_marginTop="18dp" android:gravity="center" android:text="Mật khẩu của bạn đã được cập nhật.\nBạn có thể đăng nhập bằng mật khẩu mới ngay bây giờ." android:textColor="@color/skyline_text_secondary" android:textSize="15sp" android:lineSpacingExtra="4dp" />
+        <Button android:id="@+id/btnPrimary" android:layout_width="match_parent" android:layout_height="58dp" android:layout_marginStart="28dp" android:layout_marginEnd="28dp" android:layout_marginTop="42dp" android:background="@drawable/bg_auth_button" android:text="Đăng nhập ngay" android:textAllCaps="false" android:textColor="@color/white" android:textSize="17sp" android:textStyle="bold" />
+        <TextView android:id="@+id/tvHome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:layout_marginTop="28dp" android:text="Về trang chủ" android:textColor="@color/auth_blue" android:textSize="16sp" android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

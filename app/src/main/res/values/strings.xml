@@ -19,4 +19,19 @@
     <string name="notification">Thông báo</string>
     <string name="learn_more">Tìm hiểu thêm</string>
     <string name="login_prompt">Bạn đã có tài khoản? Đăng nhập ngay</string>
+
+    <string name="about_title">SKYLINE</string>
+    <string name="about_subtitle">KẾT NỐI MỌI CHUYẾN BAY</string>
+    <string name="about_desc">Skyline là nền tảng đặt vé máy bay trực tuyến giúp hành khách dễ dàng tìm kiếm, so sánh và đặt vé chỉ trong vài phút. Chúng tôi mang đến trải nghiệm đặt vé nhanh chóng, minh bạch và thuận tiện cho mọi chuyến bay trong nước và quốc tế.</string>
+    <string name="journey_title">Chuẩn bị cho hành trình bay thuận lợi</string>
+    <string name="team_title">Đội ngũ Skyline</string>
+    <string name="why_title">Vì sao nên chọn Skyline?</string>
+
+    <!-- Auth Strings -->
+    <string name="forgot_password">Quên mật khẩu</string>
+    <string name="forgot_password_desc">Nhập email tài khoản của bạn để nhận OTP\nvà cấp lại mật khẩu.</string>
+    <string name="email_label">Email tài khoản  *</string>
+    <string name="email_hint">Nhập email của bạn</string>
+    <string name="get_otp_button">Nhận OTP để cấp lại mật khẩu</string>
+    <string name="back_to_login">Quay lại đăng nhập</string>
 </resources>

@@ -10,6 +10,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Skyline">
+
+        <activity android:name=".AboutActivity" android:exported="false" />
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".RegisterEmailActivity" android:exported="false" />
+        <activity android:name=".SetPasswordActivity" android:exported="false" />
+        <activity android:name=".CompleteInfoActivity" android:exported="false" />
+        <activity android:name=".PhoneOtpActivity" android:exported="false" />
+        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".ForgotOtpActivity" android:exported="false" />
+        <activity android:name=".ResetPasswordActivity" android:exported="false" />
+        <activity android:name=".ResetSuccessActivity" android:exported="false" />
+        <activity android:name=".AccountSuccessActivity" android:exported="false" />
         <activity
             android:name=".HomeActivity"
             android:exported="true">
@@ -19,9 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

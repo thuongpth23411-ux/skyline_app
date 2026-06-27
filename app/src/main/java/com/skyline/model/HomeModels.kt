@@ -20,3 +20,8 @@ data class Experience(
     val description: String,
     @param:DrawableRes val imageRes: Int,
 )
+
+data class TeamMember(
+    val name: String,
+    @param:DrawableRes val imageRes: Int,
+)

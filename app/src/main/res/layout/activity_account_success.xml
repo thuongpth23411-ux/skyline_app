@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_auth_screen">
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="100dp" android:paddingBottom="28dp">
+
+            <ImageView android:layout_width="320dp" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:adjustViewBounds="true" android:src="@drawable/logo_skyline" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="32dp" android:layout_marginEnd="32dp" android:layout_marginTop="34dp" android:gravity="center" android:text="Tài khoản Skyline\nđã sẵn sàng!" android:textColor="@color/auth_blue_dark" android:textSize="26sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="32dp" android:layout_marginEnd="32dp" android:layout_marginTop="20dp" android:gravity="center" android:text="Membership của bạn đã được tạo thành công.\nKhám phá đặc quyền hội viên ngay bây giờ." android:textColor="@color/skyline_text_secondary" android:textSize="16sp" android:lineSpacingExtra="4dp" />
+        <Space android:layout_width="match_parent" android:layout_height="160dp" />
+        <Button android:id="@+id/btnExplore" android:layout_width="match_parent" android:layout_height="58dp" android:layout_marginStart="44dp" android:layout_marginEnd="44dp" android:background="@drawable/bg_auth_button" android:text="Khám phá đặc quyền  →" android:textAllCaps="false" android:textColor="@color/white" android:textSize="17sp" android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
