@@ -34,4 +34,31 @@
     <string name="email_hint">Nhập email của bạn</string>
     <string name="get_otp_button">Nhận OTP để cấp lại mật khẩu</string>
     <string name="back_to_login">Quay lại đăng nhập</string>
+
+    <!-- Splash Strings -->
+    <string name="splash_text">ĐẶT VÉ, CHECK-IN,\nTÍCH ĐIỂM, TRẢI NGHIỆM</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_title_1">Tìm kiếm &amp; Đặt vé nhanh chóng</string>
+    <string name="onboarding_desc_1">Dễ dàng tìm thấy chuyến bay phù hợp với lộ trình của bạn chỉ trong vài bước.</string>
+    <string name="onboarding_title_2">Quản lý hành trình tiện lợi</string>
+    <string name="onboarding_desc_2">Theo dõi thông tin chuyến bay, check-in trực tuyến và nhận thông báo tức thì.</string>
+    <string name="onboarding_title_3">Tích điểm &amp; Ưu đãi hấp dẫn</string>
+    <string name="onboarding_desc_3">Trở thành hội viên Skyline để nhận dặm thưởng và nhiều đặc quyền ưu tiên.</string>
+    <string name="btn_skip">Bỏ qua</string>
+    <string name="btn_next">Tiếp theo</string>
+
+    <string name="welcome_title">TRẢI NGHIỆM BAY 5 SAO TRỌN VẸN</string>
+    <string name="welcome_lang_label">Chọn vùng và ngôn ngữ</string>
+    <string name="welcome_lang_value">Việt Nam - Tiếng Việt</string>
+    <string name="btn_experience_now">Trải nghiệm ngay</string>
+
+    <!-- Permission Strings -->
+    <string name="perm_title">Cho phép chúng tôi đồng hành cùng Quý khách</string>
+    <string name="perm_desc">Quý khách vui lòng cho phép Skyline Airways gửi thông báo để không bỏ lỡ các cập nhật quan trọng về chuyến bay, tình trạng đặt chỗ và các ưu đãi cá nhân hóa dành riêng cho Quý khách.</string>
+    <string name="perm_notif_title">Cho phép thông báo</string>
+    <string name="perm_notif_desc">Gợi ý hành trình, đề xuất các ưu đãi cá nhân hóa</string>
+    <string name="perm_data_title">Quyền cho phép theo dõi việc sử dụng dữ liệu.</string>
+    <string name="perm_data_desc">Quyền này giúp chúng tôi hiểu rõ hơn về thói quen sử dụng ứng dụng của Quý khách, nhằm mang đến các trải nghiệm mượt mà và đề xuất cá nhân hóa hơn. Mọi dữ liệu đều được bảo mật và tuân thủ quyền riêng tư.</string>
+    <string name="btn_continue">Tiếp tục</string>
 </resources>
