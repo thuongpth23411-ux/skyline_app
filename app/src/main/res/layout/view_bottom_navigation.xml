@@ -13,24 +13,32 @@
         android:id="@+id/navHome"
         style="@style/BottomNavItemStyle"
         android:text="@string/home"
-        app:drawableTopCompat="@drawable/ic_home" />
+        android:textColor="@color/nav_item_color"
+        app:drawableTopCompat="@drawable/ic_home"
+        app:drawableTint="@color/nav_item_color" />
 
     <TextView
         android:id="@+id/navBook"
         style="@style/BottomNavItemStyle"
         android:text="@string/book"
-        app:drawableTopCompat="@drawable/ic_plane" />
+        android:textColor="@color/nav_item_color"
+        app:drawableTopCompat="@drawable/ic_plane"
+        app:drawableTint="@color/nav_item_color" />
 
     <TextView
         android:id="@+id/navFlights"
         style="@style/BottomNavItemStyle"
         android:text="@string/flights"
-        app:drawableTopCompat="@drawable/ic_ticket" />
+        android:textColor="@color/nav_item_color"
+        app:drawableTopCompat="@drawable/ic_ticket"
+        app:drawableTint="@color/nav_item_color" />
 
     <TextView
         android:id="@+id/navProfile"
         style="@style/BottomNavItemStyle"
         android:text="@string/profile"
-        app:drawableTopCompat="@drawable/ic_profile" />
+        android:textColor="@color/nav_item_color"
+        app:drawableTopCompat="@drawable/ic_profile"
+        app:drawableTint="@color/nav_item_color" />
 
 </LinearLayout>

@@ -35,6 +35,14 @@
     <string name="get_otp_button">Nhận OTP để cấp lại mật khẩu</string>
     <string name="back_to_login">Quay lại đăng nhập</string>
 
+    <!-- Flights Strings -->
+    <string name="check_booking_checkin">Kiểm tra đặt chỗ / Làm thủ tục</string>
+    <string name="upcoming_flights">Chuyến bay sắp tới</string>
+    <string name="completed_flights">Chuyến bay hoàn thành</string>
+    <string name="no_flights_yet">Chưa có chuyến bay nào</string>
+    <string name="fly_with_skyline">Bay cùng Skyline Airways ngay hôm nay</string>
+    <string name="book_now">Đặt vé ngay</string>
+
     <!-- Splash Strings -->
     <string name="splash_text">ĐẶT VÉ, CHECK-IN,\nTÍCH ĐIỂM, TRẢI NGHIỆM</string>
 
