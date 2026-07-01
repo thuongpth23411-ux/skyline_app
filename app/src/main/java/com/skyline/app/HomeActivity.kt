@@ -38,7 +38,7 @@ class HomeActivity : AppCompatActivity() {
         }
         bottomNavigation.navProfile.setOnClickListener {
             updateNavSelection(it)
-            startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
+            startActivity(Intent(this@HomeActivity, ProfileActivity::class.java))
         }
     }
 

@@ -69,4 +69,24 @@
     <string name="perm_data_title">Quyền cho phép theo dõi việc sử dụng dữ liệu.</string>
     <string name="perm_data_desc">Quyền này giúp chúng tôi hiểu rõ hơn về thói quen sử dụng ứng dụng của Quý khách, nhằm mang đến các trải nghiệm mượt mà và đề xuất cá nhân hóa hơn. Mọi dữ liệu đều được bảo mật và tuân thủ quyền riêng tư.</string>
     <string name="btn_continue">Tiếp tục</string>
+
+    <!-- Profile Strings -->
+    <string name="profile_username">Thương Phạm</string>
+    <string name="profile_rank">HẠNG ĐỒNG</string>
+    <string name="profile_card_rank">SKY POINTS</string>
+    <string name="profile_card_number">9000 0029 3915</string>
+    <string name="profile_sky_points">SỐ DƯ ĐIỂM</string>
+    <string name="profile_view_details">Xem chi tiết</string>
+    <string name="profile_current_tier">HẠNG HIỆN TẠI</string>
+    <string name="profile_next_tier">HẠNG KẾ TIẾP</string>
+    <string name="profile_member">ĐỒNG</string>
+    <string name="profile_silver">BẠC</string>
+    <string name="profile_my_vouchers">Voucher của tôi</string>
+    <string name="profile_customer_directory">Danh bạ khách hàng</string>
+    <string name="profile_book_flight">Đặt vé máy bay</string>
+    <string name="profile_support">Liên hệ hỗ trợ</string>
+    <string name="profile_member_info">Thông tin hội viên</string>
+    <string name="profile_terms">Điều khoản &amp; Điều kiện</string>
+    <string name="profile_privacy">Chính sách bảo mật</string>
+    <string name="profile_logout">Đăng xuất</string>
 </resources>

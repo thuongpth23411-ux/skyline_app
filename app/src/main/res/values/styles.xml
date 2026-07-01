@@ -19,9 +19,12 @@
     </style>
 
     <style name="BottomNavItemStyle" parent="NavItemStyle">
-        <item name="android:drawablePadding">5dp</item>
-        <item name="android:textColor">@color/skyline_blue</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:textColor">@color/nav_item_color</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <style name="SectionTitle">
