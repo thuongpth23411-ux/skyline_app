@@ -53,7 +53,7 @@ class ProfileActivity : AppCompatActivity() {
             toast("Điều khoản & Điều kiện")
         }
         itemPrivacy.setOnClickListener {
-            toast("Chính sách bảo mật")
+            startActivity(Intent(this@ProfileActivity, PrivacyActivity::class.java))
         }
         btnLogoutItem.setOnClickListener {
             toast("Đăng xuất")
