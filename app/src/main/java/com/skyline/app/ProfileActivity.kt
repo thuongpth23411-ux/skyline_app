@@ -62,6 +62,9 @@ class ProfileActivity : AppCompatActivity() {
         btnViewDetails.setOnClickListener {
             toast("Xem chi tiết điểm thưởng")
         }
+        layoutQuickActions.getChildAt(3).setOnClickListener {
+            startActivity(Intent(this@ProfileActivity, SupportActivity::class.java))
+        }
     }
 
     private fun toast(message: String) {

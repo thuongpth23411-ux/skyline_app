@@ -89,4 +89,25 @@
     <string name="profile_terms">Điều khoản &amp; Điều kiện</string>
     <string name="profile_privacy">Chính sách bảo mật</string>
     <string name="profile_logout">Đăng xuất</string>
+
+    <!-- Support Strings -->
+    <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="support_header_title">Chúng tôi có thể\ngiúp gì cho bạn?</string>
+    <string name="support_header_desc">Đội ngũ Skyline luôn sẵn sàng hỗ trợ bạn\n24/7 để mang lại trải nghiệm chuyên\nnghiệp nhất.</string>
+    <string name="support_contact_method">Phương thức liên hệ</string>
+    <string name="support_hotline_title">HOTLINE HỖ TRỢ 24/7</string>
+    <string name="support_hotline_number">1900 1234</string>
+    <string name="support_hotline_desc">Gọi ngay cho chúng tôi để được giải đáp\ncác vấn đề về đặt chỗ, thanh toán và\nkhiếu nại khẩn cấp.</string>
+    <string name="support_call_now">Gọi ngay</string>
+    <string name="support_chat_title">Trò chuyện trực tuyến</string>
+    <string name="support_chat_desc">Phản hồi tức thì trong 30 giây</string>
+    <string name="support_start_chat">Bắt đầu chat</string>
+    <string name="support_faq_title">Chủ đề phổ biến</string>
+    <string name="support_faq_view_all">Xem tất cả FAQ</string>
+    <string name="support_faq_booking">Vấn đề về đặt chỗ</string>
+    <string name="support_faq_booking_desc">Hủy, đổi lịch hoặc thanh toán</string>
+    <string name="support_faq_account">Tài khoản &amp; Hội viên</string>
+    <string name="support_faq_account_desc">Bảo mật và quyền lợi VIP</string>
+    <string name="support_faq_policy">Chính sách &amp; Quy định</string>
+    <string name="support_faq_policy_desc">Điều khoản và quyền riêng tư</string>
 </resources>
