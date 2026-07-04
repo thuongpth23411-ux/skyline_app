@@ -24,4 +24,7 @@
     <color name="profile_action_bg">#F2F5F8</color>
     <color name="profile_logout_text">#E53935</color>
     <color name="profile_divider">#F0F0F0</color>
+    <color name="support_header_bg">#EDF4FF</color>
+    <color name="support_hotline_btn">#263E5A</color>
+    <color name="support_chat_bg">#4E54D4</color>
 </resources>

@@ -89,4 +89,117 @@
     <string name="profile_terms">Điều khoản &amp; Điều kiện</string>
     <string name="profile_privacy">Chính sách bảo mật</string>
     <string name="profile_logout">Đăng xuất</string>
+
+    <!-- Support Strings -->
+    <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="support_header_title">Chúng tôi có thể\ngiúp gì cho bạn?</string>
+    <string name="support_header_desc">Đội ngũ Skyline luôn sẵn sàng hỗ trợ bạn\n24/7 để mang lại trải nghiệm chuyên\nnghiệp nhất.</string>
+    <string name="support_contact_method">Phương thức liên hệ</string>
+    <string name="support_hotline_title">HOTLINE HỖ TRỢ 24/7</string>
+    <string name="support_hotline_number">1900 1234</string>
+    <string name="support_hotline_desc">Gọi ngay cho chúng tôi để được giải đáp\ncác vấn đề về đặt chỗ, thanh toán và\nkhiếu nại khẩn cấp.</string>
+    <string name="support_call_now">Gọi ngay</string>
+    <string name="support_chat_title">Trò chuyện trực tuyến</string>
+    <string name="support_chat_desc">Phản hồi tức thì trong 30 giây</string>
+    <string name="support_start_chat">Bắt đầu chat</string>
+    <string name="support_faq_title">Chủ đề phổ biến</string>
+    <string name="support_faq_view_all">Xem tất cả FAQ</string>
+    <string name="support_faq_booking">Vấn đề về đặt chỗ</string>
+    <string name="support_faq_booking_desc">Hủy, đổi lịch hoặc thanh toán</string>
+    <string name="support_faq_account">Tài khoản &amp; Hội viên</string>
+    <string name="support_faq_account_desc">Bảo mật và quyền lợi VIP</string>
+    <string name="support_faq_policy">Chính sách &amp; Quy định</string>
+    <string name="support_faq_policy_desc">Điều khoản và quyền riêng tư</string>
+
+    <!-- Privacy Strings -->
+    <string name="privacy_title">Chính sách bảo mật</string>
+    <string name="privacy_header_badge">Bảo mật tối ưu</string>
+    <string name="privacy_header_title">Quyền riêng tư của bạn</string>
+
+    <string name="privacy_section_1_title">1. Thu thập thông tin</string>
+    <string name="privacy_section_1_desc">Chúng tôi thu thập các thông tin cơ bản khi bạn đăng ký hội viên như tên, email và số điện thoại để cá nhân hóa trải nghiệm.</string>
+
+    <string name="privacy_section_2_title">2. Mục đích sử dụng</string>
+    <string name="privacy_section_2_desc">Thông tin của bạn được dùng để quản lý hạng thẻ, cung cấp ưu đãi đặc quyền và cải thiện chất lượng dịch vụ.</string>
+
+    <string name="privacy_section_3_title">3. Cam kết bảo mật</string>
+    <string name="privacy_section_3_desc">Skyline cam kết không chia sẻ thông tin cá nhân của bạn cho bên thứ ba khi chưa có sự đồng ý, trừ trường hợp theo quy định pháp luật.</string>
+
+    <string name="privacy_section_4_title">4. Quyền của người dùng</string>
+    <string name="privacy_section_4_desc">Bạn có quyền truy cập, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân của mình bất kỳ lúc nào thông qua ứng dụng.</string>
+
+    <string name="privacy_footer_title">Cần hỗ trợ thêm?</string>
+    <string name="privacy_footer_desc">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp thắc mắc về quyền riêng tư của bạn.</string>
+    <string name="privacy_footer_btn">Liên hệ hỗ trợ</string>
+    <string name="privacy_version">Cập nhật lần cuối: 15/10/2023 • Phiên bản v2.4.1</string>
+
+    <!-- Home Fragment Data -->
+    <string name="promo_bangkok_title">Xin chào Bangkok! Ưu đãi ngay 20%</string>
+    <string name="promo_bangkok_date">11/06/2026 - 10/07/2026</string>
+    <string name="promo_friday_title">Thứ 6 mở app – giảm đến 10%</string>
+    <string name="promo_friday_date">17/06/2026 - 01/07/2026</string>
+    <string name="vietnam">Việt Nam</string>
+    <string name="dest_phuquoc_desc">Phú Quốc – “đảo ngọc” xinh đẹp của Việt Nam</string>
+    <string name="dest_danang_desc">Đà Nẵng – thành phố đáng sống nhất Việt Nam</string>
+    <string name="exp_economy_title">Hạng Phổ thông</string>
+    <string name="exp_economy_desc">Mức giá tốt, dịch vụ chu đáo.</string>
+    <string name="exp_economy_sub">Thoải mái trong mọi hành trình</string>
+    <string name="exp_business_title">Hạng Business</string>
+    <string name="exp_business_desc">Bay phong cách, tận hưởng khác biệt</string>
+    <string name="exp_business_sub">Trải nghiệm đẳng cấp cho mỗi hành trình.</string>
+    <string name="exp_first_title">Hạng Thương gia</string>
+    <string name="exp_first_desc">Nâng tầm trải nghiệm</string>
+    <string name="exp_first_sub">Không gian riêng tư, dịch vụ tinh tế.</string>
+
+    <!-- Payment Strings -->
+    <string name="payment_title">Xác nhận thanh toán</string>
+    <string name="total_price_label">Tổng giá (VND)</string>
+    <string name="total_price_value">5.421.000</string>
+    <string name="price_detail">Chi tiết giá</string>
+    <string name="payment_warning">Quý khách vui lòng không đóng ứng dụng cho đến khi hoàn tất thanh toán</string>
+    <string name="choose_payment_method">CHỌN PHƯƠNG THỨC</string>
+    <string name="payment_card">Payment Card</string>
+    <string name="card_type">Loại thẻ</string>
+    <string name="card_number">Số thẻ</string>
+    <string name="card_expiry">Ngày hết hạn</string>
+    <string name="card_cvv">Mã bảo mật</string>
+    <string name="card_holder">Tên chủ thẻ</string>
+    <string name="card_holder_hint">Nhập tên không dấu</string>
+    <string name="payment_secure">Thanh toán bảo mật chuẩn PCI DSS</string>
+    <string name="vnpay">VNPay</string>
+    <string name="vietqr">VietQR</string>
+    <string name="momo">Momo</string>
+    <string name="payment_redirect">Hệ thống sẽ điều hướng bạn đến trang thanh toán an toàn.</string>
+    <string name="payment_terms">Tôi hiểu và đồng ý với Điều lệ vận chuyển, Điều kiện điều khoản, Chính sách bảo mật và Điều kiện giá vé của Skyline.</string>
+    <string name="pay_now">Thanh toán ngay</string>
+    <string name="payment_footer_note">Trong trường hợp Quý khách đã thanh toán thành công nhưng chưa nhận được vé sau 1 tiếng, vui lòng liên hệ trung tâm trợ giúp 1900 1234 để được hỗ trợ.</string>
+    <string name="card_expiry_hint">mm/yy</string>
+    <string name="card_cvv_hint">cvv/cvc</string>
+    <string name="card_number_hint">0000 0000 0000 0000</string>
+    <string name="processing_payment">Đang xử lý thanh toán...</string>
+    <string name="visa">Visa</string>
+    <string name="mastercard">Mastercard</string>
+    <string name="jcb">JCB</string>
+    <string name="amex">American Express</string>
+
+    <!-- Price Detail Dialog -->
+    <string name="price_detail_title">Chi tiết giá</string>
+    <string name="adult_ticket_count">Giá vé người lớn x1</string>
+    <string name="price_per_person">4.941.000 VND/Người</string>
+    <string name="price_adult_total">4.941.000 VND</string>
+    <string name="base_fare">Giá vé</string>
+    <string name="price_base_fare_value">3.918.000 VND</string>
+    <string name="tax_and_fees">Thuế, phí</string>
+    <string name="price_tax_fees_value">1.503.000 VND</string>
+    <string name="passenger_service_fee">Phí dịch vụ hành khách chặng nội địa,\nViệt Nam</string>
+    <string name="price_service_fee_value">198.000 VND</string>
+    <string name="security_screening_fee">Phí soi chiếu an ninh hành khách và\nhành lý, Việt Nam</string>
+    <string name="price_screening_fee_value">40.000 VND</string>
+    <string name="vat_fee">Thuế giá trị gia tăng, Việt Nam</string>
+    <string name="price_vat_value">385.000 VND</string>
+    <string name="system_surcharge">Phụ thu quản trị hệ thống</string>
+    <string name="price_surcharge_value">400.000 VND</string>
+    <string name="all_inclusive_note">Giá đã bao gồm tất cả các khoản thuế phí bắt buộc từ hãng hàng không và sân bay.</string>
+    <string name="total_cost">Tổng chi phí</string>
+    <string name="confirm">Xác nhận</string>
 </resources>
