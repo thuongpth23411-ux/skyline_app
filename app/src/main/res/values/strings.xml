@@ -69,4 +69,67 @@
     <string name="perm_data_title">Quyền cho phép theo dõi việc sử dụng dữ liệu.</string>
     <string name="perm_data_desc">Quyền này giúp chúng tôi hiểu rõ hơn về thói quen sử dụng ứng dụng của Quý khách, nhằm mang đến các trải nghiệm mượt mà và đề xuất cá nhân hóa hơn. Mọi dữ liệu đều được bảo mật và tuân thủ quyền riêng tư.</string>
     <string name="btn_continue">Tiếp tục</string>
+
+    <!-- Profile Strings -->
+    <string name="profile_username">Thương Phạm</string>
+    <string name="profile_rank">HẠNG ĐỒNG</string>
+    <string name="profile_card_rank">SKY POINTS</string>
+    <string name="profile_card_number">9000 0029 3915</string>
+    <string name="profile_sky_points">SỐ DƯ ĐIỂM</string>
+    <string name="profile_view_details">Xem chi tiết</string>
+    <string name="profile_current_tier">HẠNG HIỆN TẠI</string>
+    <string name="profile_next_tier">HẠNG KẾ TIẾP</string>
+    <string name="profile_member">ĐỒNG</string>
+    <string name="profile_silver">BẠC</string>
+    <string name="profile_my_vouchers">Voucher của tôi</string>
+    <string name="profile_customer_directory">Danh bạ khách hàng</string>
+    <string name="profile_book_flight">Đặt vé máy bay</string>
+    <string name="profile_support">Liên hệ hỗ trợ</string>
+    <string name="profile_member_info">Thông tin hội viên</string>
+    <string name="profile_terms">Điều khoản &amp; Điều kiện</string>
+    <string name="profile_privacy">Chính sách bảo mật</string>
+    <string name="profile_logout">Đăng xuất</string>
+
+    <!-- Support Strings -->
+    <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="support_header_title">Chúng tôi có thể\ngiúp gì cho bạn?</string>
+    <string name="support_header_desc">Đội ngũ Skyline luôn sẵn sàng hỗ trợ bạn\n24/7 để mang lại trải nghiệm chuyên\nnghiệp nhất.</string>
+    <string name="support_contact_method">Phương thức liên hệ</string>
+    <string name="support_hotline_title">HOTLINE HỖ TRỢ 24/7</string>
+    <string name="support_hotline_number">1900 1234</string>
+    <string name="support_hotline_desc">Gọi ngay cho chúng tôi để được giải đáp\ncác vấn đề về đặt chỗ, thanh toán và\nkhiếu nại khẩn cấp.</string>
+    <string name="support_call_now">Gọi ngay</string>
+    <string name="support_chat_title">Trò chuyện trực tuyến</string>
+    <string name="support_chat_desc">Phản hồi tức thì trong 30 giây</string>
+    <string name="support_start_chat">Bắt đầu chat</string>
+    <string name="support_faq_title">Chủ đề phổ biến</string>
+    <string name="support_faq_view_all">Xem tất cả FAQ</string>
+    <string name="support_faq_booking">Vấn đề về đặt chỗ</string>
+    <string name="support_faq_booking_desc">Hủy, đổi lịch hoặc thanh toán</string>
+    <string name="support_faq_account">Tài khoản &amp; Hội viên</string>
+    <string name="support_faq_account_desc">Bảo mật và quyền lợi VIP</string>
+    <string name="support_faq_policy">Chính sách &amp; Quy định</string>
+    <string name="support_faq_policy_desc">Điều khoản và quyền riêng tư</string>
+
+    <!-- Privacy Strings -->
+    <string name="privacy_title">Chính sách bảo mật</string>
+    <string name="privacy_header_badge">Bảo mật tối ưu</string>
+    <string name="privacy_header_title">Quyền riêng tư của bạn</string>
+
+    <string name="privacy_section_1_title">1. Thu thập thông tin</string>
+    <string name="privacy_section_1_desc">Chúng tôi thu thập các thông tin cơ bản khi bạn đăng ký hội viên như tên, email và số điện thoại để cá nhân hóa trải nghiệm.</string>
+
+    <string name="privacy_section_2_title">2. Mục đích sử dụng</string>
+    <string name="privacy_section_2_desc">Thông tin của bạn được dùng để quản lý hạng thẻ, cung cấp ưu đãi đặc quyền và cải thiện chất lượng dịch vụ.</string>
+
+    <string name="privacy_section_3_title">3. Cam kết bảo mật</string>
+    <string name="privacy_section_3_desc">Skyline cam kết không chia sẻ thông tin cá nhân của bạn cho bên thứ ba khi chưa có sự đồng ý, trừ trường hợp theo quy định pháp luật.</string>
+
+    <string name="privacy_section_4_title">4. Quyền của người dùng</string>
+    <string name="privacy_section_4_desc">Bạn có quyền truy cập, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân của mình bất kỳ lúc nào thông qua ứng dụng.</string>
+
+    <string name="privacy_footer_title">Cần hỗ trợ thêm?</string>
+    <string name="privacy_footer_desc">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp thắc mắc về quyền riêng tư của bạn.</string>
+    <string name="privacy_footer_btn">Liên hệ hỗ trợ</string>
+    <string name="privacy_version">Cập nhật lần cuối: 15/10/2023 • Phiên bản v2.4.1</string>
 </resources>

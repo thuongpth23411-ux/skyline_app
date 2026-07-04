@@ -8,50 +8,43 @@ const { sendOTP } = require("../utils/mailer");
 // Generate 6 digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Register
-router.post("/register", async (req, res) => {
+// 1. Send OTP for Registration
+router.post("/send-otp-reg", async (req, res) => {
     try {
-        const { email, password, name, phone } = req.body;
-
+        const { email } = req.body;
         let user = await User.findOne({ email });
+
         if (user && user.isVerified) {
             return res.status(400).json({ success: false, message: "Email đã được đăng ký" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
-        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
         if (user) {
-            // Update existing unverified user
-            user.password = hashedPassword;
-            user.fullName = name || "User";
-            user.phone = phone;
             user.otp = otp;
             user.otpExpires = otpExpires;
             await user.save();
         } else {
-            // Create new user
             user = new User({
-                fullName: name || "User",
+                fullName: "User",
                 email,
-                password: hashedPassword,
-                phone,
+                password: "temporary_password", // Will be updated in finalize
                 otp,
-                otpExpires
+                otpExpires,
+                isVerified: false
             });
             await user.save();
         }
 
         await sendOTP(email, otp);
-        res.json({ success: true, message: "Đăng ký thành công, vui lòng kiểm tra email để lấy mã OTP" });
+        res.json({ success: true, message: "Mã OTP đã được gửi vào email của bạn" });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
 });
 
-// Verify OTP
+// 2. Verify OTP
 router.post("/verify-otp", async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -61,12 +54,32 @@ router.post("/verify-otp", async (req, res) => {
             return res.status(400).json({ success: false, message: "Mã OTP không hợp lệ hoặc đã hết hạn" });
         }
 
+        // We don't mark isVerified=true yet, we wait for password
+        res.json({ success: true, message: "Xác thực OTP thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
+// 3. Finalize Registration
+router.post("/register-finalize", async (req, res) => {
+    try {
+        const { email, password, name, phone } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy yêu cầu đăng ký" });
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        user.fullName = name || user.fullName;
+        user.phone = phone || user.phone;
         user.isVerified = true;
         user.otp = undefined;
         user.otpExpires = undefined;
         await user.save();
 
-        res.json({ success: true, message: "Xác thực thành công" });
+        res.json({ success: true, message: "Đăng ký tài khoản thành công" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
@@ -78,17 +91,8 @@ router.post("/login", async (req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
 
-        if (!user) {
-            return res.status(400).json({ success: false, message: "Email hoặc mật khẩu không đúng" });
-        }
-
-        if (!user.isVerified) {
-            const otp = generateOTP();
-            user.otp = otp;
-            user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-            await user.save();
-            await sendOTP(email, otp);
-            return res.status(400).json({ success: false, message: "Tài khoản chưa xác thực. Mã OTP mới đã được gửi vào email." });
+        if (!user || !user.isVerified) {
+            return res.status(400).json({ success: false, message: "Email hoặc mật khẩu không đúng hoặc tài khoản chưa xác thực" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -108,7 +112,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// Forgot Password
+// Forgot Password (Keep as is)
 router.post("/forgot-password", async (req, res) => {
     try {
         const { email } = req.body;
@@ -130,7 +134,7 @@ router.post("/forgot-password", async (req, res) => {
     }
 });
 
-// Reset Password
+// Reset Password (Keep as is)
 router.post("/reset-password", async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;

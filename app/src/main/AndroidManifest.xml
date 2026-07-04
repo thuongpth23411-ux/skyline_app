@@ -38,6 +38,15 @@
         <activity
             android:name=".HomeActivity"
             android:exported="true" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SupportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

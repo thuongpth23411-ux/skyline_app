@@ -138,14 +138,32 @@ class RegisterEmailActivity : BaseAuthActivity() {
         val edtEmail = findViewById<EditText>(R.id.edtEmail)
         
         findViewById<View>(R.id.btnContinue).setOnClickListener {
-            val email = edtEmail.text.toString()
+            val email = edtEmail.text.toString().trim()
             if (email.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val intent = Intent(this, SetPasswordActivity::class.java)
-            intent.putExtra("EMAIL", email)
-            startActivity(intent)
+            
+            val btn = it
+            btn.isEnabled = false
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.instance.sendOtpReg(com.skyline.app.network.ForgotPasswordRequest(email))
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@RegisterEmailActivity, "Mã OTP đã được gửi đến email", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@RegisterEmailActivity, PhoneOtpActivity::class.java)
+                        intent.putExtra("EMAIL", email)
+                        intent.putExtra("IS_REGISTER", true)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this@RegisterEmailActivity, response.body()?.message ?: "Gửi OTP thất bại", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@RegisterEmailActivity, "Lỗi kết nối: ${e.message}", Toast.LENGTH_SHORT).show()
+                } finally {
+                    btn.isEnabled = true
+                }
+            }
         }
     }
 }
@@ -250,62 +268,43 @@ class CompleteInfoActivity : BaseAuthActivity() {
         }
 
         edtDob.setOnClickListener { showDatePicker(edtDob) }
-        // Also allow manual entry check on focus loss or text change if needed, but focus on DatePicker for now.
         
         findViewById<View>(R.id.btnContinue).setOnClickListener {
             val phone = edtPhone.text.toString().trim()
             val firstName = edtFirstName.text.toString().trim()
             val lastName = edtLastName.text.toString().trim()
             val dob = edtDob.text.toString().trim()
-            val country = tvCountry.text.toString()
             
-            Log.d(TAG, "Continue clicked. Phone: $phone, Name: $firstName $lastName")
-
-            if (phone.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || dob.isEmpty() || country == "-- Chọn quốc gia --") {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ các thông tin bắt buộc (*)", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (!isValidDate(dob)) {
+            if (dob.isNotEmpty() && !isValidDate(dob)) {
                 Toast.makeText(this, "Ngày sinh không đúng định dạng DD/MM/YYYY", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (!isValidPhone(phone)) {
+            if (phone.isNotEmpty() && !isValidPhone(phone)) {
                 Toast.makeText(this, "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
-            if (!cbAgree.isChecked) {
-                Toast.makeText(this, "Vui lòng đồng ý với các điều khoản để tiếp tục", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
-            val name = "$firstName $lastName".trim()
+            val name = "$firstName $lastName".trim().let { if (it.isEmpty()) "User" else it }
             val btn = it
             btn.isEnabled = false
             
             lifecycleScope.launch {
                 try {
-                    Log.d(TAG, "Calling register API for $email")
-                    val response = RetrofitClient.instance.register(com.skyline.app.network.RegisterRequest(
+                    val response = RetrofitClient.instance.registerFinalize(com.skyline.app.network.RegisterRequest(
                         email = email,
                         password = password,
                         name = name,
-                        phone = phone
+                        phone = if (phone.isEmpty()) null else phone
                     ))
                     if (response.isSuccessful && response.body()?.success == true) {
-                        Log.d(TAG, "Register success")
                         Toast.makeText(this@CompleteInfoActivity, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@CompleteInfoActivity, PhoneOtpActivity::class.java).putExtra("EMAIL", email))
-                        finish()
+                        startActivity(Intent(this@CompleteInfoActivity, AccountSuccessActivity::class.java))
+                        finishAffinity() // Clear all auth activities
                     } else {
-                        val msg = response.body()?.message ?: "Đăng ký thất bại"
-                        Log.e(TAG, "Register failed: $msg")
-                        Toast.makeText(this@CompleteInfoActivity, msg, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@CompleteInfoActivity, response.body()?.message ?: "Đăng ký thất bại", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error: ${e.message}", e)
                     Toast.makeText(this@CompleteInfoActivity, "Lỗi kết nối: ${e.message}", Toast.LENGTH_SHORT).show()
                 } finally {
                     btn.isEnabled = true
@@ -313,26 +312,21 @@ class CompleteInfoActivity : BaseAuthActivity() {
             }
         }
         findViewById<View>(R.id.tvSkip).setOnClickListener { 
-             Log.d(TAG, "Skip clicked")
              val skipView = it
              skipView.isEnabled = false
              lifecycleScope.launch {
                 try {
-                    val response = RetrofitClient.instance.register(com.skyline.app.network.RegisterRequest(
+                    val response = RetrofitClient.instance.registerFinalize(com.skyline.app.network.RegisterRequest(
                         email = email,
                         password = password
                     ))
                     if (response.isSuccessful && response.body()?.success == true) {
-                         Log.d(TAG, "Register (skip info) success")
                          startActivity(Intent(this@CompleteInfoActivity, AccountSuccessActivity::class.java))
-                         finish()
+                         finishAffinity()
                     } else {
-                        val msg = response.body()?.message ?: "Đăng ký thất bại"
-                        Log.e(TAG, "Register failed: $msg")
-                        Toast.makeText(this@CompleteInfoActivity, msg, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@CompleteInfoActivity, response.body()?.message ?: "Đăng ký thất bại", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error: ${e.message}", e)
                     Toast.makeText(this@CompleteInfoActivity, "Lỗi kết nối: ${e.message}", Toast.LENGTH_SHORT).show()
                 } finally {
                     skipView.isEnabled = true
@@ -377,6 +371,8 @@ class PhoneOtpActivity : BaseAuthActivity() {
         setupHomeButton()
         
         val email = intent.getStringExtra("EMAIL") ?: ""
+        val isRegister = intent.getBooleanExtra("IS_REGISTER", false)
+        
         val otpInputs = listOf<EditText>(
             findViewById(R.id.edtOtp1), findViewById(R.id.edtOtp2),
             findViewById(R.id.edtOtp3), findViewById(R.id.edtOtp4),
@@ -396,7 +392,16 @@ class PhoneOtpActivity : BaseAuthActivity() {
                 try {
                     val response = RetrofitClient.instance.verifyOtp(com.skyline.app.network.VerifyOtpRequest(email, otp))
                     if (response.isSuccessful && response.body()?.success == true) {
-                        startActivity(Intent(this@PhoneOtpActivity, AccountSuccessActivity::class.java))
+                        if (isRegister) {
+                            // Go to Set Password for Registration
+                            val intent = Intent(this@PhoneOtpActivity, SetPasswordActivity::class.java)
+                            intent.putExtra("EMAIL", email)
+                            intent.putExtra("OTP", otp)
+                            startActivity(intent)
+                        } else {
+                            // Existing success behavior (for other flows)
+                            startActivity(Intent(this@PhoneOtpActivity, AccountSuccessActivity::class.java))
+                        }
                     } else {
                         Toast.makeText(this@PhoneOtpActivity, response.body()?.message ?: "Xác thực thất bại", Toast.LENGTH_SHORT).show()
                     }
