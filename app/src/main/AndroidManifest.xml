@@ -36,6 +36,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ConfirmPaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="true" />
         <activity
