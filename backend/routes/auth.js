@@ -79,7 +79,13 @@ router.post("/register-finalize", async (req, res) => {
         user.otpExpires = undefined;
         await user.save();
 
-        res.json({ success: true, message: "Đăng ký tài khoản thành công" });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        res.json({
+            success: true,
+            message: "Đăng ký tài khoản thành công",
+            token,
+            user: { id: user._id, email: user.email, name: user.fullName }
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }

@@ -37,7 +37,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/app_name"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/logo_skyline"
+                    android:src="@drawable/logo_horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>

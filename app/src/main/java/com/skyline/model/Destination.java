@@ -1,0 +1,17 @@
+package com.skyline.model;
+
+public class Destination {
+    private String country;
+    private String title;
+    private int imageRes;
+
+    public Destination(String country, String title, int imageRes) {
+        this.country = country;
+        this.title = title;
+        this.imageRes = imageRes;
+    }
+
+    public String getCountry() { return country; }
+    public String getTitle() { return title; }
+    public int getImageRes() { return imageRes; }
+}
