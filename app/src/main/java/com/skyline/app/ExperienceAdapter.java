@@ -30,12 +30,12 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.Ex
 
     @Override
     public void onBindViewHolder(@NonNull ExperienceViewHolder holder, int position) {
-        holder.bind(items.get(position));
+        holder.bind(items.get(position % items.size()));
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items == null || items.isEmpty() ? 0 : Integer.MAX_VALUE;
     }
 
     class ExperienceViewHolder extends RecyclerView.ViewHolder {

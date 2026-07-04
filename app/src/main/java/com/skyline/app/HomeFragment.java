@@ -95,12 +95,21 @@ public class HomeFragment extends Fragment {
 
         binding.experiencePager.setAdapter(new ExperienceAdapter(experiences, item -> toast("Đã chọn " + item.getTitle())));
         binding.experiencePager.setOffscreenPageLimit(3);
+        
+        // Start from a middle position for infinite effect
+        int middle = Integer.MAX_VALUE / 2;
+        int startPos = middle - (middle % experiences.size());
+        binding.experiencePager.setCurrentItem(startPos, false);
+
         binding.experiencePager.setPageTransformer((page, position) -> {
             float scaleFactor = 0.85f + (1 - Math.abs(position)) * 0.15f;
             page.setScaleX(scaleFactor);
             page.setScaleY(scaleFactor);
             page.setAlpha(0.6f + (1 - Math.abs(position)) * 0.4f);
         });
+
+        binding.btnExpPrev.setOnClickListener(v -> binding.experiencePager.setCurrentItem(binding.experiencePager.getCurrentItem() - 1));
+        binding.btnExpNext.setOnClickListener(v -> binding.experiencePager.setCurrentItem(binding.experiencePager.getCurrentItem() + 1));
     }
 
     private void setupClicks() {

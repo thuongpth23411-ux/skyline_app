@@ -34,6 +34,8 @@ public class CompleteInfoActivity extends BaseAuthActivity {
         EditText edtFirstName = findViewById(R.id.edtFirstName);
         EditText edtLastName = findViewById(R.id.edtLastName);
         EditText edtDob = findViewById(R.id.edtDob);
+        EditText edtCccd = findViewById(R.id.edtCccd);
+        EditText edtPassport = findViewById(R.id.edtPassport);
         TextView tvCountry = findViewById(R.id.tvCountry);
         CheckBox cbAgree = findViewById(R.id.cbAgree);
 
@@ -41,7 +43,7 @@ public class CompleteInfoActivity extends BaseAuthActivity {
             tvCountryCode.setText(selected.split(" ")[0]);
         }));
 
-        tvTitle.setOnClickListener(v -> showListSelector("Chọn danh xưng", new String[]{"Ông", "Bà", "Anh", "Chị"}, tvTitle::setText));
+        tvTitle.setOnClickListener(v -> showListSelector("Chọn danh xưng", new String[]{"Ông", "Bà"}, tvTitle::setText));
 
         tvCountry.setOnClickListener(v -> showListSelector("Chọn quốc gia", new String[]{"Việt Nam", "Thái Lan", "Singapore", "Malaysia", "Hàn Quốc", "Nhật Bản"}, tvCountry::setText));
 
@@ -50,6 +52,8 @@ public class CompleteInfoActivity extends BaseAuthActivity {
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
             String phone = edtPhone.getText().toString().trim();
             String dob = edtDob.getText().toString().trim();
+            String cccd = edtCccd.getText().toString().trim();
+            String passport = edtPassport.getText().toString().trim();
 
             if (!dob.isEmpty() && !isValidDate(dob)) {
                 showErrorDialog("Ngày sinh không đúng định dạng DD/MM/YYYY");
@@ -57,7 +61,22 @@ public class CompleteInfoActivity extends BaseAuthActivity {
             }
 
             if (!phone.isEmpty() && !isValidPhone(phone)) {
-                showErrorDialog("Số điện thoại không hợp lệ");
+                showErrorDialog("Số điện thoại không hợp lệ (yêu cầu 10-11 chữ số)");
+                return;
+            }
+
+            if (!cccd.isEmpty() && !isValidCccd(cccd)) {
+                showErrorDialog("Số CCCD không hợp lệ (yêu cầu đúng 12 chữ số)");
+                return;
+            }
+
+            if (!passport.isEmpty() && !isValidPassport(passport)) {
+                showErrorDialog("Số hộ chiếu không hợp lệ");
+                return;
+            }
+            
+            if (!cbAgree.isChecked()) {
+                showErrorDialog("Vui lòng đồng ý với các điều khoản để tiếp tục");
                 return;
             }
 
@@ -147,7 +166,15 @@ public class CompleteInfoActivity extends BaseAuthActivity {
     }
 
     private boolean isValidPhone(String phone) {
-        return phone.length() >= 9 && phone.length() <= 11 && phone.matches("\\d+");
+        return phone.length() >= 10 && phone.length() <= 11 && phone.matches("\\d+");
+    }
+
+    private boolean isValidCccd(String cccd) {
+        return cccd.length() == 12 && cccd.matches("\\d+");
+    }
+
+    private boolean isValidPassport(String passport) {
+        return passport.length() >= 7 && passport.length() <= 15 && passport.matches("[a-zA-Z0-9]+");
     }
 
     interface OnSelectedListener {
