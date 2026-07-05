@@ -59,6 +59,12 @@
         <activity
             android:name=".TermsActivity"
             android:exported="false" />
+        <activity
+            android:name=".AirportSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FlightResultsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,18 +55,27 @@ public class AirportSelectionActivity extends AppCompatActivity {
     }
 
     private void loadAirports() {
+        binding.progressBar.setVisibility(View.VISIBLE);
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
+                binding.progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     allAirports = response.body();
-                    adapter.updateList(allAirports);
+                    if (allAirports.isEmpty()) {
+                        Toast.makeText(AirportSelectionActivity.this, "Danh sách sân bay trống", Toast.LENGTH_SHORT).show();
+                    } else {
+                        adapter.updateList(allAirports);
+                    }
+                } else {
+                    Toast.makeText(AirportSelectionActivity.this, "Lỗi máy chủ: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Airport>> call, Throwable t) {
-                Toast.makeText(AirportSelectionActivity.this, "Lỗi tải danh sách sân bay", Toast.LENGTH_SHORT).show();
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(AirportSelectionActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -86,11 +96,15 @@ public class AirportSelectionActivity extends AppCompatActivity {
     }
 
     private void filter(String text) {
+        if (allAirports == null) return;
         List<Airport> filteredList = new ArrayList<>();
         for (Airport airport : allAirports) {
-            if (airport.getName().toLowerCase().contains(text.toLowerCase()) ||
-                airport.getCity().toLowerCase().contains(text.toLowerCase()) ||
-                airport.getCode().toLowerCase().contains(text.toLowerCase())) {
+            String name = airport.getName() != null ? airport.getName().toLowerCase() : "";
+            String city = airport.getCity() != null ? airport.getCity().toLowerCase() : "";
+            String code = airport.getCode() != null ? airport.getCode().toLowerCase() : "";
+            String search = text.toLowerCase();
+            
+            if (name.contains(search) || city.contains(search) || code.contains(search)) {
                 filteredList.add(airport);
             }
         }

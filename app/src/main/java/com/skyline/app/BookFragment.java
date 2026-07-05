@@ -56,6 +56,12 @@ public class BookFragment extends Fragment {
     private final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
     private final Gson gson = new Gson();
 
+    public BookFragment() {
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateFormat.setLenient(false);
+    }
+
     private final ActivityResultLauncher<String[]> locationPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             result -> {
@@ -63,6 +69,8 @@ public class BookFragment extends Fragment {
                 Boolean coarse = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
                 if ((fine != null && fine) || (coarse != null && coarse)) {
                     determineNearestAirport();
+                } else {
+                    loadInitialAirports();
                 }
             }
     );
@@ -81,9 +89,7 @@ public class BookFragment extends Fragment {
                         }
                         fromCode = code;
                         fromCity = city;
-                        binding.tvFromCode.setText(code);
-                        binding.tvFromCity.setText(city);
-                        binding.tvFromCode.setTextSize(32);
+                        updateAirportDisplay();
                     } else {
                         if (code.equals(fromCode)) {
                             Toast.makeText(requireContext(), "Điểm đến không được trùng với điểm đi", Toast.LENGTH_SHORT).show();
@@ -91,9 +97,7 @@ public class BookFragment extends Fragment {
                         }
                         toCode = code;
                         toCity = city;
-                        binding.tvToCode.setText(code);
-                        binding.tvToCity.setText(city);
-                        binding.tvToCode.setTextSize(32);
+                        updateAirportDisplay();
                     }
                 }
             }
@@ -118,6 +122,7 @@ public class BookFragment extends Fragment {
         updateTabUI();
         updateDateUI();
         updatePassengersDisplay();
+        updateAirportDisplay();
 
         binding.btnBack.setOnClickListener(v -> {
             if (getActivity() instanceof HomeActivity) {
@@ -147,21 +152,15 @@ public class BookFragment extends Fragment {
             fromCity = toCity;
             toCode = tempCode;
             toCity = tempCity;
-
-            binding.tvFromCode.setText(fromCode);
-            binding.tvFromCity.setText(fromCity);
-            binding.tvToCode.setText(toCode);
-            binding.tvToCity.setText(toCity);
+            updateAirportDisplay();
         });
 
-        // Departure Date Clicks
         binding.ivDepCalendar.setOnClickListener(v -> showDatePicker(true));
-        setupManualDateEntry(binding.tvDepDate, true);
-
-        // Return Date Clicks
         binding.ivReturnCalendar.setOnClickListener(v -> {
             if (isRoundTrip) showDatePicker(false);
         });
+
+        setupManualDateEntry(binding.tvDepDate, true);
         setupManualDateEntry(binding.tvReturnDate, false);
 
         binding.btnSelectPassengers.setOnClickListener(v -> {
@@ -177,13 +176,29 @@ public class BookFragment extends Fragment {
                 Toast.makeText(requireContext(), "Vui lòng chọn đủ điểm đi và điểm đến", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            syncDatesFromInput();
+
             if (departureDate == 0) {
-                Toast.makeText(requireContext(), "Vui lòng chọn ngày đi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Vui lòng nhập ngày đi hợp lệ (dd/mm/yyyy)", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (isRoundTrip && returnDate == 0) {
-                Toast.makeText(requireContext(), "Vui lòng chọn ngày về", Toast.LENGTH_SHORT).show();
+
+            long tomorrowStart = getTomorrowStartUtc();
+            if (departureDate < tomorrowStart) {
+                Toast.makeText(requireContext(), "Vui lòng chọn thời gian hợp lệ! (Chỉ từ ngày mai)", Toast.LENGTH_SHORT).show();
                 return;
+            }
+
+            if (isRoundTrip) {
+                if (returnDate == 0) {
+                    Toast.makeText(requireContext(), "Vui lòng nhập ngày về hợp lệ (dd/mm/yyyy)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (returnDate < departureDate) {
+                    Toast.makeText(requireContext(), "Ngày về không được nhỏ hơn ngày đi", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
             
             saveRecentSearch();
@@ -196,32 +211,100 @@ public class BookFragment extends Fragment {
         });
     }
 
+    private void updateAirportDisplay() {
+        if (fromCode.isEmpty()) {
+            binding.tvFromCode.setText("+");
+            binding.tvFromCity.setText("Chọn điểm đi");
+            binding.tvFromCity.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary));
+        } else {
+            binding.tvFromCode.setText(fromCode);
+            binding.tvFromCity.setText(fromCity);
+            binding.tvFromCode.setTextSize(32);
+            binding.tvFromCity.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_blue_dark));
+        }
+
+        if (toCode.isEmpty()) {
+            binding.tvToCode.setText("+");
+            binding.tvToCity.setText("Chọn điểm đến");
+            binding.tvToCity.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary));
+        } else {
+            binding.tvToCode.setText(toCode);
+            binding.tvToCity.setText(toCity);
+            binding.tvToCode.setTextSize(32);
+            binding.tvToCity.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_blue_dark));
+        }
+    }
+
+    private long getTomorrowStartUtc() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        return cal.getTimeInMillis();
+    }
+
+    private void syncDatesFromInput() {
+        try {
+            String depStr = binding.tvDepDate.getText().toString();
+            if (depStr.length() == 10) {
+                Date d = dateFormat.parse(depStr);
+                if (d != null) departureDate = d.getTime();
+            }
+            
+            if (isRoundTrip) {
+                String retStr = binding.tvReturnDate.getText().toString();
+                if (retStr.length() == 10) {
+                    Date r = dateFormat.parse(retStr);
+                    if (r != null) returnDate = r.getTime();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("BookFragment", "Parse error in sync");
+        }
+    }
+
     private void setupManualDateEntry(android.widget.EditText editText, boolean isDeparture) {
         editText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            private String prevText = "";
+
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                prevText = s.toString();
+            }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
+                if (input.length() > prevText.length()) {
+                    if (input.length() == 2 || input.length() == 5) {
+                        s.append("/");
+                    }
+                }
+
                 if (input.length() == 10) {
                     try {
                         Date date = dateFormat.parse(input);
                         if (date != null) {
                             long time = date.getTime();
+                            long tomorrow = getTomorrowStartUtc();
+                            
+                            if (time < tomorrow) {
+                                Toast.makeText(requireContext(), "Vui lòng chọn thời gian hợp lệ!", Toast.LENGTH_SHORT).show();
+                                editText.setText(""); 
+                                return;
+                            }
+
                             if (isDeparture) {
                                 departureDate = time;
-                                binding.tvDepDayOfWeek.setText(dayFormat.format(date));
                             } else {
-                                if (time < departureDate) {
+                                if (departureDate != 0 && time < departureDate) {
                                     Toast.makeText(requireContext(), "Ngày về không được nhỏ hơn ngày đi", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 returnDate = time;
-                                binding.tvReturnDayOfWeek.setText(dayFormat.format(date));
                             }
                         }
                     } catch (ParseException e) {
-                        // handled by updateDateUI on loss of focus or search
+                        // ignore while typing
                     }
                 }
             }
@@ -267,32 +350,18 @@ public class BookFragment extends Fragment {
 
     private void updateDateUI() {
         if (departureDate == 0) {
-            binding.ivDepCalendar.setVisibility(View.VISIBLE);
-            binding.tvDepDate.setVisibility(View.GONE);
-            binding.tvDepDayOfWeek.setText("Chọn ngày đi");
-            binding.tvDepDayOfWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_blue_dark));
+            binding.tvDepDate.setText("");
         } else {
-            binding.ivDepCalendar.setVisibility(View.VISIBLE);
-            binding.tvDepDate.setVisibility(View.VISIBLE);
             binding.tvDepDate.setText(dateFormat.format(new Date(departureDate)));
-            binding.tvDepDayOfWeek.setText(dayFormat.format(new Date(departureDate)));
-            binding.tvDepDayOfWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary));
         }
 
         if (isRoundTrip) {
             binding.dateDivider.setVisibility(View.VISIBLE);
             binding.btnSelectReturnDate.setVisibility(View.VISIBLE);
             if (returnDate == 0) {
-                binding.ivReturnCalendar.setVisibility(View.VISIBLE);
-                binding.tvReturnDate.setVisibility(View.GONE);
-                binding.tvReturnDayOfWeek.setText("Chọn ngày về");
-                binding.tvReturnDayOfWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_blue_dark));
+                binding.tvReturnDate.setText("");
             } else {
-                binding.ivReturnCalendar.setVisibility(View.VISIBLE);
-                binding.tvReturnDate.setVisibility(View.VISIBLE);
                 binding.tvReturnDate.setText(dateFormat.format(new Date(returnDate)));
-                binding.tvReturnDayOfWeek.setText(dayFormat.format(new Date(returnDate)));
-                binding.tvReturnDayOfWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary));
             }
         } else {
             binding.dateDivider.setVisibility(View.GONE);
@@ -301,14 +370,7 @@ public class BookFragment extends Fragment {
     }
 
     private void showDatePicker(boolean isDeparture) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        long tomorrowStart = cal.getTimeInMillis();
-
+        long tomorrowStart = getTomorrowStartUtc();
         CalendarConstraints constraints = new CalendarConstraints.Builder()
                 .setValidator(DateValidatorPointForward.from(tomorrowStart))
                 .build();
@@ -317,7 +379,6 @@ public class BookFragment extends Fragment {
                 .setTitleText(isDeparture ? "Chọn ngày đi" : "Chọn ngày về")
                 .setCalendarConstraints(constraints)
                 .setTheme(R.style.CustomDatePickerTheme)
-                // [XÓA THANH THỪA]: Ép buộc chế độ lịch, kết hợp với Theme sẽ ẩn hoàn toàn thanh icon sửa
                 .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
                 .setSelection(isDeparture ? (departureDate != 0 ? departureDate : tomorrowStart) : (returnDate != 0 ? returnDate : (departureDate != 0 ? departureDate : tomorrowStart)))
                 .build();
@@ -354,12 +415,25 @@ public class BookFragment extends Fragment {
                     Airport first = response.body().get(0);
                     fromCode = first.getCode();
                     fromCity = first.getCity();
-                    if (binding != null) {
-                        binding.tvFromCode.setText(fromCode);
-                        binding.tvFromCity.setText(fromCity);
-                        binding.tvFromCode.setTextSize(32);
-                        binding.tvFromCity.setTextColor(ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary));
-                    }
+                    updateAirportDisplay();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Airport>> call, Throwable t) {
+                loadInitialAirports();
+            }
+        });
+    }
+
+    private void loadInitialAirports() {
+        RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
+            @Override
+            public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    Airport first = response.body().get(0);
+                    fromCode = first.getCode();
+                    fromCity = first.getCity();
+                    updateAirportDisplay();
                 }
             }
             @Override
@@ -384,6 +458,17 @@ public class BookFragment extends Fragment {
         search.children = children;
         search.infants = infants;
         search.createdAt = System.currentTimeMillis();
+
+        list.removeIf(item -> 
+            item.fromAirportId.equals(search.fromAirportId) &&
+            item.toAirportId.equals(search.toAirportId) &&
+            item.departureDate.equals(search.departureDate) &&
+            ((item.returnDate == null && search.returnDate == null) || (item.returnDate != null && item.returnDate.equals(search.returnDate))) &&
+            item.isRoundTrip == search.isRoundTrip &&
+            item.adults == search.adults &&
+            item.children == search.children &&
+            item.infants == search.infants
+        );
 
         list.add(0, search);
         if (list.size() > 5) list = list.subList(0, 5);
@@ -430,12 +515,7 @@ public class BookFragment extends Fragment {
                     returnDate = 0;
                 }
                 
-                binding.tvFromCode.setText(fromCode);
-                binding.tvFromCity.setText(fromCity);
-                binding.tvToCode.setText(toCode);
-                binding.tvToCity.setText(toCity);
-                binding.tvToCode.setTextSize(32);
-                binding.tvFromCode.setTextSize(32);
+                updateAirportDisplay();
                 binding.toggleTripType.check(isRoundTrip ? R.id.btnRoundTrip : R.id.btnOneWay);
                 
                 updatePassengersDisplay();

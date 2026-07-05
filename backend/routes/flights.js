@@ -11,11 +11,11 @@ router.post("/search", async (req, res) => {
 
         console.log(`Searching: from ${fromCode} to ${toCode} on ${date}`);
 
-        // Find flights based on IDs provided (assuming fromCode/toCode match fromAirportId/toAirportId)
+        // Find flights based on IDs provided
         const flights = await Flight.find({
             fromAirportId: fromCode,
             toAirportId: toCode,
-            departureDate: date
+            departureDate: { $regex: new RegExp(`^${date}`) }
         }).lean();
 
         // Populate airline and airport info manually since we're using String IDs instead of ObjectIds
