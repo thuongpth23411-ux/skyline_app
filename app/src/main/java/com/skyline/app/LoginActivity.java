@@ -43,8 +43,7 @@ public class LoginActivity extends BaseAuthActivity {
                         if (authResponse.getToken() != null) {
                             SessionManager sessionManager = new SessionManager(LoginActivity.this);
                             sessionManager.saveAuthToken(authResponse.getToken());
-                            String name = authResponse.getUser() != null ? authResponse.getUser().getName() : null;
-                            sessionManager.saveUser(name, email);
+                            sessionManager.saveUser(authResponse.getUser());
                         }
                         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                         goHome();

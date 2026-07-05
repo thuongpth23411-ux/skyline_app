@@ -110,8 +110,7 @@ public class CompleteInfoActivity extends BaseAuthActivity {
                         if (body.getToken() != null) {
                             SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
                             sessionManager.saveAuthToken(body.getToken());
-                            String name = body.getUser() != null ? body.getUser().getName() : null;
-                            sessionManager.saveUser(name, email);
+                            sessionManager.saveUser(body.getUser());
                         }
                         Toast.makeText(CompleteInfoActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
@@ -141,8 +140,7 @@ public class CompleteInfoActivity extends BaseAuthActivity {
                         if (body.getToken() != null) {
                             SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
                             sessionManager.saveAuthToken(body.getToken());
-                            String name = body.getUser() != null ? body.getUser().getName() : null;
-                            sessionManager.saveUser(name, email);
+                            sessionManager.saveUser(body.getUser());
                         }
                         startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
                         finishAffinity();

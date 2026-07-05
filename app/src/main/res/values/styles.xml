@@ -38,13 +38,13 @@
 
     <style name="FeatureTitle">
         <item name="android:textColor">@color/skyline_text</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">19sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="FeatureBody">
-        <item name="android:textColor">@color/skyline_text</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:textColor">@color/skyline_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
     </style>
 </resources>

@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema(
         type: String
     },
 
+    memberCode: {
+        type: String
+    },
+
     isVerified: {
         type: Boolean,
         default: false

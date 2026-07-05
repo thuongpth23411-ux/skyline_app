@@ -71,6 +71,27 @@ public class AboutActivity extends AppCompatActivity {
 
     private void setupClicks() {
         binding.btnNotification.setOnClickListener(v -> Toast.makeText(this, "Thông báo", Toast.LENGTH_SHORT).show());
+        
+        binding.btnTeamPrev.setOnClickListener(v -> {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) binding.teamRecycler.getLayoutManager();
+            if (layoutManager != null) {
+                int firstVisible = layoutManager.findFirstVisibleItemPosition();
+                if (firstVisible > 0) {
+                    binding.teamRecycler.smoothScrollToPosition(firstVisible - 1);
+                }
+            }
+        });
+
+        binding.btnTeamNext.setOnClickListener(v -> {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) binding.teamRecycler.getLayoutManager();
+            if (layoutManager != null && binding.teamRecycler.getAdapter() != null) {
+                int lastVisible = layoutManager.findLastVisibleItemPosition();
+                if (lastVisible < binding.teamRecycler.getAdapter().getItemCount() - 1) {
+                    binding.teamRecycler.smoothScrollToPosition(lastVisible + 1);
+                }
+            }
+        });
+
         binding.bottomNav.navHome.setOnClickListener(v -> finish());
         binding.bottomNav.navBook.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Đặt vé", Toast.LENGTH_SHORT).show());
         binding.bottomNav.navFlights.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Chuyến bay", Toast.LENGTH_SHORT).show());
