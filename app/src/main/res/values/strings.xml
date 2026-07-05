@@ -202,4 +202,28 @@
     <string name="all_inclusive_note">Giá đã bao gồm tất cả các khoản thuế phí bắt buộc từ hãng hàng không và sân bay.</string>
     <string name="total_cost">Tổng chi phí</string>
     <string name="confirm">Xác nhận</string>
+
+    <!-- Flights 2 Strings -->
+    <string name="ready_for_journey">SẴN SÀNG CHO HÀNH TRÌNH</string>
+    <string name="your_itinerary">Lịch trình của bạn</string>
+    <string name="economy_class">HẠNG PHỔ THÔNG</string>
+    <string name="business_class_caps">THƯƠNG GIA</string>
+    <string name="flight_time_label">THỜI GIAN</string>
+    <string name="seat_label">CHỖ NGỒI</string>
+    <string name="ticket_detail">Chi tiết vé</string>
+    <string name="change_ticket">Đổi vé</string>
+    <string name="cancel_ticket">Hủy vé</string>
+
+    <!-- Booking Strings -->
+    <string name="search_flights_title">Tìm kiếm chuyến bay</string>
+    <string name="one_way">Một chiều</string>
+    <string name="round_trip">Khứ hồi</string>
+    <string name="from_label">Từ</string>
+    <string name="to_label">Đến</string>
+    <string name="departure_date">Ngày đi</string>
+    <string name="return_date">Ngày về</string>
+    <string name="passengers_label">Hành khách</string>
+    <string name="class_label">Hạng ghế</string>
+    <string name="search_button">Tìm chuyến bay</string>
+    <string name="popular_routes">Chặng bay phổ biến</string>
 </resources>

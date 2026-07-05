@@ -20,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setupClicks();
+        // Default select Home
         binding.bottomNavigation.navHome.setSelected(true);
         showFragment(new HomeFragment());
     }
@@ -29,7 +30,9 @@ public class HomeActivity extends AppCompatActivity {
             updateNavSelection(v);
             showFragment(new HomeFragment());
         });
-        binding.bottomNavigation.navBook.setOnClickListener(v -> toast("Mở màn hình Đặt vé"));
+        binding.bottomNavigation.navBook.setOnClickListener(v -> {
+            toast("Mở màn hình Đặt vé");
+        });
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             updateNavSelection(v);
             showFragment(new FlightsFragment());
