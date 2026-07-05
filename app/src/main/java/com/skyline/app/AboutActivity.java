@@ -6,18 +6,22 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.skyline.app.databinding.ActivityAboutBinding;
+import com.skyline.app.utils.SessionManager;
 import com.skyline.model.TeamMember;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AboutActivity extends AppCompatActivity {
     private ActivityAboutBinding binding;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAboutBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sessionManager = new SessionManager(this);
 
         setupFeatures();
         setupTeam();
@@ -70,6 +74,12 @@ public class AboutActivity extends AppCompatActivity {
         binding.bottomNav.navHome.setOnClickListener(v -> finish());
         binding.bottomNav.navBook.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Đặt vé", Toast.LENGTH_SHORT).show());
         binding.bottomNav.navFlights.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Chuyến bay", Toast.LENGTH_SHORT).show());
-        binding.bottomNav.navProfile.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+        binding.bottomNav.navProfile.setOnClickListener(v -> {
+            if (sessionManager.isLoggedIn()) {
+                startActivity(new Intent(this, ProfileActivity.class));
+            } else {
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+        });
     }
 }

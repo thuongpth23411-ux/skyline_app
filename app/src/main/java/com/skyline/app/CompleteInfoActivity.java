@@ -84,7 +84,24 @@ public class CompleteInfoActivity extends BaseAuthActivity {
             if (fullName.isEmpty()) fullName = "User";
 
             v.setEnabled(false);
-            RetrofitClient.getInstance().registerFinalize(new RegisterRequest(email, password, fullName, phone.isEmpty() ? null : phone)).enqueue(new Callback<AuthResponse>() {
+            String country = tvCountry.getText().toString();
+            String title = tvTitle.getText().toString();
+            String countryCode = tvCountryCode.getText().toString();
+            
+            RegisterRequest request = new RegisterRequest(
+                email, 
+                password, 
+                fullName, 
+                phone.isEmpty() ? null : (countryCode + phone),
+                cccd.isEmpty() ? null : cccd,
+                passport.isEmpty() ? null : passport,
+                dob.isEmpty() ? null : dob,
+                country.equals("-- Chọn quốc gia --") ? null : country,
+                title.equals("Bà") || title.equals("Ông") ? title : null,
+                null // Address field if you have it in UI
+            );
+
+            RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     v.setEnabled(true);
@@ -114,7 +131,8 @@ public class CompleteInfoActivity extends BaseAuthActivity {
 
         findViewById(R.id.tvSkip).setOnClickListener(v -> {
             v.setEnabled(false);
-            RetrofitClient.getInstance().registerFinalize(new RegisterRequest(email, password)).enqueue(new Callback<AuthResponse>() {
+            RegisterRequest request = new RegisterRequest(email, password);
+            RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     v.setEnabled(true);

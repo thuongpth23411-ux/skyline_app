@@ -91,18 +91,25 @@ public class HomeFragment extends Fragment {
     private void setupExperiences() {
         List<Experience> experiences = new ArrayList<>();
         experiences.add(new Experience("Mức giá tốt, dịch vụ chu đáo.", "Hạng Phổ thông", "Thoải mái trong mọi hành trình", R.drawable.img_experience_economy));
-        experiences.add(new Experience("Bay phong cách, tận hưởng khác biệt", "Hạng Business", "Trải nghiệm đẳng cấp cho mỗi hành trình.", R.drawable.img_experience_first));
         experiences.add(new Experience("Nâng tầm trải nghiệm", "Hạng Thương gia", "Không gian riêng tư, dịch vụ tinh tế.", R.drawable.img_experience_first));
 
         binding.experiencePager.setAdapter(new ExperienceAdapter(experiences, item -> toast("Đã chọn " + item.getTitle())));
         binding.experiencePager.setOffscreenPageLimit(3);
         
+        // Start from a middle position for infinite effect
+        int middle = Integer.MAX_VALUE / 2;
+        int startPos = middle - (middle % experiences.size());
+        binding.experiencePager.setCurrentItem(startPos, false);
+
         binding.experiencePager.setPageTransformer((page, position) -> {
             float scaleFactor = 0.85f + (1 - Math.abs(position)) * 0.15f;
             page.setScaleX(scaleFactor);
             page.setScaleY(scaleFactor);
             page.setAlpha(0.6f + (1 - Math.abs(position)) * 0.4f);
         });
+
+        binding.btnExpPrev.setOnClickListener(v -> binding.experiencePager.setCurrentItem(binding.experiencePager.getCurrentItem() - 1));
+        binding.btnExpNext.setOnClickListener(v -> binding.experiencePager.setCurrentItem(binding.experiencePager.getCurrentItem() + 1));
     }
 
     private void setupClicks() {

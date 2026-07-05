@@ -64,7 +64,7 @@ router.post("/verify-otp", async (req, res) => {
 // 3. Finalize Registration
 router.post("/register-finalize", async (req, res) => {
     try {
-        const { email, password, name, phone } = req.body;
+        const { email, password, name, phone, cccd, passport, dob, country, title, address } = req.body;
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -74,6 +74,13 @@ router.post("/register-finalize", async (req, res) => {
         user.password = await bcrypt.hash(password, 10);
         user.fullName = name || user.fullName;
         user.phone = phone || user.phone;
+        user.cccd = cccd;
+        user.passport = passport;
+        user.dob = dob;
+        user.country = country;
+        user.title = title;
+        user.address = address;
+
         user.isVerified = true;
         user.otp = undefined;
         user.otpExpires = undefined;

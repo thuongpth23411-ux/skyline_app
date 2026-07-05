@@ -18,10 +18,15 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
+        sessionManager = new SessionManager(this);
+        if (!sessionManager.isLoggedIn()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        sessionManager = new SessionManager(this);
 
         setupBottomNavigation();
         setupMenuClicks();
@@ -32,13 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
         android.content.SharedPreferences prefs = getSharedPreferences("skyline_prefs", MODE_PRIVATE);
         String name = prefs.getString("user_name", "Khách");
         binding.tvUsername.setText(name);
-
-        if (!sessionManager.isLoggedIn()) {
-            binding.btnLogoutItem.setVisibility(View.GONE);
-            binding.tvUsername.setText("Chưa đăng nhập");
-        } else {
-            binding.btnLogoutItem.setVisibility(View.VISIBLE);
-        }
+        binding.btnLogoutItem.setVisibility(View.VISIBLE);
     }
 
     private void setupBottomNavigation() {
