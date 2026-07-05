@@ -226,4 +226,7 @@
     <string name="class_label">Hạng ghế</string>
     <string name="search_button">Tìm chuyến bay</string>
     <string name="popular_routes">Chặng bay phổ biến</string>
+
+    <!-- Override Material Date Picker strings -->
+    <string name="mtrl_picker_out_of_range">Vui lòng chọn thời gian hợp lệ!</string>
 </resources>

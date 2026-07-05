@@ -35,7 +35,8 @@ public class HomeActivity extends AppCompatActivity {
             showFragment(new HomeFragment());
         });
         binding.bottomNavigation.navBook.setOnClickListener(v -> {
-            toast("Mở màn hình Đặt vé");
+            updateNavSelection(v);
+            showFragment(new BookFragment());
         });
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             updateNavSelection(v);
