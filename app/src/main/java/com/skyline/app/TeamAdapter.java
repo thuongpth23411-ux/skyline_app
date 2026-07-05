@@ -24,12 +24,12 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TeamViewHolder holder, int position) {
-        holder.bind(items.get(position));
+        holder.bind(items.get(position % items.size()));
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items == null || items.isEmpty() ? 0 : Integer.MAX_VALUE;
     }
 
     static class TeamViewHolder extends RecyclerView.ViewHolder {
