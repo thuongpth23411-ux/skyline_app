@@ -50,6 +50,16 @@ const userSchema = new mongoose.Schema(
         type: String
     },
 
+    rank: {
+        type: String,
+        default: "Đồng"
+    },
+
+    skyPoints: {
+        type: Number,
+        default: 0
+    },
+
     isVerified: {
         type: Boolean,
         default: false

@@ -27,4 +27,10 @@
     <color name="support_header_bg">#EDF4FF</color>
     <color name="support_hotline_btn">#263E5A</color>
     <color name="support_chat_bg">#4E54D4</color>
+    <color name="terms_bronze">#C69C6D</color>
+    <color name="terms_silver">#A5ABB6</color>
+    <color name="terms_gold">#F2B705</color>
+    <color name="terms_diamond">#4FC3F7</color>
+    <color name="terms_marker">#314795</color>
+    <color name="terms_footer_bg">#FDF6F6</color>
 </resources>

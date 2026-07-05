@@ -4,6 +4,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendOTP } = require("../utils/mailer");
+const RankBenefit = require("../models/RankBenefit");
 
 // Generate 6 digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -173,6 +174,44 @@ router.post("/reset-password", async (req, res) => {
         await user.save();
 
         res.json({ success: true, message: "Đổi mật khẩu thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
+// Get User Profile
+router.get("/profile", async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ success: false, message: "Không có quyền truy cập" });
+        }
+
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.id).select("-password -otp -otpExpires");
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
+        }
+
+        res.json(user);
+    } catch (error) {
+        res.status(401).json({ success: false, message: "Xác thực không hợp lệ" });
+    }
+});
+
+// Get Rank Benefits
+router.get("/rank-benefits", async (req, res) => {
+    try {
+        let { rank } = req.query;
+        if (!rank) rank = "Đồng";
+
+        // Tìm kiếm không phân biệt hoa thường
+        const benefits = await RankBenefit.find({
+            rank: { $regex: new RegExp("^" + rank + "$", "i") }
+        });
+        res.json(benefits);
     } catch (error) {
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }

@@ -7,7 +7,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import com.skyline.app.databinding.ActivityProfileBinding;
+import com.skyline.app.network.AuthResponse;
+import com.skyline.app.network.RetrofitClient;
+import com.skyline.app.network.User;
 import com.skyline.app.utils.SessionManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
     private ActivityProfileBinding binding;
@@ -18,25 +24,62 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
-        sessionManager = new SessionManager(this);
-        if (!sessionManager.isLoggedIn()) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-            return;
-        }
-
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sessionManager = new SessionManager(this);
+
         setupBottomNavigation();
         setupMenuClicks();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         displayUserInfo();
     }
 
     private void displayUserInfo() {
+        if (!sessionManager.isLoggedIn()) {
+            binding.btnLogoutItem.setVisibility(View.GONE);
+            binding.tvUsername.setText("Chưa đăng nhập");
+            binding.tvUserRank.setText("");
+            binding.tvSkyPoints.setText("0");
+            binding.tvCardNumber.setText("---- ---- ---- ----");
+            return;
+        }
+
+        binding.btnLogoutItem.setVisibility(View.VISIBLE);
+        
+        // Hiển thị dữ liệu tạm thời từ SharedPreferences trong lúc tải
         binding.tvUsername.setText(sessionManager.getUserName());
         binding.tvCardNumber.setText(sessionManager.getMemberCode());
-        binding.btnLogoutItem.setVisibility(View.VISIBLE);
+
+        String token = "Bearer " + sessionManager.fetchAuthToken();
+
+        // Load dữ liệu mới nhất từ MongoDB qua API
+        RetrofitClient.getInstance().getProfile(token).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    User user = response.body();
+                    
+                    // Cập nhật lại SessionManager với dữ liệu mới nhất
+                    sessionManager.saveUser(user);
+                    
+                    // Cập nhật UI từ MongoDB
+                    binding.tvUsername.setText(user.getName());
+                    binding.tvUserRank.setText("HẠNG " + (user.getRank() != null ? user.getRank().toUpperCase() : "ĐỒNG"));
+                    binding.tvSkyPoints.setText(String.valueOf(user.getSkyPoints()));
+                    binding.tvCardNumber.setText(user.getMemberCode());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // Nếu lỗi, vẫn giữ dữ liệu cũ để người dùng không thấy trống
+            }
+        });
     }
 
     private void setupBottomNavigation() {
@@ -55,9 +98,22 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupMenuClicks() {
-        binding.itemMemberInfo.setOnClickListener(v -> toast("Thông tin hội viên"));
-        binding.itemTerms.setOnClickListener(v -> toast("Điều khoản & Điều kiện"));
-        binding.itemPrivacy.setOnClickListener(v -> toast("Chính sách bảo mật"));
+        binding.btnSupport.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, SupportActivity.class));
+        });
+
+        binding.itemMemberInfo.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, MemberInfoActivity.class));
+        });
+
+        binding.itemTerms.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, TermsActivity.class));
+        });
+
+        binding.itemPrivacy.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, PrivacyActivity.class));
+        });
+
         binding.btnLogoutItem.setOnClickListener(v -> {
             sessionManager.logout();
             toast("Đăng xuất thành công");
@@ -66,7 +122,9 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-        binding.btnViewDetails.setOnClickListener(v -> toast("Xem chi tiết điểm thưởng"));
+        binding.btnViewDetails.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
+        });
     }
 
     private void toast(String message) {

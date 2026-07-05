@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
                 updateNavSelection(v);
                 startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
             } else {
-                startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                startActivity(new Intent(HomeActivity.this, RegisterEmailActivity.class));
             }
         });
     }

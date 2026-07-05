@@ -36,4 +36,11 @@
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
+
+    <!-- Custom Date Picker Theme -->
+    <style name="SkylineDatePicker" parent="Theme.Material3.Light.Dialog">
+        <item name="colorPrimary">@color/skyline_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
 </resources>
