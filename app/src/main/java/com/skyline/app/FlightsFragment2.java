@@ -56,7 +56,44 @@ public class FlightsFragment2 extends Fragment {
         ));
 
         binding.rvTickets.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.rvTickets.setAdapter(new TicketAdapter(tickets, ticket -> showPriceDetailDialog()));
+        binding.rvTickets.setAdapter(new TicketAdapter(tickets, new TicketAdapter.OnTicketActionListener() {
+            @Override
+            public void onDetailClick(Ticket ticket) {
+                TicketDetailFragment fragment = TicketDetailFragment.newInstance(
+                    ticket.getFlightNo(),
+                    ticket.getOriginCode(),
+                    ticket.getDestCode(),
+                    ticket.getTime(),
+                    ticket.getSeat()
+                );
+                getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            }
+
+            @Override
+            public void onCancelClick(Ticket ticket) {
+                CancelTicketFragment fragment = CancelTicketFragment.newInstance(
+                    ticket.getFlightNo(),
+                    ticket.getOriginCode(),
+                    ticket.getOriginCity(),
+                    ticket.getDestCode(),
+                    ticket.getDestCity(),
+                    ticket.getDay() + " " + ticket.getMonthYear().replace("\n", " "),
+                    ticket.getTime()
+                );
+                getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment)
+                    .addToBackStack(null)
+                    .commit();
+            }
+
+            @Override
+            public void onChangeClick(Ticket ticket) {
+                // Handle change
+            }
+        }));
     }
 
     private void showPriceDetailDialog() {

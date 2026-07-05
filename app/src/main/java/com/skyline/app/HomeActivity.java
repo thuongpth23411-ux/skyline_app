@@ -35,7 +35,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             updateNavSelection(v);
-            showFragment(new FlightsFragment());
+            showFragment(new FlightsFragment2());
         });
         binding.bottomNavigation.navProfile.setOnClickListener(v -> {
             updateNavSelection(v);
