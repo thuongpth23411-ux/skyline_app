@@ -116,12 +116,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         binding.btnLogoutItem.setOnClickListener(v -> {
             sessionManager.logout();
-            toast("Đăng xuất thành công");
+            Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         });
+
         binding.btnViewDetails.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
         });

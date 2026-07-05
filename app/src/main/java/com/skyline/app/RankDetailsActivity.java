@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.skyline.app.databinding.ActivityRankDetailsBinding;
 import com.skyline.app.databinding.ItemBenefitBinding;
+import com.skyline.app.network.AuthResponse;
 import com.skyline.app.network.RankBenefit;
 import com.skyline.app.network.RetrofitClient;
 import com.skyline.app.network.User;
@@ -60,25 +61,32 @@ public class RankDetailsActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        if (!sessionManager.isLoggedIn()) return;
+        
         String token = "Bearer " + sessionManager.fetchAuthToken();
         RetrofitClient.getInstance().getProfile(token).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     User user = response.body();
-                    currentRank = user.getRank() != null ? user.getRank() : "Đồng";
+                    String rank = user.getRank() != null ? user.getRank() : "Đồng";
+                    currentRank = rank;
                     displayUserInfo(user);
-                    loadBenefits(currentRank);
+                    loadBenefits(rank);
+                } else {
+                    toast("Không thể tải thông tin hạng: " + response.code());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                toast("Lỗi tải thông tin hạng");
+                toast("Lỗi kết nối: " + t.getMessage());
             }
         });
     }
 
     private void displayUserInfo(User user) {
+        if (user == null) return;
+        
         String rank = user.getRank() != null ? user.getRank() : "Đồng";
         binding.tvRankName.setText("Hạng " + rank);
         binding.tvPoints.setText(String.valueOf(user.getSkyPoints()));
@@ -91,11 +99,16 @@ public class RankDetailsActivity extends AppCompatActivity {
         // Set Background Gradient and Colors based on Rank
         updateRankCardStyle(rank);
 
-        // Simple logic for points needed
-        int needed = 1000 - user.getSkyPoints();
+        // Progress logic
+        int points = user.getSkyPoints();
+        int maxPoints = 1000;
+        if ("Bạc".equalsIgnoreCase(rank)) maxPoints = 3000;
+        else if ("Vàng".equalsIgnoreCase(rank)) maxPoints = 5000;
+        
+        int needed = maxPoints - points;
         if (needed > 0) {
             binding.tvPointsNeeded.setText("Còn " + needed + " điểm để lên Hạng " + nextRank);
-            binding.progressRank.setProgress(user.getSkyPoints() * 100 / 1000);
+            binding.progressRank.setProgress(points * 100 / maxPoints);
         } else {
             binding.tvPointsNeeded.setText("Bạn đã đạt hạng cao nhất");
             binding.progressRank.setProgress(100);

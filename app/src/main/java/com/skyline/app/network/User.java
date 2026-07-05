@@ -23,11 +23,10 @@ public class User {
     @SerializedName("skyPoints")
     private int skyPoints;
     
-    @SerializedName("memberCode")
     private String memberCode;
     
     @SerializedName("createdAt")
-    private String joinDate;
+    private String createdAt;
 
     public String getId() { return id; }
     public String getEmail() { return email; }
@@ -42,5 +41,5 @@ public class User {
     public String getRank() { return rank; }
     public int getSkyPoints() { return skyPoints; }
     public String getMemberCode() { return memberCode; }
-    public String getJoinDate() { return joinDate; }
+    public String getJoinDate() { return createdAt; }
 }

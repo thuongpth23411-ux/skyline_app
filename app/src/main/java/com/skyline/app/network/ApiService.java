@@ -1,8 +1,12 @@
 package com.skyline.app.network;
 
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("auth/login")
@@ -22,4 +26,16 @@ public interface ApiService {
 
     @POST("auth/reset-password")
     Call<BaseResponse> resetPassword(@Body ResetPasswordRequest request);
+
+    @GET("auth/profile")
+    Call<User> getProfile(@Header("Authorization") String token);
+
+    @GET("auth/rank-benefits")
+    Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
+
+    @GET("airports")
+    Call<List<Airport>> getAirports();
+
+    @POST("flights/search")
+    Call<List<Flight>> searchFlights(@Body FlightSearchRequest request);
 }

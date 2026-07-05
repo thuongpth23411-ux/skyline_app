@@ -195,7 +195,12 @@ router.get("/profile", async (req, res) => {
             return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
         }
 
-        res.json(user);
+        // Làm sạch dữ liệu cho App Android
+        const userObj = user.toObject();
+        userObj._id = user._id.toString();
+        if (user.createdAt) userObj.createdAt = user.createdAt.toISOString();
+
+        res.json(userObj);
     } catch (error) {
         res.status(401).json({ success: false, message: "Xác thực không hợp lệ" });
     }

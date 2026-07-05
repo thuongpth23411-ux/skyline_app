@@ -81,6 +81,7 @@ public class MemberInfoActivity extends AppCompatActivity {
     private void loadMemberData() {
         if (!sessionManager.isLoggedIn()) return;
 
+        // Hiện dữ liệu tạm thời từ máy
         binding.tvUsername.setText(sessionManager.getUserName());
         binding.tvMemberId.setText(sessionManager.getMemberCode());
 
@@ -124,15 +125,23 @@ public class MemberInfoActivity extends AppCompatActivity {
 
         binding.itemDob.fieldValue.setText(user.getDob() != null ? user.getDob() : "Chưa cập nhật");
 
-        // Format Join Date (from MongoDB ISO string)
+        // Format Join Date (handling both raw string and MongoDB ISO string)
         String rawJoinDate = user.getJoinDate();
         String formattedDate = "--/--/----";
-        if (rawJoinDate != null && rawJoinDate.length() >= 10) {
+        if (rawJoinDate != null) {
             try {
-                // Lấy 10 ký tự đầu "YYYY-MM-DD"
-                String dateOnly = rawJoinDate.substring(0, 10);
-                String[] parts = dateOnly.split("-");
-                formattedDate = String.format(Locale.getDefault(), "%s/%s/%s", parts[2], parts[1], parts[0]);
+                if (rawJoinDate.length() >= 10) {
+                    // Extract YYYY-MM-DD from something like "2026-07-05T..." or "2026-07-05"
+                    String dateOnly = rawJoinDate.contains("T") ? rawJoinDate.split("T")[0] : rawJoinDate.substring(0, 10);
+                    String[] parts = dateOnly.split("-");
+                    if (parts.length == 3) {
+                        formattedDate = String.format(Locale.getDefault(), "%s/%s/%s", parts[2], parts[1], parts[0]);
+                    } else {
+                        formattedDate = rawJoinDate;
+                    }
+                } else {
+                    formattedDate = rawJoinDate;
+                }
             } catch (Exception e) {
                 formattedDate = rawJoinDate;
             }
