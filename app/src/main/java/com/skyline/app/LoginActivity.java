@@ -56,7 +56,7 @@ public class LoginActivity extends BaseAuthActivity {
 
                 @Override
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
-                    showErrorDialog("Lỗi kết nối: " + t.getMessage());
+                    showErrorDialog("Lỗi kết nối server!\nChi tiết: " + t.getMessage());
                 }
             });
         });

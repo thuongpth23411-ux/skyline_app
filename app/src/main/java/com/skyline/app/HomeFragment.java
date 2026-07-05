@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment {
     private void setupPromotionPager() {
         List<Promotion> promotions = new ArrayList<>();
         promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "11/06/2026 - 10/07/2026", R.drawable.img_promo_bangkok));
+        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/06/2026 - 15/07/2026", R.drawable.img_promo_phuquoc));
         promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "17/06/2026 - 01/07/2026", R.drawable.img_brand_banner));
 
         binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));

@@ -42,7 +42,7 @@ public class ForgotPasswordActivity extends BaseAuthActivity {
 
                 @Override
                 public void onFailure(Call<BaseResponse> call, Throwable t) {
-                    showErrorDialog("Lỗi kết nối: " + t.getMessage());
+                    showErrorDialog("Lỗi gửi OTP!\nChi tiết: " + t.getMessage());
                 }
             });
         });
