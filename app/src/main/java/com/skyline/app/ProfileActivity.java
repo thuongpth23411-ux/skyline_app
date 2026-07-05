@@ -87,12 +87,21 @@ public class ProfileActivity extends AppCompatActivity {
 
         binding.bottomNavigation.navHome.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
+            overridePendingTransition(0, 0);
             finish();
         });
-        binding.bottomNavigation.navBook.setOnClickListener(v -> toast("Mở màn hình Đặt vé"));
+        binding.bottomNavigation.navBook.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "BOOK");
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
             startActivity(intent);
+            overridePendingTransition(0, 0);
             finish();
         });
     }

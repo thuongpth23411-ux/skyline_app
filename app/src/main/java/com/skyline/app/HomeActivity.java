@@ -24,9 +24,27 @@ public class HomeActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
 
         setupClicks();
-        // Default select Home
-        binding.bottomNavigation.navHome.setSelected(true);
-        showFragment(new HomeFragment());
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        String target = intent != null ? intent.getStringExtra("TARGET_FRAGMENT") : null;
+        if ("BOOK".equals(target)) {
+            updateNavSelection(binding.bottomNavigation.navBook);
+            showFragment(new BookFragment());
+        } else if ("FLIGHTS".equals(target)) {
+            updateNavSelection(binding.bottomNavigation.navFlights);
+            showFragment(new FlightsFragment2());
+        } else {
+            updateNavSelection(binding.bottomNavigation.navHome);
+            showFragment(new HomeFragment());
+        }
     }
 
     private void setupClicks() {
@@ -45,7 +63,9 @@ public class HomeActivity extends AppCompatActivity {
         binding.bottomNavigation.navProfile.setOnClickListener(v -> {
             if (sessionManager.isLoggedIn()) {
                 updateNavSelection(v);
-                startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0); // Loại bỏ hiệu ứng trượt để giống Fragment
             } else {
                 startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             }
