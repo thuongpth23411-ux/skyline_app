@@ -9,17 +9,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import com.skyline.app.databinding.FragmentFlightsBinding;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.skyline.app.databinding.DialogPriceDetailBinding;
+import com.skyline.app.databinding.FragmentFlights2Binding;
+import com.skyline.model.Ticket;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FlightsFragment extends Fragment {
+public class FlightsFragment2 extends Fragment {
 
-    private FragmentFlightsBinding binding;
+    private FragmentFlights2Binding binding;
     private boolean isUpcomingTab = true;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentFlightsBinding.inflate(inflater, container, false);
+        binding = FragmentFlights2Binding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -28,7 +34,41 @@ public class FlightsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupTabs();
+        setupRecyclerView();
         updateUI();
+    }
+
+    private void setupRecyclerView() {
+        List<Ticket> tickets = new ArrayList<>();
+        tickets.add(new Ticket(
+            "27", "THÁNG 12\n2025",
+            getString(R.string.economy_class), "SK9921X",
+            "HAN", "Hà Nội",
+            "SGN", "TP. Hồ Chí Minh",
+            "14:30", "08C"
+        ));
+        tickets.add(new Ticket(
+            "15", "THÁNG 01\n2026",
+            getString(R.string.business_class_caps), "SK4402A",
+            "DAD", "Đà Nẵng",
+            "HUI", "Huế",
+            "09:15", "02A"
+        ));
+
+        binding.rvTickets.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvTickets.setAdapter(new TicketAdapter(tickets, ticket -> showPriceDetailDialog()));
+    }
+
+    private void showPriceDetailDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
+        DialogPriceDetailBinding dialogBinding = DialogPriceDetailBinding.inflate(getLayoutInflater());
+        dialog.setContentView(dialogBinding.getRoot());
+
+        dialogBinding.btnBack.setOnClickListener(v -> dialog.dismiss());
+        dialogBinding.btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialogBinding.btnConfirm.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     private void setupTabs() {
@@ -52,29 +92,25 @@ public class FlightsFragment extends Fragment {
         int inactiveColor = ContextCompat.getColor(requireContext(), R.color.skyline_text_secondary);
 
         if (isUpcomingTab) {
-            // Active: Upcoming
             binding.tabUpcoming.setTextColor(activeColor);
             binding.tabUpcoming.setTypeface(null, Typeface.BOLD);
             binding.indicatorUpcoming.setVisibility(View.VISIBLE);
 
-            // Inactive: Completed
             binding.tabCompleted.setTextColor(inactiveColor);
             binding.tabCompleted.setTypeface(null, Typeface.NORMAL);
             binding.indicatorCompleted.setVisibility(View.INVISIBLE);
 
-            binding.ivEmpty.setImageResource(R.drawable.checkticket_background1);
+            binding.rvTickets.setVisibility(View.VISIBLE);
         } else {
-            // Active: Completed
             binding.tabCompleted.setTextColor(activeColor);
             binding.tabCompleted.setTypeface(null, Typeface.BOLD);
             binding.indicatorCompleted.setVisibility(View.VISIBLE);
 
-            // Inactive: Upcoming
             binding.tabUpcoming.setTextColor(inactiveColor);
             binding.tabUpcoming.setTypeface(null, Typeface.NORMAL);
             binding.indicatorUpcoming.setVisibility(View.INVISIBLE);
 
-            binding.ivEmpty.setImageResource(R.drawable.checkticket_background2);
+            binding.rvTickets.setVisibility(View.GONE);
         }
     }
 
