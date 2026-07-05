@@ -92,6 +92,9 @@ public class HomeFragment extends Fragment {
         List<Experience> experiences = new ArrayList<>();
         experiences.add(new Experience("Mức giá tốt, dịch vụ chu đáo.", "Hạng Phổ thông", "Thoải mái trong mọi hành trình", R.drawable.img_experience_economy));
         experiences.add(new Experience("Nâng tầm trải nghiệm", "Hạng Thương gia", "Không gian riêng tư, dịch vụ tinh tế.", R.drawable.img_experience_first));
+        // Duplicate to ensure smooth infinite scroll and show at least 3 cards
+        experiences.add(new Experience("Mức giá tốt, dịch vụ chu đáo.", "Hạng Phổ thông", "Thoải mái trong mọi hành trình", R.drawable.img_experience_economy));
+        experiences.add(new Experience("Nâng tầm trải nghiệm", "Hạng Thương gia", "Không gian riêng tư, dịch vụ tinh tế.", R.drawable.img_experience_first));
 
         binding.experiencePager.setAdapter(new ExperienceAdapter(experiences, item -> toast("Đã chọn " + item.getTitle())));
         binding.experiencePager.setOffscreenPageLimit(3);
