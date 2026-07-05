@@ -22,6 +22,34 @@ const userSchema = new mongoose.Schema(
         type: String
     },
 
+    cccd: {
+        type: String
+    },
+
+    passport: {
+        type: String
+    },
+
+    dob: {
+        type: String
+    },
+
+    country: {
+        type: String
+    },
+
+    title: {
+        type: String
+    },
+
+    address: {
+        type: String
+    },
+
+    memberCode: {
+        type: String
+    },
+
     isVerified: {
         type: Boolean,
         default: false

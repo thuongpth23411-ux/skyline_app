@@ -3,39 +3,55 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="220dp"
+    android:layout_height="wrap_content"
     android:paddingStart="20dp"
-    android:paddingEnd="20dp">
+    android:paddingEnd="20dp"
+    android:layout_marginBottom="24dp">
 
     <LinearLayout
         android:id="@+id/textBlock"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="16dp"
         android:orientation="vertical"
-        app:layout_constraintWidth_percent="0.48"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/imageCard"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <TextView
             android:id="@+id/tvFeatureTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/FeatureTitle"/>
+            android:textColor="@color/skyline_blue_dark"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp"/>
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/skyline_blue"/>
+
         <TextView
             android:id="@+id/tvFeatureDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            style="@style/FeatureBody"/>
+            android:layout_marginTop="12dp"
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:maxLines="4"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="24dp"
+        android:id="@+id/imageCard"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
-        app:layout_constraintStart_toEndOf="@id/textBlock"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

@@ -22,4 +22,10 @@ public interface ApiService {
 
     @POST("auth/reset-password")
     Call<BaseResponse> resetPassword(@Body ResetPasswordRequest request);
+
+    @retrofit2.http.GET("airports")
+    Call<java.util.List<Airport>> getAirports();
+
+    @POST("flights/search")
+    Call<java.util.List<Flight>> searchFlights(@Body FlightSearchRequest request);
 }

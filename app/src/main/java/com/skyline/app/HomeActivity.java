@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.fragment.app.Fragment;
 import com.skyline.app.databinding.ActivityHomeBinding;
+import com.skyline.app.utils.SessionManager;
 
 public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +20,8 @@ public class HomeActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sessionManager = new SessionManager(this);
 
         setupClicks();
         // Default select Home
@@ -31,15 +35,20 @@ public class HomeActivity extends AppCompatActivity {
             showFragment(new HomeFragment());
         });
         binding.bottomNavigation.navBook.setOnClickListener(v -> {
-            toast("Mở màn hình Đặt vé");
+            updateNavSelection(v);
+            showFragment(new BookFragment());
         });
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             updateNavSelection(v);
             showFragment(new FlightsFragment2());
         });
         binding.bottomNavigation.navProfile.setOnClickListener(v -> {
-            updateNavSelection(v);
-            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+            if (sessionManager.isLoggedIn()) {
+                updateNavSelection(v);
+                startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+            } else {
+                startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            }
         });
     }
 

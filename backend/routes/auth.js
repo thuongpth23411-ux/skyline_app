@@ -64,16 +64,32 @@ router.post("/verify-otp", async (req, res) => {
 // 3. Finalize Registration
 router.post("/register-finalize", async (req, res) => {
     try {
-        const { email, password, name, phone } = req.body;
+        const { email, password, name, phone, cccd, passport, dob, country, title, address } = req.body;
         const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Không tìm thấy yêu cầu đăng ký" });
         }
 
+        // Helper function to set null if empty
+        const nullIfEmpty = (val) => (val && typeof val === "string" && val.trim() !== "") ? val.trim() : null;
+
         user.password = await bcrypt.hash(password, 10);
         user.fullName = name || user.fullName;
-        user.phone = phone || user.phone;
+        user.phone = nullIfEmpty(phone) || user.phone;
+        user.cccd = nullIfEmpty(cccd);
+        user.passport = nullIfEmpty(passport);
+        user.dob = nullIfEmpty(dob);
+        user.country = nullIfEmpty(country);
+        user.title = nullIfEmpty(title);
+        user.address = nullIfEmpty(address);
+
+        // Generate random member code (Format: XXXX XXXX XXXX)
+        const part1 = Math.floor(1000 + Math.random() * 9000);
+        const part2 = Math.floor(1000 + Math.random() * 9000);
+        const part3 = Math.floor(1000 + Math.random() * 9000);
+        user.memberCode = `${part1} ${part2} ${part3}`;
+
         user.isVerified = true;
         user.otp = undefined;
         user.otpExpires = undefined;

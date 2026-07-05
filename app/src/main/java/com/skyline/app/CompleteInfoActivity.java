@@ -3,6 +3,8 @@ package com.skyline.app;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -47,7 +49,73 @@ public class CompleteInfoActivity extends BaseAuthActivity {
 
         tvCountry.setOnClickListener(v -> showListSelector("Chọn quốc gia", new String[]{"Việt Nam", "Thái Lan", "Singapore", "Malaysia", "Hàn Quốc", "Nhật Bản"}, tvCountry::setText));
 
-        edtDob.setOnClickListener(v -> showDatePicker(edtDob));
+        edtDob.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                if (edtDob.getCompoundDrawables()[2] != null) {
+                    if (event.getX() >= (edtDob.getWidth() - edtDob.getPaddingEnd() - edtDob.getCompoundDrawables()[2].getBounds().width())) {
+                        showDatePicker(edtDob);
+                        v.performClick();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        edtDob.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+            private final Calendar cal = Calendar.getInstance();
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().equals(current)) {
+                    String clean = s.toString().replaceAll("[^\\d]", "");
+                    String cleanC = current.replaceAll("[^\\d]", "");
+
+                    int cl = clean.length();
+                    int sel = cl;
+                    for (int i = 2; i <= cl && i <= 4; i += 2) {
+                        sel++;
+                    }
+                    //Fix for pressing delete next to a forward slash
+                    if (clean.equals(cleanC)) sel--;
+
+                    if (clean.length() < 8){
+                        String ddmmyyyy = "DDMMYYYY";
+                        clean = clean + ddmmyyyy.substring(clean.length());
+                    }else{
+                        //This part makes sure that when we finish entering numbers
+                        //the date is correct, fixing it otherwise
+                        int day  = Integer.parseInt(clean.substring(0,2));
+                        int mon  = Integer.parseInt(clean.substring(2,4));
+                        int year = Integer.parseInt(clean.substring(4,8));
+
+                        mon = Math.max(1, Math.min(12, mon));
+                        cal.set(Calendar.MONTH, mon-1);
+                        year = Math.max(1900, Math.min(2100, year));
+                        cal.set(Calendar.YEAR, year);
+
+                        day = Math.min(day, cal.getActualMaximum(Calendar.DATE));
+                        clean = String.format(Locale.getDefault(), "%02d%02d%02d", day, mon, year);
+                    }
+
+                    clean = String.format("%s/%s/%s", clean.substring(0, 2),
+                            clean.substring(2, 4),
+                            clean.substring(4, 8));
+
+                    sel = Math.max(0, sel);
+                    current = clean;
+                    edtDob.setText(current);
+                    edtDob.setSelection(Math.min(sel, current.length()));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
             String phone = edtPhone.getText().toString().trim();
@@ -84,7 +152,24 @@ public class CompleteInfoActivity extends BaseAuthActivity {
             if (fullName.isEmpty()) fullName = "User";
 
             v.setEnabled(false);
-            RetrofitClient.getInstance().registerFinalize(new RegisterRequest(email, password, fullName, phone.isEmpty() ? null : phone)).enqueue(new Callback<AuthResponse>() {
+            String country = tvCountry.getText().toString();
+            String title = tvTitle.getText().toString();
+            String countryCode = tvCountryCode.getText().toString();
+            
+            RegisterRequest request = new RegisterRequest(
+                email, 
+                password, 
+                fullName, 
+                phone.isEmpty() ? null : (countryCode + phone),
+                cccd.isEmpty() ? null : cccd,
+                passport.isEmpty() ? null : passport,
+                dob.isEmpty() ? null : dob,
+                country.equals("-- Chọn quốc gia --") ? null : country,
+                title.equals("Bà") || title.equals("Ông") ? title : null,
+                null // Address field if you have it in UI
+            );
+
+            RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     v.setEnabled(true);
@@ -93,8 +178,7 @@ public class CompleteInfoActivity extends BaseAuthActivity {
                         if (body.getToken() != null) {
                             SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
                             sessionManager.saveAuthToken(body.getToken());
-                            String name = body.getUser() != null ? body.getUser().getName() : null;
-                            sessionManager.saveUser(name, email);
+                            sessionManager.saveUser(body.getUser());
                         }
                         Toast.makeText(CompleteInfoActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
@@ -114,7 +198,8 @@ public class CompleteInfoActivity extends BaseAuthActivity {
 
         findViewById(R.id.tvSkip).setOnClickListener(v -> {
             v.setEnabled(false);
-            RetrofitClient.getInstance().registerFinalize(new RegisterRequest(email, password)).enqueue(new Callback<AuthResponse>() {
+            RegisterRequest request = new RegisterRequest(email, password);
+            RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     v.setEnabled(true);
@@ -123,8 +208,7 @@ public class CompleteInfoActivity extends BaseAuthActivity {
                         if (body.getToken() != null) {
                             SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
                             sessionManager.saveAuthToken(body.getToken());
-                            String name = body.getUser() != null ? body.getUser().getName() : null;
-                            sessionManager.saveUser(name, email);
+                            sessionManager.saveUser(body.getUser());
                         }
                         startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
                         finishAffinity();

@@ -1,12 +1,16 @@
 <resources>
     <style name="Theme.Skyline" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
-        <item name="colorPrimary">@color/skyline_blue</item>
+        <item name="colorPrimary">@color/skyline_blue_dark</item>
         <item name="colorSecondary">@color/skyline_teal</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowActionModeOverlay">true</item>
+
+        <!-- Custom Date Picker integration -->
+        <item name="materialCalendarTheme">@style/CustomDatePickerTheme</item>
+        <item name="materialCalendarFullscreenTheme">@style/CustomDatePickerTheme</item>
     </style>
 
     <style name="Theme.Skyline.Splash" parent="Theme.Skyline">
