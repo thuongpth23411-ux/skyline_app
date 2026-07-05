@@ -3,6 +3,8 @@ package com.skyline.app;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -47,7 +49,73 @@ public class CompleteInfoActivity extends BaseAuthActivity {
 
         tvCountry.setOnClickListener(v -> showListSelector("Chọn quốc gia", new String[]{"Việt Nam", "Thái Lan", "Singapore", "Malaysia", "Hàn Quốc", "Nhật Bản"}, tvCountry::setText));
 
-        edtDob.setOnClickListener(v -> showDatePicker(edtDob));
+        edtDob.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                if (edtDob.getCompoundDrawables()[2] != null) {
+                    if (event.getX() >= (edtDob.getWidth() - edtDob.getPaddingEnd() - edtDob.getCompoundDrawables()[2].getBounds().width())) {
+                        showDatePicker(edtDob);
+                        v.performClick();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        edtDob.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+            private final Calendar cal = Calendar.getInstance();
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().equals(current)) {
+                    String clean = s.toString().replaceAll("[^\\d]", "");
+                    String cleanC = current.replaceAll("[^\\d]", "");
+
+                    int cl = clean.length();
+                    int sel = cl;
+                    for (int i = 2; i <= cl && i <= 4; i += 2) {
+                        sel++;
+                    }
+                    //Fix for pressing delete next to a forward slash
+                    if (clean.equals(cleanC)) sel--;
+
+                    if (clean.length() < 8){
+                        String ddmmyyyy = "DDMMYYYY";
+                        clean = clean + ddmmyyyy.substring(clean.length());
+                    }else{
+                        //This part makes sure that when we finish entering numbers
+                        //the date is correct, fixing it otherwise
+                        int day  = Integer.parseInt(clean.substring(0,2));
+                        int mon  = Integer.parseInt(clean.substring(2,4));
+                        int year = Integer.parseInt(clean.substring(4,8));
+
+                        mon = Math.max(1, Math.min(12, mon));
+                        cal.set(Calendar.MONTH, mon-1);
+                        year = Math.max(1900, Math.min(2100, year));
+                        cal.set(Calendar.YEAR, year);
+
+                        day = Math.min(day, cal.getActualMaximum(Calendar.DATE));
+                        clean = String.format(Locale.getDefault(), "%02d%02d%02d", day, mon, year);
+                    }
+
+                    clean = String.format("%s/%s/%s", clean.substring(0, 2),
+                            clean.substring(2, 4),
+                            clean.substring(4, 8));
+
+                    sel = Math.max(0, sel);
+                    current = clean;
+                    edtDob.setText(current);
+                    edtDob.setSelection(Math.min(sel, current.length()));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
             String phone = edtPhone.getText().toString().trim();

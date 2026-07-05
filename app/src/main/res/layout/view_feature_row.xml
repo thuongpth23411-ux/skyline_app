@@ -6,13 +6,13 @@
     android:layout_height="wrap_content"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
-    android:layout_marginBottom="32dp">
+    android:layout_marginBottom="24dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/imageCard"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        app:cardCornerRadius="24dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,22 +27,37 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="16dp"
         android:orientation="vertical"
         app:layout_constraintStart_toEndOf="@id/imageCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <TextView
             android:id="@+id/tvFeatureTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/FeatureTitle"/>
+            android:textColor="@color/skyline_blue_dark"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp"/>
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/skyline_blue"/>
+
         <TextView
             android:id="@+id/tvFeatureDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            style="@style/FeatureBody"/>
+            android:layout_marginTop="12dp"
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:maxLines="4"
+            android:ellipsize="end"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

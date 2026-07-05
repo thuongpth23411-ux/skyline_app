@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:clipToPadding="false"
-        android:paddingBottom="110dp"
+        android:paddingBottom="100dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,13 +23,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Header -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="@dimen/screen_horizontal"
-                android:paddingEnd="@dimen/screen_horizontal">
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
                 <ImageView
                     android:id="@+id/imgLogo"
@@ -40,7 +41,8 @@
                     android:scaleType="fitStart"
                     android:src="@drawable/logo_horizontal"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnNotification" />
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <ImageButton
                     android:id="@+id/btnNotification"
                     android:layout_width="36dp"
@@ -53,9 +55,10 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Hero Section -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="270dp"
+                android:layout_height="220dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 app:cardCornerRadius="24dp"
@@ -65,107 +68,148 @@
                     android:layout_height="match_parent">
                     <ImageView
                         android:id="@+id/imgHero"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/img_about_hero"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"/>
+                        android:src="@drawable/img_about_hero"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#66001B3A"/>
+
                     <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:gravity="center_vertical"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="8dp"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:padding="24dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintWidth_percent="0.52">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/about_title" android:textColor="@color/skyline_blue_dark" android:textSize="30sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/about_subtitle" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/about_desc" android:textColor="@color/skyline_blue_dark" android:textSize="12sp" android:lineSpacingExtra="2dp"/>
+                        app:layout_constraintStart_toStartOf="parent">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SKYLINE"
+                            android:textColor="@color/white"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="KẾT NỐI MỌI CHUYẾN BAY"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2"/>
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Main Intro -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="20dp"
+                android:text="Skyline là nền tảng đặt vé máy bay trực tuyến giúp hành khách dễ dàng tìm kiếm, so sánh và đặt vé chỉ trong vài phút. Chúng tôi mang đến trải nghiệm đặt vé nhanh chóng, minh bạch và thuận tiện cho mọi chuyến bay trong nước và quốc tế."
+                android:textColor="@color/skyline_text_secondary"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:gravity="center"/>
+
+            <!-- Features -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
                 android:layout_marginBottom="24dp"
-                android:text="@string/journey_title"
-                style="@style/SectionTitle"/>
+                android:text="Chuẩn bị cho hành trình thuận lợi"
+                android:gravity="center"
+                android:textColor="@color/skyline_text"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
-            <include android:id="@+id/featureEasy" layout="@layout/view_feature_row" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-            <include android:id="@+id/featurePrice" layout="@layout/view_feature_row_reverse" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-            <include android:id="@+id/featureSupport" layout="@layout/view_feature_row" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <include android:id="@+id/featureEasy" layout="@layout/view_feature_row" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <include android:id="@+id/featurePrice" layout="@layout/view_feature_row_reverse" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
+            <include android:id="@+id/featureSupport" layout="@layout/view_feature_row" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
 
+            <!-- Team Section -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/team_title"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp"
+                android:text="Đội ngũ Skyline"
                 style="@style/SectionTitle"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp">
+                android:layout_height="wrap_content">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/teamPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="240dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:paddingStart="65dp"
+                    android:paddingEnd="65dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <ImageButton
                     android:id="@+id/btnTeamPrev"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_arrow_right"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_circle_white"
+                    android:elevation="4dp"
+                    android:padding="12dp"
                     android:rotation="180"
+                    android:src="@drawable/ic_arrow_right"
+                    app:layout_constraintBottom_toBottomOf="@id/teamPager"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/teamRecycler"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    app:layout_constraintStart_toEndOf="@id/btnTeamPrev"
-                    app:layout_constraintEnd_toStartOf="@id/btnTeamNext"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@id/teamPager"
+                    app:tint="@color/skyline_blue" />
+
                 <ImageButton
                     android:id="@+id/btnTeamNext"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:background="@android:color/transparent"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_circle_white"
+                    android:elevation="4dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_arrow_right"
+                    app:layout_constraintBottom_toBottomOf="@id/teamPager"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@id/teamPager"
+                    app:tint="@color/skyline_blue" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Why Choose Us -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/why_title"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp"
+                android:text="Vì sao nên chọn Skyline?"
                 style="@style/SectionTitle"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginHorizontal="20dp"
                 android:orientation="horizontal"
                 android:weightSum="3">
-                <include android:id="@+id/reasonPrice" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="170dp" android:layout_weight="1" android:layout_marginEnd="6dp"/>
-                <include android:id="@+id/reasonTools" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="170dp" android:layout_weight="1" android:layout_marginStart="3dp" android:layout_marginEnd="3dp"/>
-                <include android:id="@+id/reasonSupport" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="170dp" android:layout_weight="1" android:layout_marginStart="6dp"/>
+                <include android:id="@+id/reasonPrice" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="220dp" android:layout_weight="1" android:layout_marginEnd="6dp"/>
+                <include android:id="@+id/reasonTools" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="220dp" android:layout_weight="1" android:layout_marginHorizontal="3dp"/>
+                <include android:id="@+id/reasonSupport" layout="@layout/view_reason_card" android:layout_width="0dp" android:layout_height="220dp" android:layout_weight="1" android:layout_marginStart="6dp"/>
             </LinearLayout>
 
-            <Space android:layout_width="match_parent" android:layout_height="28dp"/>
+            <Space android:layout_width="match_parent" android:layout_height="40dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -175,4 +219,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
