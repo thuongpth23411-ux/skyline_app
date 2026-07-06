@@ -68,6 +68,9 @@
         <activity
             android:name=".FareSelectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".AddonServiceActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
