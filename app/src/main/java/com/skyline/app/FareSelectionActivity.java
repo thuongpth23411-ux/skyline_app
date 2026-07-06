@@ -186,8 +186,15 @@ public class FareSelectionActivity extends AppCompatActivity {
     }
 
     private void navigateToPayment(String fareType, double price) {
-        Intent intent = new Intent(this, ConfirmPaymentActivity.class);
+        Intent intent = new Intent(this, AddonServiceActivity.class);
         intent.putExtra("flightNumber", flightNumber);
+        intent.putExtra("fromCode", fromCode);
+        intent.putExtra("toCode", toCode);
+        intent.putExtra("fromName", fromName);
+        intent.putExtra("toName", toName);
+        intent.putExtra("departureTime", departureTime);
+        intent.putExtra("arrivalTime", arrivalTime);
+        intent.putExtra("duration", durationMinutes);
         intent.putExtra("fareType", fareType);
         intent.putExtra("totalPrice", price);
         startActivity(intent);
