@@ -1,7 +1,10 @@
 package com.skyline.app.network;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,8 +25,6 @@ public class RetrofitClient {
 //             return "http://192.168.1.189:3000/api/";
 //             return "http://10.0.2.2:3000/api/";
             return "http://127.0.0.1:3000/api/";
-
-
         }
     }
 
