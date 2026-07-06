@@ -71,7 +71,10 @@ public class CancelTicketFragment extends Fragment {
         });
 
         binding.btnPolicy.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Đang tải chính sách hoàn vé...", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new TicketPolicyFragment())
+                .addToBackStack(null)
+                .commit();
         });
     }
 

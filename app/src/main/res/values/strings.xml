@@ -217,6 +217,15 @@
     <!-- Ticket Detail Strings -->
     <string name="cancel_ticket_title">Hủy vé</string>
     <string name="policy">Chính sách</string>
+    <!-- Change Ticket Strings -->
+    <string name="change_ticket_title">Đổi vé</string>
+    <string name="filter_label">Bộ lọc</string>
+    <string name="sort_lowest_price">Giá thấp nhất</string>
+    <string name="price_difference_label">Chênh lệch</string>
+    <string name="direct_flight">Bay thẳng</string>
+    <string name="confirm_button">Xác nhận</string>
+    <string name="total_additional_cost">Tổng chi phí</string>
+
     <string name="cancel_flight_header">Hủy vé máy bay</string>
     <string name="cancel_flight_desc">Vui lòng kiểm tra lại thông tin chuyến bay và chính sách trước khi xác nhận hủy.</string>
     <string name="warning_irrevocable">Hành động không thể hoàn tác</string>
@@ -256,6 +265,22 @@
     <string name="seat_class_demo">12A / Phổ thông</string>
     <string name="gate_value_demo">G12</string>
     <string name="terminal_value_demo">T2</string>
+
+    <string name="ticket_policy_title">Chính sách vé</string>
+    <string name="policy_intro">Để đảm bảo tính linh hoạt cho người dùng đồng thời mô phỏng quy trình xử lý của các hãng hàng không, hệ thống áp dụng chính sách hủy và đổi vé tự động dựa trên các điều kiện được thiết lập sẵn.</string>
+    <string name="change_policy_title">Chính sách đổi vé</string>
+    <string name="cancel_policy_title">Chính sách hủy vé</string>
+    <string name="apply_condition">ĐIỀU KIỆN ÁP DỤNG</string>
+    <string name="cond_paid">Vé đã thanh toán</string>
+    <string name="cond_not_departed">Chuyến bay chưa khởi hành</string>
+    <string name="cond_time_limit">Yêu cầu trước ít nhất 24 giờ</string>
+    <string name="economy_fee_label">PHỔ THÔNG</string>
+    <string name="business_fee_label">THƯƠNG GIA</string>
+    <string name="change_note_hint">*Khách trả chênh lệch nếu vé mới cao hơn, không hoàn lại nếu vé mới thấp hơn.*</string>
+    <string name="refund_table_time">Thời gian</string>
+    <string name="refund_table_rate">Hoàn trả</string>
+    <string name="need_more_help">Cần hỗ trợ thêm?</string>
+    <string name="support_contact_desc">Liên hệ tổng đài 1900 1234 hoặc gửi email về support@skyline.vn để được tư vấn chi tiết về trường hợp của bạn.</string>
 
     <!-- Booking Strings -->
     <string name="search_flights_title">Tìm kiếm chuyến bay</string>

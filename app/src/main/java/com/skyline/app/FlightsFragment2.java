@@ -91,7 +91,10 @@ public class FlightsFragment2 extends Fragment {
 
             @Override
             public void onChangeClick(Ticket ticket) {
-                // Handle change
+                getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, new ChangeTicketFragment())
+                    .addToBackStack(null)
+                    .commit();
             }
         }));
     }

@@ -82,6 +82,13 @@ public class TicketDetailFragment extends Fragment {
                     .commit();
             }
         });
+
+        binding.btnEdit.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new ChangeTicketFragment())
+                .addToBackStack(null)
+                .commit();
+        });
     }
 
     @Override
