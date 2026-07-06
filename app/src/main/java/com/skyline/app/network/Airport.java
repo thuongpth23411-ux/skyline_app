@@ -12,7 +12,10 @@ public class Airport {
     private String country;
 
     public String getId() { return id; }
-    public String getCode() { return id; } // Using id as code as per your notes
+    public String getCode() {
+        // return id; // Using id as code as per your notes - Code cũ
+        return (code != null && !code.isEmpty()) ? code : id;
+    }
     public String getName() { return name; }
     public String getCity() { return city; }
     public String getCountry() { return country; }

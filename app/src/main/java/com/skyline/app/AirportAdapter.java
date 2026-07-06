@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.skyline.app.network.Airport;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.ViewHolder> {
@@ -19,7 +20,7 @@ public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.ViewHold
     }
 
     public AirportAdapter(List<Airport> airports, OnAirportClickListener listener) {
-        this.airports = airports;
+        this.airports = new ArrayList<>(airports);
         this.listener = listener;
     }
 
@@ -33,19 +34,29 @@ public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Airport airport = airports.get(position);
-        holder.tvName.setText(airport.getName());
-        holder.tvLocation.setText(airport.getCity() + ", " + airport.getCountry());
-        holder.tvCode.setText(airport.getCode());
-        holder.itemView.setOnClickListener(v -> listener.onAirportClick(airport));
+        
+        String name = airport.getName() != null ? airport.getName() : "Không tên";
+        String city = airport.getCity() != null ? airport.getCity() : "";
+        String country = airport.getCountry() != null ? airport.getCountry() : "";
+        String code = airport.getCode() != null ? airport.getCode() : "???";
+
+        holder.tvName.setText(name);
+        holder.tvLocation.setText(city + (city.isEmpty() || country.isEmpty() ? "" : ", ") + country);
+        holder.tvCode.setText(code);
+        
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onAirportClick(airport);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return airports.size();
+        return airports != null ? airports.size() : 0;
     }
 
     public void updateList(List<Airport> newList) {
-        this.airports = newList;
+        if (newList == null) return;
+        this.airports = new ArrayList<>(newList);
         notifyDataSetChanged();
     }
 

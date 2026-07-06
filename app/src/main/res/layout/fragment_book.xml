@@ -56,7 +56,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                app:cardBackgroundColor="#E5E7EB"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp">
 
@@ -105,6 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
                 app:strokeColor="#F3F4F6"
@@ -212,6 +213,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
                 app:strokeColor="#F3F4F6"
@@ -223,7 +225,8 @@
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="20dp">
 
                     <!-- Departure Date -->
                     <LinearLayout
@@ -232,7 +235,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -253,17 +258,19 @@
                                 android:layout_height="match_parent"
                                 android:background="@android:color/transparent"
                                 android:gravity="center"
-                                android:hint="--/--/----"
+                                android:hint="dd/mm/yyyy"
                                 android:textColor="@color/skyline_blue_dark"
-                                android:textSize="20sp"
+                                android:textSize="22sp"
                                 android:textStyle="bold"
-                                android:inputType="date"
+                                android:inputType="number"
+                                android:digits="0123456789/"
+                                android:maxLength="10"
                                 android:autofillHints="none" />
 
                             <ImageView
                                 android:id="@+id/ivDepCalendar"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_marginStart="8dp"
                                 android:src="@drawable/ic_calendar"
                                 app:tint="@color/skyline_blue_dark"
@@ -272,19 +279,13 @@
                                 android:focusable="true" />
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tvDepDayOfWeek"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chọn ngày đi"
-                            android:textColor="@color/skyline_blue_dark"
-                            android:textSize="14sp" />
+                        <!-- Removed tvDepDayOfWeek label -->
                     </LinearLayout>
 
                     <View
                         android:id="@+id/dateDivider"
                         android:layout_width="1dp"
-                        android:layout_height="60dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginHorizontal="8dp"
                         android:background="#E5E7EB" />
@@ -296,7 +297,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -317,17 +320,19 @@
                                 android:layout_height="match_parent"
                                 android:background="@android:color/transparent"
                                 android:gravity="center"
-                                android:hint="--/--/----"
+                                android:hint="dd/mm/yyyy"
                                 android:textColor="@color/skyline_blue_dark"
-                                android:textSize="20sp"
+                                android:textSize="22sp"
                                 android:textStyle="bold"
-                                android:inputType="date"
+                                android:inputType="number"
+                                android:digits="0123456789/"
+                                android:maxLength="10"
                                 android:autofillHints="none" />
 
                             <ImageView
                                 android:id="@+id/ivReturnCalendar"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_marginStart="8dp"
                                 android:src="@drawable/ic_calendar"
                                 app:tint="@color/skyline_blue_dark"
@@ -336,13 +341,7 @@
                                 android:focusable="true" />
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tvReturnDayOfWeek"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chọn ngày về"
-                            android:textColor="@color/skyline_blue_dark"
-                            android:textSize="14sp" />
+                        <!-- Removed tvReturnDayOfWeek label -->
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -353,6 +352,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
                 app:strokeColor="#F3F4F6"

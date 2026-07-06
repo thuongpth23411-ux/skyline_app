@@ -119,8 +119,7 @@
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeColor="#F0F0F0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -135,12 +134,13 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_action_circle"
-                            android:padding="10dp"
+                            android:backgroundTint="#E3F2FD"
+                            android:padding="12dp"
                             android:src="@drawable/ic_profile"
-                            app:tint="@color/skyline_blue" />
+                            app:tint="#1976D2" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -171,8 +171,7 @@
                 android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeColor="#F0F0F0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -187,12 +186,13 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_action_circle"
-                            android:padding="10dp"
-                            android:src="@drawable/ic_check_auth"
-                            app:tint="@color/skyline_blue" />
+                            android:backgroundTint="#EDE7F6"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_plane"
+                            app:tint="#5E35B1" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -223,8 +223,7 @@
                 android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeColor="#F0F0F0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -239,12 +238,13 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_action_circle"
-                            android:padding="10dp"
+                            android:backgroundTint="#E0F2F1"
+                            android:padding="12dp"
                             android:src="@drawable/ic_lock_auth"
-                            app:tint="@color/skyline_teal" />
+                            app:tint="#00897B" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -275,8 +275,7 @@
                 android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeColor="#F0F0F0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -291,12 +290,13 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_action_circle"
-                            android:padding="10dp"
+                            android:backgroundTint="#ECEFF1"
+                            android:padding="12dp"
                             android:src="@drawable/ic_profile"
-                            app:tint="@color/skyline_blue" />
+                            app:tint="#455A64" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -327,7 +327,7 @@
                 android:layout_marginTop="24dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="#F8FAFF">
+                app:cardBackgroundColor="#F5F5F5">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -336,17 +336,23 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_notifications"
-                        app:tint="@color/skyline_blue"
-                        android:alpha="0.6"/>
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="2dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_notifications"
+                            app:tint="@color/skyline_blue" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="16dp"
                         android:text="@string/privacy_footer_title"
                         android:textColor="@color/skyline_text"
                         android:textSize="19sp"
@@ -364,14 +370,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_contact_support"
-                        android:layout_width="160dp"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="20dp"
-                        android:backgroundTint="@color/support_hotline_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:backgroundTint="#2D4369"
                         android:text="@string/privacy_footer_btn"
                         android:textAllCaps="false"
+                        android:textSize="15sp"
                         android:textStyle="bold"
-                        app:cornerRadius="12dp" />
+                        app:cornerRadius="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
