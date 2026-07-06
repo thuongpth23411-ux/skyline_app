@@ -19,10 +19,11 @@ public class RetrofitClient {
         if (isEmulator) {
             return "http://10.0.2.2:3000/api/";
         } else {
-            // TỰ ĐỘNG LẤY IP NẾU CÓ THỂ HOẶC DÙNG IP CỐ ĐỊNH
-            // Bạn hãy kiểm tra IP máy tính (ipconfig) và sửa tại đây nếu cần
-            // return "http://192.168.1.189:3000/api/";
-            return "http://10.0.2.2:3000/api/";
+//             return "http://192.168.1.189:3000/api/";
+//             return "http://10.0.2.2:3000/api/";
+            return "http://127.0.0.1:3000/api/";
+
+
         }
     }
 

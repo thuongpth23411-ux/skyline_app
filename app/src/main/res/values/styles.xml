@@ -124,8 +124,12 @@
     <style name="CustomPositiveButtonStyle" parent="Widget.Material3.Button.UnelevatedButton">
         <item name="android:textColor">@color/white</item>
         <item name="backgroundTint">@color/skyline_blue_dark</item>
-        <item name="android:paddingLeft">24dp</item>
-        <item name="android:paddingRight">24dp</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:minWidth">100dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.SmallComponent</item>

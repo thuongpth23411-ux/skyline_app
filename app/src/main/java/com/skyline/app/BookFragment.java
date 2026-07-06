@@ -404,15 +404,16 @@ public class BookFragment extends Fragment {
 
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            locationPermissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+            locationPermissionLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
         } else {
             determineNearestAirport();
         }
     }
 
     private void determineNearestAirport() {
-        // Tạm thời tắt tự động chọn để người dùng tự chọn
-        /* Code cũ
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
@@ -428,12 +429,9 @@ public class BookFragment extends Fragment {
                 loadInitialAirports();
             }
         });
-        */
     }
 
     private void loadInitialAirports() {
-        // Tạm thời tắt tự động chọn để người dùng tự chọn
-        /* Code cũ
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
@@ -447,7 +445,6 @@ public class BookFragment extends Fragment {
             @Override
             public void onFailure(Call<List<Airport>> call, Throwable t) {}
         });
-        */
     }
 
     private void saveRecentSearch() {
