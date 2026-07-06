@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fareCard"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    app:strokeColor="@color/skyline_blue"
+    app:strokeWidth="2.5dp"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="4dp"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/tvFareTitle"
+            android:text="Phổ thông"
+            android:textColor="@color/skyline_blue"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvFareSubtitle"
+            android:text="TIẾT KIỆM &amp; TIỆN LỢI"
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvFarePrice"
+            android:text="0 VND"
+            android:textColor="@color/skyline_blue_dark"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="Giá đã bao gồm thuế và phí"
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSelectFare"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:text="Lựa chọn"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/skyline_blue"
+            app:cornerRadius="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="24dp"
+            android:background="#15000000" />
+
+        <include layout="@layout/item_benefit" android:id="@+id/benefitCarryOn" />
+        <include layout="@layout/item_benefit" android:id="@+id/benefitChecked" />
+        <include layout="@layout/item_benefit" android:id="@+id/benefitChange" />
+        <include layout="@layout/item_benefit" android:id="@+id/benefitRefund" />
+        <include layout="@layout/item_benefit" android:id="@+id/benefitSeat" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

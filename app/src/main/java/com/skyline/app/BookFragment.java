@@ -82,8 +82,11 @@ public class BookFragment extends Fragment {
                     boolean isFrom = result.getData().getBooleanExtra("isFrom", true);
                     String code = result.getData().getStringExtra("code");
                     String city = result.getData().getStringExtra("city");
+                    if (code == null) code = "";
+                    if (city == null) city = "";
+                    
                     if (isFrom) {
-                        if (code.equals(toCode)) {
+                        if (code.equals(toCode) && !code.isEmpty()) {
                             Toast.makeText(requireContext(), "Điểm đi không được trùng với điểm đến", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -91,7 +94,7 @@ public class BookFragment extends Fragment {
                         fromCity = city;
                         updateAirportDisplay();
                     } else {
-                        if (code.equals(fromCode)) {
+                        if (code.equals(fromCode) && !code.isEmpty()) {
                             Toast.makeText(requireContext(), "Điểm đến không được trùng với điểm đi", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -408,6 +411,8 @@ public class BookFragment extends Fragment {
     }
 
     private void determineNearestAirport() {
+        // Tạm thời tắt tự động chọn để người dùng tự chọn
+        /* Code cũ
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
@@ -423,9 +428,12 @@ public class BookFragment extends Fragment {
                 loadInitialAirports();
             }
         });
+        */
     }
 
     private void loadInitialAirports() {
+        // Tạm thời tắt tự động chọn để người dùng tự chọn
+        /* Code cũ
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
@@ -439,6 +447,7 @@ public class BookFragment extends Fragment {
             @Override
             public void onFailure(Call<List<Airport>> call, Throwable t) {}
         });
+        */
     }
 
     private void saveRecentSearch() {

@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -42,7 +43,18 @@ public class FlightResultsActivity extends AppCompatActivity {
         adapter = new FlightAdapter(new ArrayList<>(), new FlightAdapter.OnFlightClickListener() {
             @Override
             public void onFlightClick(Flight flight) {
-                Toast.makeText(FlightResultsActivity.this, "Chọn chuyến bay: " + flight.getFlightNumber(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(FlightResultsActivity.this, "Chọn chuyến bay: " + flight.getFlightNumber(), Toast.LENGTH_SHORT).show(); // Code cũ
+                Intent intent = new Intent(FlightResultsActivity.this, FareSelectionActivity.class);
+                intent.putExtra("flightNumber", flight.getFlightNumber());
+                intent.putExtra("fromCode", flight.getDepartureAirport().getCode());
+                intent.putExtra("toCode", flight.getArrivalAirport().getCode());
+                intent.putExtra("fromName", flight.getDepartureAirport().getName());
+                intent.putExtra("toName", flight.getArrivalAirport().getName());
+                intent.putExtra("departureTime", flight.getDepartureAt());
+                intent.putExtra("arrivalTime", flight.getArrivalAt());
+                intent.putExtra("duration", flight.getDuration());
+                intent.putExtra("basePrice", flight.getBasePrice());
+                startActivity(intent);
             }
 
             @Override
@@ -77,7 +89,18 @@ public class FlightResultsActivity extends AppCompatActivity {
                         adapter = new FlightAdapter(flights, new FlightAdapter.OnFlightClickListener() {
                             @Override
                             public void onFlightClick(Flight flight) {
-                                Toast.makeText(FlightResultsActivity.this, "Chọn: " + flight.getFlightNumber(), Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(FlightResultsActivity.this, "Chọn: " + flight.getFlightNumber(), Toast.LENGTH_SHORT).show(); // Code cũ
+                                Intent intent = new Intent(FlightResultsActivity.this, FareSelectionActivity.class);
+                                intent.putExtra("flightNumber", flight.getFlightNumber());
+                                intent.putExtra("fromCode", flight.getDepartureAirport().getCode());
+                                intent.putExtra("toCode", flight.getArrivalAirport().getCode());
+                                intent.putExtra("fromName", flight.getDepartureAirport().getName());
+                                intent.putExtra("toName", flight.getArrivalAirport().getName());
+                                intent.putExtra("departureTime", flight.getDepartureAt());
+                                intent.putExtra("arrivalTime", flight.getArrivalAt());
+                                intent.putExtra("duration", flight.getDuration());
+                                intent.putExtra("basePrice", flight.getBasePrice());
+                                startActivity(intent);
                             }
 
                             @Override

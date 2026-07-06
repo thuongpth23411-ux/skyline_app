@@ -65,6 +65,9 @@
         <activity
             android:name=".FlightResultsActivity"
             android:exported="false" />
+        <activity
+            android:name=".FareSelectionActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
