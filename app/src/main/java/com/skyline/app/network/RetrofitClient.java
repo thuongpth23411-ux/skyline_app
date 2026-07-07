@@ -2,7 +2,6 @@ package com.skyline.app.network;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -22,7 +21,7 @@ public class RetrofitClient {
         if (isEmulator) {
             return "http://10.0.2.2:3000/api/";
         } else {
-//             return "http://192.168.1.189:3000/api/";
+//             return "http://172.20.10.5:3000/api/";
 //             return "http://10.0.2.2:3000/api/";
             return "http://127.0.0.1:3000/api/";
         }
@@ -38,6 +37,8 @@ public class RetrofitClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .protocols(Collections.singletonList(Protocol.HTTP_1_1))
                 .build();
 
             Retrofit retrofit = new Retrofit.Builder()

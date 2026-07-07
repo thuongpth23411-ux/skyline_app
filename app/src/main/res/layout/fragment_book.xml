@@ -279,6 +279,17 @@
                                 android:focusable="true" />
                         </LinearLayout>
 
+                        <TextView
+                            android:id="@+id/tvDepError"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới."
+                            android:textColor="@color/auth_error"
+                            android:textSize="10sp"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginTop="4dp" />
+
                         <!-- Removed tvDepDayOfWeek label -->
                     </LinearLayout>
 
@@ -340,6 +351,17 @@
                                 android:clickable="true"
                                 android:focusable="true" />
                         </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvReturnError"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới."
+                            android:textColor="@color/auth_error"
+                            android:textSize="10sp"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginTop="4dp" />
 
                         <!-- Removed tvReturnDayOfWeek label -->
                     </LinearLayout>
