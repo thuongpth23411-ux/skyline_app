@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +25,14 @@ public class AddonServiceActivity extends AppCompatActivity {
 
     private Flight flight;
     private final Gson gson = new Gson();
-    private double totalPrice;
+    private double baseFarePrice, addonPrice = 0;
     private String fareType;
     private TextView txtTotalPrice;
 
     private static final int REQUEST_CODE_SEAT = 100;
+    private static final int REQUEST_CODE_BAGGAGE = 101;
     private String selectedSeat = "";
+    private int baggage10 = 0, baggage23 = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class AddonServiceActivity extends AppCompatActivity {
         if (json != null) {
             flight = gson.fromJson(json, Flight.class);
         }
-        totalPrice = getIntent().getDoubleExtra("totalPrice", 0);
+        baseFarePrice = getIntent().getDoubleExtra("totalPrice", 0);
         fareType = getIntent().getStringExtra("fareType");
 
         if (flight == null) {
@@ -75,30 +76,44 @@ public class AddonServiceActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SeatSelectionActivity.class);
             intent.putExtra("flight_json", gson.toJson(flight));
             intent.putExtra("initialSeat", selectedSeat);
-            intent.putExtra("fareType", fareType); // Truyền hạng vé đã chọn sang
+            intent.putExtra("fareType", fareType);
             startActivityForResult(intent, REQUEST_CODE_SEAT);
         });
 
-        findViewById(R.id.itemBaggage).setOnClickListener(v ->
-                Toast.makeText(this, "Tính năng mua hành lý đang phát triển", Toast.LENGTH_SHORT).show()
-        );
+        findViewById(R.id.itemBaggage).setOnClickListener(v -> {
+            Intent intent = new Intent(this, BaggageSelectionActivity.class);
+            intent.putExtra("flight_json", gson.toJson(flight));
+            intent.putExtra("initialB10", baggage10);
+            intent.putExtra("initialB23", baggage23);
+            intent.putExtra("fareType", fareType); // Thêm dòng này
+            startActivityForResult(intent, REQUEST_CODE_BAGGAGE);
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, requestCode, data);
-        if (requestCode == REQUEST_CODE_SEAT && resultCode == RESULT_OK && data != null) {
-            selectedSeat = data.getStringExtra("selectedSeat");
-            
-            TextView tvSelectSeat = findViewById(R.id.tvSelectSeat);
-            if (tvSelectSeat != null) {
-                if (selectedSeat != null && !selectedSeat.isEmpty()) {
-                    tvSelectSeat.setText(selectedSeat);
-                    tvSelectSeat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue));
-                } else {
-                    tvSelectSeat.setText("Chọn");
-                    tvSelectSeat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue));
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == REQUEST_CODE_SEAT) {
+                selectedSeat = data.getStringExtra("selectedSeat");
+                TextView tvSelectSeat = findViewById(R.id.tvSelectSeat);
+                if (tvSelectSeat != null) {
+                    tvSelectSeat.setText(selectedSeat != null && !selectedSeat.isEmpty() ? selectedSeat : "Chọn");
                 }
+            } else if (requestCode == REQUEST_CODE_BAGGAGE) {
+                baggage10 = data.getIntExtra("baggage10", 0);
+                baggage23 = data.getIntExtra("baggage23", 0);
+                addonPrice = data.getDoubleExtra("baggagePrice", 0);
+                
+                TextView tvSelectBaggage = findViewById(R.id.tvSelectBaggage);
+                if (tvSelectBaggage != null) {
+                    if (baggage10 > 0 || baggage23 > 0) {
+                        tvSelectBaggage.setText("+" + (baggage10 * 10 + baggage23 * 23) + "KG");
+                    } else {
+                        tvSelectBaggage.setText("Chọn");
+                    }
+                }
+                updateTotalPrice();
             }
         }
     }
@@ -187,14 +202,14 @@ public class AddonServiceActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         if (txtTotalPrice != null) {
             DecimalFormat df = new DecimalFormat("#,###");
-            txtTotalPrice.setText(df.format(totalPrice) + " VND");
+            txtTotalPrice.setText(df.format(baseFarePrice + addonPrice) + " VND");
         }
     }
 
     private void goNext() {
         Intent intent = new Intent(this, ConfirmPaymentActivity.class);
         intent.putExtra("flightNumber", flight.getFlightNumber());
-        intent.putExtra("totalPrice", totalPrice);
+        intent.putExtra("totalPrice", baseFarePrice + addonPrice);
         startActivity(intent);
     }
 }

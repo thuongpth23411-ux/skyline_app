@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- HEADER (Cố định ở đầu) -->
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/skyline_blue_dark"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View android:layout_width="32dp" android:layout_height="32dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvFlightNumberHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CHUYẾN BAY"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MUA THÊM HÀNH LÝ"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btnClose"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/white"
+                    android:contentDescription="@null" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/skyline_blue_dark"
+                app:strokeColor="#22FFFFFF"
+                app:strokeWidth="1dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:baselineAligned="false">
+
+                    <LinearLayout
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView android:id="@+id/tvDepCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="SGN" />
+                        <TextView android:id="@+id/tvDepTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="05:45" />
+                        <TextView android:id="@+id/tvDepDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvDepAirport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="TÂN SƠN NHẤT" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="8dp">
+                        <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1h 10m" android:textColor="#CCFFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                        <ImageView android:id="@+id/imgPlane" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:rotation="90" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:orientation="vertical">
+                        <TextView android:id="@+id/tvArrCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="HAN" />
+                        <TextView android:id="@+id/tvArrTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="07:55" />
+                        <TextView android:id="@+id/tvArrDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
+                        <TextView android:id="@+id/tvArrAirport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="NỘI BÀI" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- INFO BAR -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@color/skyline_blue_dark"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:text="ⓘ  Mỗi hành khách được mua tối đa 2 gói hành lý bổ sung."
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HÀNH LÝ ĐÃ BAO GỒM"
+                android:textColor="@color/skyline_blue_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#F8F9FA"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_check" app:tint="@color/skyline_blue_dark" />
+                        <TextView android:id="@+id/tvIncludedCarryOn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:text="Hành lý xách tay: 01 kiện 7kg/người" android:textColor="@color/skyline_text" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_check" app:tint="@color/skyline_blue_dark" />
+                        <TextView android:id="@+id/tvIncludedChecked" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:text="Hành lý ký gửi: 01 kiện 23kg/người" android:textColor="@color/skyline_text" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="GÓI HÀNH LÝ MUA THÊM"
+                android:textColor="@color/skyline_blue_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- 10KG CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#DDDFE3"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="14dp"
+                        android:src="@drawable/ic_baggage_big"
+                        app:tint="@color/skyline_blue" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BỔ SUNG 10KG" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+10kg hành lý ký gửi" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="200.000 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#F4F5F7"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="4dp">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMinus10"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                app:cardBackgroundColor="#E0E3E8"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0dp">
+                                <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView android:id="@+id/txtQty10" android:layout_width="34dp" android:layout_height="wrap_content" android:gravity="center" android:text="0" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnPlus10"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                app:cardBackgroundColor="@color/skyline_blue_dark"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0dp">
+                                <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 23KG CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#DDDFE3"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="14dp"
+                        android:src="@drawable/ic_baggage_big"
+                        app:tint="@color/skyline_blue" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BỔ SUNG 23KG" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+23kg hành lý ký gửi" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="450.000 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#F4F5F7"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="4dp">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMinus23"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                app:cardBackgroundColor="#E0E3E8"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0dp">
+                                <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView android:id="@+id/txtQty23" android:layout_width="34dp" android:layout_height="wrap_content" android:gravity="center" android:text="0" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnPlus23"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                app:cardBackgroundColor="@color/skyline_blue_dark"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0dp">
+                                <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- WARNING -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="#FFF1F1"
+                app:strokeColor="#FFD6D6"
+                app:strokeWidth="1dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_warning" app:tint="#B00000" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="THÔNG TIN QUAN TRỌNG" android:textColor="#B00000" android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="•  Vui lòng không để các vật phẩm nguy hiểm, chất lỏng quá giới hạn trong hành lý." android:textColor="#B00000" android:textSize="13sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="•  Tổng kích thước 3 chiều của mỗi kiện không vượt quá 158cm (62in)." android:textColor="#B00000" android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- BOTTOM BAR -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="20dp"
+        app:cardCornerRadius="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="14dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TỔNG PHÍ HÀNH LÝ"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/txtTotalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 VND"
+                    android:textColor="@color/skyline_blue_dark"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewSelectedBaggage"
+                android:layout_width="160dp"
+                android:layout_height="52dp"
+                android:text="Xác nhận"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/skyline_blue_dark"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
