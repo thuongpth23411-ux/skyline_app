@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="64dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:minWidth="80dp"
     android:layout_marginEnd="8dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/tvDayOfWeek"
@@ -15,6 +20,8 @@
         android:textColor="@color/skyline_text_secondary"
         android:textSize="12sp" />
 
+    <!-- tvDayOfMonth is used in circular style (HEAD), tvDate is used in detailed style (Incoming) -->
+    <!-- We keep both IDs or consolidate them. Let's keep tvDayOfMonth as it's common for the number -->
     <TextView
         android:id="@+id/tvDayOfMonth"
         android:layout_width="48dp"
@@ -26,5 +33,25 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <!-- tvPrice from incoming branch -->
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text=""
+        android:textColor="@color/skyline_text_secondary"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+    <!-- indicator from incoming branch -->
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/skyline_blue_dark"
+        android:visibility="invisible" />
 
 </LinearLayout>

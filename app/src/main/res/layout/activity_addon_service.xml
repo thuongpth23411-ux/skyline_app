@@ -68,16 +68,14 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/btnSkip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:gravity="center"
-                        android:paddingHorizontal="8dp"
-                        android:text="BỎ QUA"
-                        android:textColor="@color/white"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/btnClose"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_close"
+                        app:tint="@color/white"
+                        android:contentDescription="@null" />
                 </LinearLayout>
 
                 <com.google.android.material.card.MaterialCardView
@@ -102,7 +100,6 @@
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-
                             <TextView android:id="@+id/tvDepCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="SGN" />
                             <TextView android:id="@+id/tvDepTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="05:45" />
                             <TextView android:id="@+id/tvDepDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
@@ -116,25 +113,8 @@
                             android:gravity="center"
                             android:orientation="vertical"
                             android:paddingHorizontal="8dp">
-
-                            <TextView
-                                android:id="@+id/tvDuration"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="1h 10m"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <ImageView
-                                android:id="@+id/imgPlane"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:layout_marginTop="8dp"
-                                android:rotation="90"
-                                android:src="@drawable/ic_plane"
-                                app:tint="@color/white"
-                                android:contentDescription="@null" />
+                            <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1h 10m" android:textColor="#CCFFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                            <ImageView android:id="@+id/imgPlane" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:rotation="90" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -142,7 +122,6 @@
                             android:layout_height="wrap_content"
                             android:gravity="end"
                             android:orientation="vertical">
-
                             <TextView android:id="@+id/tvArrCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="HAN" />
                             <TextView android:id="@+id/tvArrTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="07:55" />
                             <TextView android:id="@+id/tvArrDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
@@ -171,7 +150,6 @@
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
-                <!-- Ghế ngồi -->
                 <LinearLayout
                     android:id="@+id/itemSeat"
                     android:layout_width="match_parent"
@@ -221,9 +199,10 @@
                     </LinearLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvSelectSeat"
+                        android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
+                        android:gravity="end"
                         android:text="Chọn"
                         android:textColor="@color/skyline_blue"
                         android:textSize="14sp"
@@ -232,7 +211,6 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" />
 
-                <!-- Hành lý -->
                 <LinearLayout
                     android:id="@+id/itemBaggage"
                     android:layout_width="match_parent"
@@ -282,9 +260,10 @@
                     </LinearLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvSelectBaggage"
+                        android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
+                        android:gravity="end"
                         android:text="Chọn"
                         android:textColor="@color/skyline_blue"
                         android:textSize="14sp"

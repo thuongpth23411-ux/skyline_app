@@ -8,9 +8,13 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.google.gson.Gson;
+import com.skyline.app.network.Flight;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -19,32 +23,36 @@ import java.util.Locale;
 
 public class AddonServiceActivity extends AppCompatActivity {
 
-    private String flightNumber, fromCode, toCode, fromName, toName, departureTime, arrivalTime;
-    private int durationMinutes;
-    private double totalPrice;
+    private Flight flight;
+    private final Gson gson = new Gson();
+    private double baseFarePrice, addonPrice = 0;
+    private String fareType;
     private TextView txtTotalPrice;
+
+    private static final int REQUEST_CODE_SEAT = 100;
+    private static final int REQUEST_CODE_BAGGAGE = 101;
+    private String selectedSeat = "";
+    private int baggage10 = 0, baggage23 = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addon_service);
 
-        initData();
+        String json = getIntent().getStringExtra("flight_json");
+        if (json != null) {
+            flight = gson.fromJson(json, Flight.class);
+        }
+        baseFarePrice = getIntent().getDoubleExtra("totalPrice", 0);
+        fareType = getIntent().getStringExtra("fareType");
+
+        if (flight == null) {
+            finish();
+            return;
+        }
+
         initViews();
         updateUI();
-    }
-
-    private void initData() {
-        Intent intent = getIntent();
-        flightNumber = intent.getStringExtra("flightNumber");
-        fromCode = intent.getStringExtra("fromCode");
-        toCode = intent.getStringExtra("toCode");
-        fromName = intent.getStringExtra("fromName");
-        toName = intent.getStringExtra("toName");
-        departureTime = intent.getStringExtra("departureTime");
-        arrivalTime = intent.getStringExtra("arrivalTime");
-        durationMinutes = intent.getIntExtra("duration", 0);
-        totalPrice = intent.getDoubleExtra("totalPrice", 0);
     }
 
     private void initViews() {
@@ -64,13 +72,50 @@ public class AddonServiceActivity extends AppCompatActivity {
 
         findViewById(R.id.btnContinue).setOnClickListener(v -> goNext());
 
-        findViewById(R.id.itemSeat).setOnClickListener(v ->
-                Toast.makeText(this, "Tính năng chọn ghế đang phát triển", Toast.LENGTH_SHORT).show()
-        );
+        findViewById(R.id.itemSeat).setOnClickListener(v -> {
+            Intent intent = new Intent(this, SeatSelectionActivity.class);
+            intent.putExtra("flight_json", gson.toJson(flight));
+            intent.putExtra("initialSeat", selectedSeat);
+            intent.putExtra("fareType", fareType);
+            startActivityForResult(intent, REQUEST_CODE_SEAT);
+        });
 
-        findViewById(R.id.itemBaggage).setOnClickListener(v ->
-                Toast.makeText(this, "Tính năng mua hành lý đang phát triển", Toast.LENGTH_SHORT).show()
-        );
+        findViewById(R.id.itemBaggage).setOnClickListener(v -> {
+            Intent intent = new Intent(this, BaggageSelectionActivity.class);
+            intent.putExtra("flight_json", gson.toJson(flight));
+            intent.putExtra("initialB10", baggage10);
+            intent.putExtra("initialB23", baggage23);
+            intent.putExtra("fareType", fareType); // Thêm dòng này
+            startActivityForResult(intent, REQUEST_CODE_BAGGAGE);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, requestCode, data);
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == REQUEST_CODE_SEAT) {
+                selectedSeat = data.getStringExtra("selectedSeat");
+                TextView tvSelectSeat = findViewById(R.id.tvSelectSeat);
+                if (tvSelectSeat != null) {
+                    tvSelectSeat.setText(selectedSeat != null && !selectedSeat.isEmpty() ? selectedSeat : "Chọn");
+                }
+            } else if (requestCode == REQUEST_CODE_BAGGAGE) {
+                baggage10 = data.getIntExtra("baggage10", 0);
+                baggage23 = data.getIntExtra("baggage23", 0);
+                addonPrice = data.getDoubleExtra("baggagePrice", 0);
+                
+                TextView tvSelectBaggage = findViewById(R.id.tvSelectBaggage);
+                if (tvSelectBaggage != null) {
+                    if (baggage10 > 0 || baggage23 > 0) {
+                        tvSelectBaggage.setText("+" + (baggage10 * 10 + baggage23 * 23) + "KG");
+                    } else {
+                        tvSelectBaggage.setText("Chọn");
+                    }
+                }
+                updateTotalPrice();
+            }
+        }
     }
 
     private void updateUI() {
@@ -92,24 +137,30 @@ public class AddonServiceActivity extends AppCompatActivity {
     }
 
     private void updateFlightInfo() {
-        setTextSafe(R.id.tvFlightNumberHeader, "CHUYẾN BAY " + (flightNumber != null ? flightNumber : ""));
-        setTextSafe(R.id.tvDepCode, fromCode);
-        setTextSafe(R.id.tvArrCode, toCode);
-        setTextSafe(R.id.tvDepAirport, cleanAirportName(fromName));
-        setTextSafe(R.id.tvArrAirport, cleanAirportName(toName));
+        setTextSafe(R.id.tvFlightNumberHeader, "CHUYẾN BAY " + flight.getFlightNumber());
+        setTextSafe(R.id.tvDepCode, flight.getDepartureAirport().getCode());
+        setTextSafe(R.id.tvArrCode, flight.getArrivalAirport().getCode());
+        setTextSafe(R.id.tvDepAirport, cleanAirportName(flight.getDepartureAirport().getName()));
+        setTextSafe(R.id.tvArrAirport, cleanAirportName(flight.getArrivalAirport().getName()));
 
-        Date dDate = parseIsoDate(departureTime);
-        Date aDate = parseIsoDate(arrivalTime);
+        Date dDate = parseIsoDate(flight.getDepartureAt());
+        Date aDate = parseIsoDate(flight.getArrivalAt());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN"));
+        timeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
         if (dDate != null) {
-            setTextSafe(R.id.tvDepTime, new SimpleDateFormat("HH:mm", Locale.US).format(dDate));
-            setTextSafe(R.id.tvDepDate, new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN")).format(dDate));
+            setTextSafe(R.id.tvDepTime, timeFormat.format(dDate));
+            setTextSafe(R.id.tvDepDate, dateFormat.format(dDate));
         }
         if (aDate != null) {
-            setTextSafe(R.id.tvArrTime, new SimpleDateFormat("HH:mm", Locale.US).format(aDate));
-            setTextSafe(R.id.tvArrDate, new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN")).format(aDate));
+            setTextSafe(R.id.tvArrTime, timeFormat.format(aDate));
+            setTextSafe(R.id.tvArrDate, dateFormat.format(aDate));
         }
         
+        int durationMinutes = flight.getDuration();
         if (durationMinutes > 0) {
             int h = durationMinutes / 60;
             int m = durationMinutes % 60;
@@ -130,6 +181,9 @@ public class AddonServiceActivity extends AppCompatActivity {
         for (String pattern : patterns) {
             try {
                 SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+                if (pattern.contains("Z") || pattern.contains("XXX")) {
+                    format.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                }
                 return format.parse(isoString);
             } catch (Exception ignored) {}
         }
@@ -148,14 +202,14 @@ public class AddonServiceActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         if (txtTotalPrice != null) {
             DecimalFormat df = new DecimalFormat("#,###");
-            txtTotalPrice.setText(df.format(totalPrice) + " VND");
+            txtTotalPrice.setText(df.format(baseFarePrice + addonPrice) + " VND");
         }
     }
 
     private void goNext() {
         Intent intent = new Intent(this, ConfirmPaymentActivity.class);
-        intent.putExtra("flightNumber", flightNumber);
-        intent.putExtra("totalPrice", totalPrice);
+        intent.putExtra("flightNumber", flight.getFlightNumber());
+        intent.putExtra("totalPrice", baseFarePrice + addonPrice);
         startActivity(intent);
     }
 }

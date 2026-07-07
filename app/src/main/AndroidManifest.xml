@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -70,6 +72,12 @@
             android:exported="false" />
         <activity
             android:name=".AddonServiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SeatSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BaggageSelectionActivity"
             android:exported="false" />
     </application>
 

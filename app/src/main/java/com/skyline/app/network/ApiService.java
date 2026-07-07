@@ -6,6 +6,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -41,4 +42,7 @@ public interface ApiService {
 
     @GET("tickets/my-tickets")
     Call<List<TicketResponse>> getMyTickets(@Header("Authorization") String token);
+
+    @GET("flights/{flightId}/seats")
+    Call<List<FlightSeat>> getFlightSeats(@Path("flightId") String flightId);
 }

@@ -103,7 +103,7 @@ public class AirportSelectionActivity extends AppCompatActivity {
             String city = airport.getCity() != null ? airport.getCity().toLowerCase() : "";
             String code = airport.getCode() != null ? airport.getCode().toLowerCase() : "";
             String search = text.toLowerCase();
-            
+
             if (name.contains(search) || city.contains(search) || code.contains(search)) {
                 filteredList.add(airport);
             }

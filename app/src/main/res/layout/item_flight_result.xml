@@ -3,23 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="20dp"
+    android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
     app:cardBackgroundColor="#FFFFFF"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:strokeColor="#E5E7EB"
+    app:strokeColor="#F3F4F6"
     app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
+        <!-- Top Section: Times and Path -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/tvDepTime"
@@ -27,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="07:10"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -36,10 +37,11 @@
                 android:id="@+id/tvDepCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="SGN"
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvDepTime"
                 app:layout_constraintTop_toBottomOf="@id/tvDepTime" />
 
             <LinearLayout
@@ -48,10 +50,10 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvDepCode"
                 app:layout_constraintEnd_toStartOf="@+id/tvArrTime"
                 app:layout_constraintStart_toEndOf="@+id/tvDepTime"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="@+id/tvDepTime">
 
                 <TextView
                     android:id="@+id/tvDuration"
@@ -61,18 +63,34 @@
                     android:textColor="@color/skyline_text_secondary"
                     android:textSize="12sp" />
 
-                <ImageView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="12dp"
-                    android:src="@drawable/bg_dashed_horizontal"
-                    app:tint="#D1D5DB" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/bg_dashed_horizontal"
+                        android:alpha="0.3" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_plane"
+                        app:tint="@color/skyline_blue_dark"
+                        android:contentDescription="@null" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Bay thẳng"
-                    android:textColor="@color/skyline_text_secondary"
-                    android:textSize="12sp" />
+                    android:textColor="@color/skyline_blue_dark"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -81,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:text="09:20"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -90,54 +108,56 @@
                 android:id="@+id/tvArrCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="HAN"
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/tvArrTime"
                 app:layout_constraintTop_toBottomOf="@id/tvArrTime" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="16dp"
-            android:background="#F3F4F6" />
-
+        <!-- Middle Section: Airline Info -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/ivAirlineLogo"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:src="@drawable/ic_plane"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvAirlineName"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="QH037"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/tvAircraft"
-                app:layout_constraintStart_toEndOf="@id/ivAirlineLogo"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvAircraft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="AIRBUS A320"
-                android:textColor="@color/skyline_text_secondary"
-                android:textSize="10sp"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvAirlineName"
-                app:layout_constraintTop_toBottomOf="@id/tvAirlineName" />
+                app:layout_constraintStart_toEndOf="@id/ivAirlineLogo"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvAirlineName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QH037"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvAircraft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AIRBUS A320"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/btnDetail"
@@ -154,18 +174,20 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="16dp"
             android:background="#F3F4F6" />
 
+        <!-- Bottom Section: Price and Action -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="từ "
                 android:textColor="@color/skyline_text_secondary"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvPrice"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvPrice" />
@@ -174,10 +196,10 @@
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:text="2,365,000 VND"
                 android:textColor="@color/skyline_blue_dark"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -185,12 +207,14 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSelect"
                 android:layout_width="100dp"
-                android:layout_height="48dp"
+                android:layout_height="44dp"
                 android:backgroundTint="@color/skyline_blue_dark"
                 android:text="Chọn"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 app:cornerRadius="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

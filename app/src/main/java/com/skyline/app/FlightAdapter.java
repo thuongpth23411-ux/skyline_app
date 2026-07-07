@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder> {
 
@@ -29,6 +30,8 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
     public FlightAdapter(List<Flight> flights, OnFlightClickListener listener) {
         this.flights = flights;
         this.listener = listener;
+        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @NonNull
@@ -54,7 +57,7 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
 
         holder.tvDepCode.setText(flight.getDepartureAirport() != null ? flight.getDepartureAirport().getCode() : "");
         holder.tvArrCode.setText(flight.getArrivalAirport() != null ? flight.getArrivalAirport().getCode() : "");
-        holder.tvAirlineName.setText(flight.getFlightNumber()); // Displaying flight number as primary ID
+        holder.tvAirlineName.setText(flight.getFlightNumber());
         holder.tvAircraft.setText(flight.getAircraftModel());
         holder.tvPrice.setText(priceFormat.format(flight.getBasePrice()) + " VND");
 
