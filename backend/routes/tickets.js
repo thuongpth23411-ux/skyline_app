@@ -2,60 +2,44 @@ const express = require("express");
 const router = express.Router();
 const Ticket = require("../models/Ticket");
 const Flight = require("../models/Flight");
+const Airport = require("../models/Airport");
+const Airline = require("../models/Airline");
 const jwt = require("jsonwebtoken");
 
-// Middleware to verify JWT
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ success: false, message: "Không có quyền truy cập" });
-    }
+    if (!authHeader || !authHeader.startsWith("Bearer ")) return res.status(401).json({ success: false });
     const token = authHeader.split(" ")[1];
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.userId = decoded.id;
         next();
-    } catch (err) {
-        return res.status(401).json({ success: false, message: "Token không hợp lệ" });
-    }
+    } catch (err) { res.status(401).json({ success: false }); }
 };
 
-// Get all tickets for the logged-in user
 router.get("/my-tickets", verifyToken, async (req, res) => {
     try {
-        const tickets = await Ticket.find({ userId: req.userId })
-            .populate("flightId")
-            .sort({ createdAt: -1 });
+        console.log(`🎫 Fetching tickets for userId: ${req.userId}`);
 
-        res.json(tickets);
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Lỗi máy chủ khi lấy danh sách vé" });
-    }
-});
+        // Tìm vé theo userId (hỗ trợ cả String và ObjectId)
+        let tickets = await Ticket.find({ userId: req.userId }).sort({ createdAt: -1 }).lean();
 
-// Create a mock ticket for testing (if user has none)
-router.post("/mock", verifyToken, async (req, res) => {
-    try {
-        const firstFlight = await Flight.findOne();
-        if (!firstFlight) {
-            return res.status(404).json({ message: "No flights found to create mock ticket" });
+        for (let ticket of tickets) {
+            // Tìm chuyến bay theo flightId (String ID)
+            const flight = await Flight.findOne({ flightId: ticket.flightId }).lean();
+            if (flight) {
+                flight.departureAirport = await Airport.findOne({ airportId: flight.fromAirportId });
+                flight.arrivalAirport = await Airport.findOne({ airportId: flight.toAirportId });
+                flight.airline = await Airline.findOne({ airlineId: flight.airlineId });
+                ticket.flightData = flight;
+            }
         }
 
-        const newTicket = new Ticket({
-            userId: req.userId,
-            flightId: firstFlight._id,
-            bookingCode: "SK" + Math.floor(100000 + Math.random() * 900000),
-            seatNumber: "08C",
-            ticketClass: "Phổ thông",
-            status: "UPCOMING",
-            passengerName: "User Test",
-            totalPrice: firstFlight.priceOptions[0]?.price || 2000000
-        });
-
-        await newTicket.save();
-        res.json({ success: true, message: "Created mock ticket", ticket: newTicket });
+        console.log(`✅ Found ${tickets.length} tickets`);
+        res.json(tickets);
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false });
     }
 });
 

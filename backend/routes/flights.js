@@ -15,18 +15,23 @@ router.post("/search", async (req, res) => {
 
         console.log(`🔍 Searching: ${fromCode} -> ${toCode} on ${date}`);
 
+        // Escape date for RegExp safety
+        const safeDate = date.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
         const flights = await Flight.find({
             fromAirportId: fromCode,
             toAirportId: toCode,
-            departureDate: { $regex: new RegExp(`^${date}`) }
+            departureDate: { $regex: new RegExp(`^${safeDate}`) }
         }).lean();
 
         for (let flight of flights) {
-            flight.airline = await Airline.findOne({ airlineId: flight.airlineId });
-            flight.departureAirport = await Airport.findOne({ airportId: flight.fromAirportId });
-            flight.arrivalAirport = await Airport.findOne({ airportId: flight.toAirportId });
+            // Fetch related data with fallback to empty objects
+            flight.airline = (await Airline.findOne({ airlineId: flight.airlineId })) || { airlineName: "Skyline Airways" };
+            flight.departureAirport = (await Airport.findOne({ airportId: flight.fromAirportId })) || { code: fromCode, city: "Unknown" };
+            flight.arrivalAirport = (await Airport.findOne({ airportId: flight.toAirportId })) || { code: toCode, city: "Unknown" };
 
-            if (flight.priceOptions && Array.isArray(flight.priceOptions)) {
+            // Calculate basePrice from priceOptions array
+            if (flight.priceOptions && Array.isArray(flight.priceOptions) && flight.priceOptions.length > 0) {
                 const prices = flight.priceOptions.map(opt => {
                     let val = (typeof opt === 'object' && opt !== null) ? (opt.totalPrice || opt.price || 0) : opt;
                     if (typeof val === 'string') {
@@ -44,7 +49,7 @@ router.post("/search", async (req, res) => {
         console.log(`✅ Found ${flights.length} flights`);
         res.json(flights);
     } catch (error) {
-        console.error("❌ Search error:", error);
+        console.error("❌ Search error details:", error);
         res.status(500).json({ success: false, message: "Lỗi hệ thống khi tìm kiếm chuyến bay" });
     }
 });
@@ -55,6 +60,7 @@ router.get("/:flightId/seats", async (req, res) => {
         const seats = await FlightSeat.find({ flightId: req.params.flightId }).sort({ rowNumber: 1, seatColumn: 1 });
         res.json(seats);
     } catch (error) {
+        console.error("❌ Seat fetch error:", error);
         res.status(500).json({ success: false, message: "Lỗi khi lấy sơ đồ ghế" });
     }
 });

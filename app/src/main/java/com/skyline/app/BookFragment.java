@@ -240,9 +240,7 @@ public class BookFragment extends Fragment {
             
             Intent intent = new Intent(requireContext(), FlightResultsActivity.class);
             intent.putExtra("fromCode", fromCode);
-            intent.putExtra("fromCity", fromCity);
             intent.putExtra("toCode", toCode);
-            intent.putExtra("toCity", toCity);
             intent.putExtra("date", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(departureDate)));
             startActivity(intent);
         });

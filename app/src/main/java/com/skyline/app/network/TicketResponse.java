@@ -6,21 +6,20 @@ public class TicketResponse {
     @SerializedName("_id")
     private String id;
     private String bookingCode;
-    private String seatNumber;
-    private String ticketClass;
+    private String seatId;
+    @SerializedName("ticketStatus")
     private String status;
     private String passengerName;
-    private double totalPrice;
+    private double totalAmount;
     
-    @SerializedName("flightId")
+    @SerializedName("flightData")
     private Flight flight;
 
     public String getId() { return id; }
     public String getBookingCode() { return bookingCode; }
-    public String getSeatNumber() { return seatNumber; }
-    public String getTicketClass() { return ticketClass; }
+    public String getSeatId() { return seatId; }
     public String getStatus() { return status; }
     public String getPassengerName() { return passengerName; }
-    public double getTotalPrice() { return totalPrice; }
+    public double getTotalAmount() { return totalAmount; }
     public Flight getFlight() { return flight; }
 }

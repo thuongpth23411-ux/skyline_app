@@ -4,11 +4,12 @@
     android:id="@+id/rootLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:minWidth="80dp"
+    android:minWidth="100dp"
     android:layout_marginEnd="8dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingVertical="8dp"
+    android:paddingVertical="12dp"
+    android:background="@color/white"
     android:clickable="true"
     android:focusable="true">
 
@@ -16,36 +17,29 @@
         android:id="@+id/tvDayOfWeek"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="T2"
+        android:text="Thứ Bảy"
         android:textColor="@color/skyline_text_secondary"
         android:textSize="12sp" />
 
-    <!-- tvDayOfMonth is used in circular style (HEAD), tvDate is used in detailed style (Incoming) -->
-    <!-- We keep both IDs or consolidate them. Let's keep tvDayOfMonth as it's common for the number -->
     <TextView
-        android:id="@+id/tvDayOfMonth"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/bg_circle_gray"
-        android:gravity="center"
-        android:text="23"
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="04/07/2026"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
 
-    <!-- tvPrice from incoming branch -->
     <TextView
         android:id="@+id/tvPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text=""
-        android:textColor="@color/skyline_text_secondary"
-        android:textSize="10sp"
-        android:visibility="gone" />
+        android:layout_marginTop="4dp"
+        android:text="từ 1,458k"
+        android:textColor="@color/skyline_blue"
+        android:textSize="11sp" />
 
-    <!-- indicator from incoming branch -->
     <View
         android:id="@+id/indicator"
         android:layout_width="match_parent"

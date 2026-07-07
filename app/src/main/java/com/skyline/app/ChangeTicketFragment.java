@@ -48,7 +48,7 @@ public class ChangeTicketFragment extends Fragment {
         // Example logic to highlight T3 - 24
         View dateItem = binding.layoutDates.getChildAt(1);
         if (dateItem != null) {
-            View circle = dateItem.findViewById(R.id.tvDayOfMonth);
+            View circle = dateItem.findViewById(R.id.tvDate);
             if (circle != null) {
                 circle.setBackgroundResource(R.drawable.bg_circle_black);
                 ((android.widget.TextView)circle).setTextColor(getResources().getColor(R.color.white));

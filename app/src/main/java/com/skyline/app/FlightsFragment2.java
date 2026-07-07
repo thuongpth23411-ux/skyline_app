@@ -46,13 +46,28 @@ public class FlightsFragment2 extends Fragment {
         sessionManager = new SessionManager(requireContext());
 
         setupTabs();
+        setupClickListeners();
         fetchTickets();
         updateUI();
     }
 
+    private void setupClickListeners() {
+        binding.btnBookNow.setOnClickListener(v -> {
+            if (getActivity() instanceof HomeActivity) {
+                getActivity().findViewById(R.id.navBook).performClick();
+            }
+        });
+        
+        // Nút check-in / quản lý đặt chỗ
+        binding.btnCheck.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
+        });
+    }
+
     private void fetchTickets() {
         if (!sessionManager.isLoggedIn()) {
-            Toast.makeText(requireContext(), "Vui lòng đăng nhập để xem vé", Toast.LENGTH_SHORT).show();
+            binding.rvTickets.setVisibility(View.GONE);
+            binding.layoutNoFlights.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -60,18 +75,23 @@ public class FlightsFragment2 extends Fragment {
         RetrofitClient.getInstance().getMyTickets(token).enqueue(new Callback<List<TicketResponse>>() {
             @Override
             public void onResponse(Call<List<TicketResponse>> call, Response<List<TicketResponse>> response) {
+                if (!isAdded()) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     allTickets = response.body();
+                    Log.d("FlightsFragment2", "Fetched " + allTickets.size() + " tickets");
                     updateRecyclerView();
                 } else {
-                    Toast.makeText(requireContext(), "Lỗi lấy danh sách vé", Toast.LENGTH_SHORT).show();
+                    Log.e("FlightsFragment2", "Error: " + response.code());
+                    Toast.makeText(requireContext(), "Không thể tải danh sách vé", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<TicketResponse>> call, Throwable t) {
-                Toast.makeText(requireContext(), "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
-                Log.e("FlightsFragment2", "Error: " + t.getMessage());
+                if (!isAdded()) return;
+                Log.e("FlightsFragment2", "Failure: " + t.getMessage());
+                Toast.makeText(requireContext(), "Lỗi kết nối máy chủ", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -84,47 +104,77 @@ public class FlightsFragment2 extends Fragment {
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
 
         for (TicketResponse res : allTickets) {
-            // Filter based on tab (simulated for now, backend could provide status)
-            if (isUpcomingTab && !"UPCOMING".equals(res.getStatus())) continue;
-            if (!isUpcomingTab && !"COMPLETED".equals(res.getStatus())) continue;
+            // Lọc theo mẫu mới: "Booked" hoặc "Paid" là vé sắp tới
+            String status = res.getStatus() != null ? res.getStatus() : "Booked";
+            
+            if (isUpcomingTab && "Completed".equalsIgnoreCase(status)) continue;
+            if (!isUpcomingTab && !"Completed".equalsIgnoreCase(status)) continue;
 
             try {
-                Date depDate = inputFormat.parse(res.getFlight().getDepartureAt());
+                if (res.getFlight() == null) {
+                    Log.e("FlightsFragment2", "Flight data is missing for ticket: " + res.getBookingCode());
+                    continue;
+                }
+                
+                Date depDate = null;
+                if (res.getFlight().getDepartureAt() != null) {
+                    depDate = inputFormat.parse(res.getFlight().getDepartureAt());
+                }
+                
+                if (depDate == null) depDate = new Date(); 
+
                 String day = dayFormat.format(depDate);
                 String monthYear = monthYearFormat.format(depDate).toUpperCase();
                 String time = timeFormat.format(depDate);
 
+                String fromCode = (res.getFlight().getDepartureAirport() != null) ? res.getFlight().getDepartureAirport().getCode() : "???";
+                String fromCity = (res.getFlight().getDepartureAirport() != null) ? res.getFlight().getDepartureAirport().getCity() : "Sân bay đi";
+                String toCode = (res.getFlight().getArrivalAirport() != null) ? res.getFlight().getArrivalAirport().getCode() : "???";
+                String toCity = (res.getFlight().getArrivalAirport() != null) ? res.getFlight().getArrivalAirport().getCity() : "Sân bay đến";
+
+                // Lấy mã số ghế từ seatId (Ví dụ: ..._21D -> 21D)
+                String seatNum = res.getSeatId();
+                if (seatNum != null && seatNum.contains("_")) {
+                    seatNum = seatNum.substring(seatNum.lastIndexOf("_") + 1);
+                }
+
                 displayTickets.add(new Ticket(
                     day, monthYear,
-                    res.getTicketClass(), res.getBookingCode(),
-                    res.getFlight().getDepartureAirport().getCode(), 
-                    res.getFlight().getDepartureAirport().getCity(),
-                    res.getFlight().getArrivalAirport().getCode(), 
-                    res.getFlight().getArrivalAirport().getCity(),
-                    time, res.getSeatNumber()
+                    "Phổ thông", 
+                    res.getBookingCode(),
+                    fromCode, fromCity, toCode, toCity,
+                    time, seatNum != null ? seatNum : "--"
                 ));
             } catch (Exception e) {
-                Log.e("FlightsFragment2", "Parse error: " + e.getMessage());
+                Log.e("FlightsFragment2", "Parse error for ticket: " + e.getMessage());
             }
         }
 
-        binding.rvTickets.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.rvTickets.setAdapter(new TicketAdapter(displayTickets, new TicketAdapter.OnTicketActionListener() {
-            @Override
-            public void onDetailClick(Ticket ticket) {
-                openDetail(ticket);
-            }
+        if (displayTickets.isEmpty()) {
+            binding.rvTickets.setVisibility(View.GONE);
+            binding.layoutNoFlights.setVisibility(View.VISIBLE);
+        } else {
+            binding.rvTickets.setVisibility(View.VISIBLE);
+            binding.layoutNoFlights.setVisibility(View.GONE);
+            
+            binding.rvTickets.setLayoutManager(new LinearLayoutManager(requireContext()));
+            binding.rvTickets.setAdapter(new TicketAdapter(displayTickets, new TicketAdapter.OnTicketActionListener() {
+                @Override
+                public void onDetailClick(Ticket ticket) {
+                    openDetail(ticket);
+                }
 
-            @Override
-            public void onCancelClick(Ticket ticket) {
-                openCancel(ticket);
-            }
+                @Override
+                public void onCancelClick(Ticket ticket) {
+                    openCancel(ticket);
+                }
 
-            @Override
-            public void onChangeClick(Ticket ticket) {
-                openChange(ticket);
-            }
-        }));
+                @Override
+                public void onChangeClick(Ticket ticket) {
+                    openChange(ticket);
+                }
+            }));
+        }
     }
 
     private void openDetail(Ticket ticket) {
