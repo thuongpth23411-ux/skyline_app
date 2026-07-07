@@ -14,50 +14,49 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.gson.Gson;
+import com.skyline.app.network.Flight;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class FareSelectionActivity extends AppCompatActivity {
     
-    private String flightNumber, fromCode, toCode, fromName, toName, departureTime, arrivalTime;
-    private int durationMinutes;
-    private double basePrice;
+    private Flight flight;
+    private final Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fare_selection);
 
-        // Get data from intent
-        flightNumber = getIntent().getStringExtra("flightNumber");
-        fromCode = getIntent().getStringExtra("fromCode");
-        toCode = getIntent().getStringExtra("toCode");
-        fromName = getIntent().getStringExtra("fromName");
-        toName = getIntent().getStringExtra("toName");
-        departureTime = getIntent().getStringExtra("departureTime");
-        arrivalTime = getIntent().getStringExtra("arrivalTime");
-        durationMinutes = getIntent().getIntExtra("duration", 0);
-        basePrice = getIntent().getDoubleExtra("basePrice", 0);
-
-        View btnBack = findViewById(R.id.btnBack);
-        View btnClose = findViewById(R.id.btnClose);
-        
-        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> {
-                Intent intent = new Intent(FareSelectionActivity.this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                finish();
-            });
+        String json = getIntent().getStringExtra("flight_json");
+        if (json != null) {
+            flight = gson.fromJson(json, Flight.class);
         }
 
+        if (flight == null) {
+            finish();
+            return;
+        }
+
+        initViews();
         updateFlightInfo();
         startPlaneAnimation();
         setupFares();
+    }
+
+    private void initViews() {
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.btnClose).setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void updateFlightInfo() {
@@ -72,72 +71,36 @@ public class FareSelectionActivity extends AppCompatActivity {
         TextView tvArrAirport = findViewById(R.id.tvArrAirport);
         TextView tvDuration = findViewById(R.id.tvDuration);
 
-        if (flightNumber != null) tvFlightHeader.setText("CHUYẾN BAY " + flightNumber);
-        if (fromCode != null) tvDepCode.setText(fromCode);
-        if (toCode != null) tvArrCode.setText(toCode);
+        tvFlightHeader.setText("CHUYẾN BAY " + flight.getFlightNumber());
+        tvDepCode.setText(flight.getDepartureAirport().getCode());
+        tvArrCode.setText(flight.getArrivalAirport().getCode());
         
-        if (fromName != null) tvDepAirport.setText(cleanAirportName(fromName));
-        if (toName != null) tvArrAirport.setText(cleanAirportName(toName));
+        tvDepAirport.setText(cleanAirportName(flight.getDepartureAirport().getName()));
+        tvArrAirport.setText(cleanAirportName(flight.getArrivalAirport().getName()));
 
-        // Format dates
-        Date dDate = parseIsoDate(departureTime);
-        Date aDate = parseIsoDate(arrivalTime);
+        Date dDate = parseIsoDate(flight.getDepartureAt());
+        Date aDate = parseIsoDate(flight.getArrivalAt());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN"));
+        timeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
         if (dDate != null) {
-            tvDepTime.setText(new SimpleDateFormat("HH:mm", Locale.US).format(dDate));
-            tvDepDate.setText(new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN")).format(dDate));
-        } else {
-            tvDepTime.setText("--:--");
-            tvDepDate.setText("---");
+            tvDepTime.setText(timeFormat.format(dDate));
+            tvDepDate.setText(dateFormat.format(dDate));
         }
-
         if (aDate != null) {
-            tvArrTime.setText(new SimpleDateFormat("HH:mm", Locale.US).format(aDate));
-            tvArrDate.setText(new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN")).format(aDate));
-        } else {
-            tvArrTime.setText("--:--");
-            tvArrDate.setText("---");
+            tvArrTime.setText(timeFormat.format(aDate));
+            tvArrDate.setText(dateFormat.format(aDate));
         }
         
+        int durationMinutes = flight.getDuration();
         if (durationMinutes > 0) {
             int h = durationMinutes / 60;
             int m = durationMinutes % 60;
             tvDuration.setText(h + "h " + m + "m");
-        } else if (dDate != null && aDate != null) {
-            long diff = aDate.getTime() - dDate.getTime();
-            long totalMinutes = diff / (60 * 1000);
-            long h = totalMinutes / 60;
-            long m = totalMinutes % 60;
-            tvDuration.setText(h + "h " + m + "m");
-        } else {
-            tvDuration.setText("--h --m");
         }
-    }
-
-    private Date parseIsoDate(String isoString) {
-        if (isoString == null) return null;
-        String[] patterns = {
-            "yyyy-MM-dd'T'HH:mm:ssXXX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            "yyyy-MM-dd'T'HH:mm:ss",
-            "yyyy-MM-dd HH:mm:ss"
-        };
-        for (String pattern : patterns) {
-            try {
-                SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
-                return format.parse(isoString);
-            } catch (Exception ignored) {}
-        }
-        return null;
-    }
-
-    private String cleanAirportName(String name) {
-        if (name == null) return "";
-        return name.toUpperCase()
-                .replace("SÂN BAY QUỐC TẾ ", "")
-                .replace("SÂN BAY ", "")
-                .replace("AIRPORT", "")
-                .trim();
     }
 
     private void startPlaneAnimation() {
@@ -156,45 +119,50 @@ public class FareSelectionActivity extends AppCompatActivity {
         int blue = ContextCompat.getColor(this, R.color.skyline_blue);
         int teal = ContextCompat.getColor(this, R.color.skyline_teal);
 
+        double economyPrice = flight.getBasePrice();
+        double businessPrice = flight.getBasePrice() * 2.0;
+
+        // Lấy giá từ PriceOptions trong Backend
+        List<Flight.PriceOption> options = flight.getPriceOptions();
+        if (options != null) {
+            for (Flight.PriceOption opt : options) {
+                if ("ECONOMY".equalsIgnoreCase(opt.getType())) economyPrice = opt.getPrice();
+                if ("BUSINESS".equalsIgnoreCase(opt.getType())) businessPrice = opt.getPrice();
+            }
+        }
+
         DecimalFormat df = new DecimalFormat("#,###");
-        String economyPrice = df.format(basePrice) + " VND";
-        String businessPrice = df.format(basePrice * 2.0) + " VND";
 
         View cardEconomy = findViewById(R.id.cardEconomy);
         if (cardEconomy != null) {
-            setupFareDetails(cardEconomy, "Phổ thông", "TIẾT KIỆM & TIỆN LỢI", economyPrice, blue);
+            setupFareDetails(cardEconomy, "Phổ thông", "TIẾT KIỆM & TIỆN LỢI", df.format(economyPrice) + " VND", blue);
             setupBenefit(cardEconomy, R.id.benefitCarryOn, R.drawable.ic_baggage_small, "HÀNH LÝ XÁCH TAY", "01 kiện 7kg", blue);
             setupBenefit(cardEconomy, R.id.benefitChecked, R.drawable.ic_baggage_big, "HÀNH LÝ KÝ GỬI", "01 kiện 23kg", blue);
             setupBenefit(cardEconomy, R.id.benefitChange, R.drawable.ic_swap, "ĐỔI VÉ", "300.000 VND + chênh lệch", blue);
             setupBenefit(cardEconomy, R.id.benefitRefund, R.drawable.ic_ticket, "HOÀN VÉ", "Phí từ 800.000 VND", blue);
             setupBenefit(cardEconomy, R.id.benefitSeat, R.drawable.ic_seat, "CHỌN CHỖ", "Miễn phí", blue);
 
-            cardEconomy.findViewById(R.id.btnSelectFare).setOnClickListener(v -> navigateToPayment("Economy", basePrice));
+            final double finalPrice = economyPrice;
+            cardEconomy.findViewById(R.id.btnSelectFare).setOnClickListener(v -> navigateToAddon("Economy", finalPrice));
         }
 
         View cardBusiness = findViewById(R.id.cardBusiness);
         if (cardBusiness != null) {
-            setupFareDetails(cardBusiness, "Thương gia", "LINH HOẠT TỐI ĐA", businessPrice, teal);
+            setupFareDetails(cardBusiness, "Thương gia", "LINH HOẠT TỐI ĐA", df.format(businessPrice) + " VND", teal);
             setupBenefit(cardBusiness, R.id.benefitCarryOn, R.drawable.ic_baggage_small, "HÀNH LÝ XÁCH TAY", "01 kiện 12kg", teal);
             setupBenefit(cardBusiness, R.id.benefitChecked, R.drawable.ic_baggage_big, "HÀNH LÝ KÝ GỬI", "01 kiện 32kg", teal);
             setupBenefit(cardBusiness, R.id.benefitChange, R.drawable.ic_swap, "ĐỔI VÉ", "Miễn phí đổi + chênh lệch", teal);
             setupBenefit(cardBusiness, R.id.benefitRefund, R.drawable.ic_ticket, "HOÀN VÉ", "Phí từ 500.000 VND", teal);
             setupBenefit(cardBusiness, R.id.benefitSeat, R.drawable.ic_seat, "CHỌN CHỖ", "Miễn phí", teal);
 
-            cardBusiness.findViewById(R.id.btnSelectFare).setOnClickListener(v -> navigateToPayment("Business", basePrice * 2.0));
+            final double finalPriceB = businessPrice;
+            cardBusiness.findViewById(R.id.btnSelectFare).setOnClickListener(v -> navigateToAddon("Business", finalPriceB));
         }
     }
 
-    private void navigateToPayment(String fareType, double price) {
+    private void navigateToAddon(String fareType, double price) {
         Intent intent = new Intent(this, AddonServiceActivity.class);
-        intent.putExtra("flightNumber", flightNumber);
-        intent.putExtra("fromCode", fromCode);
-        intent.putExtra("toCode", toCode);
-        intent.putExtra("fromName", fromName);
-        intent.putExtra("toName", toName);
-        intent.putExtra("departureTime", departureTime);
-        intent.putExtra("arrivalTime", arrivalTime);
-        intent.putExtra("duration", durationMinutes);
+        intent.putExtra("flight_json", gson.toJson(flight));
         intent.putExtra("fareType", fareType);
         intent.putExtra("totalPrice", price);
         startActivity(intent);
@@ -240,5 +208,25 @@ public class FareSelectionActivity extends AppCompatActivity {
                 tvDesc.setTextColor(ContextCompat.getColor(this, R.color.skyline_text));
             }
         }
+    }
+
+    private Date parseIsoDate(String isoString) {
+        if (isoString == null) return null;
+        String[] patterns = {"yyyy-MM-dd'T'HH:mm:ssXXX", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss"};
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+                if (pattern.contains("Z") || pattern.contains("XXX")) {
+                    format.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                }
+                return format.parse(isoString);
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private String cleanAirportName(String name) {
+        if (name == null) return "";
+        return name.toUpperCase().replace("SÂN BAY QUỐC TẾ ", "").replace("SÂN BAY ", "").replace("AIRPORT", "").trim();
     }
 }

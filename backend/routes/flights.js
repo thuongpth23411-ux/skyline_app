@@ -3,6 +3,7 @@ const router = express.Router();
 const Flight = require("../models/Flight");
 const Airline = require("../models/Airline");
 const Airport = require("../models/Airport");
+const FlightSeat = require("../models/FlightSeat");
 
 router.post("/search", async (req, res) => {
     try {
@@ -45,6 +46,16 @@ router.post("/search", async (req, res) => {
     } catch (error) {
         console.error("❌ Search error:", error);
         res.status(500).json({ success: false, message: "Lỗi hệ thống khi tìm kiếm chuyến bay" });
+    }
+});
+
+// Lấy danh sách ghế của một chuyến bay
+router.get("/:flightId/seats", async (req, res) => {
+    try {
+        const seats = await FlightSeat.find({ flightId: req.params.flightId }).sort({ rowNumber: 1, seatColumn: 1 });
+        res.json(seats);
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi lấy sơ đồ ghế" });
     }
 });
 

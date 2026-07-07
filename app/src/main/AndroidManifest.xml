@@ -73,6 +73,9 @@
         <activity
             android:name=".AddonServiceActivity"
             android:exported="false" />
+        <activity
+            android:name=".SeatSelectionActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

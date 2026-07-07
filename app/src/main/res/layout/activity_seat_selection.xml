@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/skyline_bg">
+
+    <!-- HEADER (Đồng bộ tuyệt đối) -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/skyline_blue_dark"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View android:layout_width="32dp" android:layout_height="32dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvFlightNumberHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CHUYẾN BAY"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CHỌN GHẾ"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnClose"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="7dp"
+                android:src="@drawable/ic_close"
+                app:tint="@color/white"
+                android:contentDescription="@null" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="@color/skyline_blue_dark"
+            app:strokeColor="#22FFFFFF"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:baselineAligned="false">
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/tvDepCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="SGN" />
+                    <TextView android:id="@+id/tvDepTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="05:45" />
+                    <TextView android:id="@+id/tvDepDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvDepAirport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="TÂN SƠN NHẤT" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="8dp">
+                    <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1h 10m" android:textColor="#CCFFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                    <ImageView android:id="@+id/imgPlane" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:rotation="90" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/tvArrCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="HAN" />
+                    <TextView android:id="@+id/tvArrTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="07:55" />
+                    <TextView android:id="@+id/tvArrDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28 Th06" android:textColor="#CCFFFFFF" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvArrAirport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="NỘI BÀI" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- LEGEND (Ảnh 1) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/legendEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="#26FFFFFF"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/bg_circle_white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Trống"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/legendOccupied"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="#26FFFFFF"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="#80FFFFFF" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Đã đặt"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/legendSelected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/skyline_blue"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Đang chọn"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <!-- AIRCRAFT BODY -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="140dp"
+                app:strokeColor="#E0E3E5"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingTop="60dp"
+                    android:paddingBottom="40dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingBottom="12dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="A" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="B" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="C" />
+                        <TextView android:layout_width="34dp" android:layout_height="wrap_content" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="D" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="E" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textColor="@color/skyline_text_secondary" android:textSize="12sp" android:textStyle="bold" android:text="F" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/seatMap"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <!-- TAIL SECTION (Ảnh 2) -->
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="32dp" android:background="#F0F0F0" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="40dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_wc" app:tint="#B0B3B8" android:contentDescription="@null" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="LAV" android:textColor="#B0B3B8" android:textSize="10sp" android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_restaurant" app:tint="#B0B3B8" android:contentDescription="@null" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="GALLEY" android:textColor="#B0B3B8" android:textSize="10sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- BOTTOM BAR -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="20dp"
+        app:cardCornerRadius="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="14dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GHẾ ĐÃ CHỌN"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/txtSelectedSeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chưa chọn"
+                    android:textColor="@color/skyline_blue_dark"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnContinue"
+                android:layout_width="140dp"
+                android:layout_height="52dp"
+                android:text="Xác nhận"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/skyline_blue_dark"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

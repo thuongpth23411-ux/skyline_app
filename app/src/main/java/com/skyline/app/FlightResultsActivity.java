@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.google.gson.Gson;
 import com.skyline.app.databinding.ActivityFlightResultsBinding;
 import com.skyline.app.network.Flight;
 import com.skyline.app.network.FlightSearchRequest;
@@ -27,6 +28,7 @@ public class FlightResultsActivity extends AppCompatActivity {
     private ActivityFlightResultsBinding binding;
     private FlightAdapter flightAdapter;
     private DateSelectorAdapter dateAdapter;
+    private final Gson gson = new Gson();
     private String fromCode, toCode, selectedDateStr;
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -98,18 +100,14 @@ public class FlightResultsActivity extends AppCompatActivity {
         binding.rvFlights.setAdapter(flightAdapter);
     }
 
-    private void navigateToFareSelection(Flight flight) {
+    private void navigateFareSelection(Flight flight) {
         Intent intent = new Intent(FlightResultsActivity.this, FareSelectionActivity.class);
-        intent.putExtra("flightNumber", flight.getFlightNumber());
-        intent.putExtra("fromCode", flight.getDepartureAirport() != null ? flight.getDepartureAirport().getCode() : fromCode);
-        intent.putExtra("toCode", flight.getArrivalAirport() != null ? flight.getArrivalAirport().getCode() : toCode);
-        intent.putExtra("fromName", flight.getDepartureAirport() != null ? flight.getDepartureAirport().getName() : "");
-        intent.putExtra("toName", flight.getArrivalAirport() != null ? flight.getArrivalAirport().getName() : "");
-        intent.putExtra("departureTime", flight.getDepartureAt());
-        intent.putExtra("arrivalTime", flight.getArrivalAt());
-        intent.putExtra("duration", flight.getDuration());
-        intent.putExtra("basePrice", flight.getBasePrice());
+        intent.putExtra("flight_json", gson.toJson(flight));
         startActivity(intent);
+    }
+
+    private void navigateToFareSelection(Flight flight) {
+        navigateFareSelection(flight);
     }
 
     private void searchFlights(String from, String to, String date) {
