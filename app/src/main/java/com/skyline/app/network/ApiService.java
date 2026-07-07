@@ -38,4 +38,7 @@ public interface ApiService {
 
     @POST("flights/search")
     Call<List<Flight>> searchFlights(@Body FlightSearchRequest request);
+
+    @GET("tickets/my-tickets")
+    Call<List<TicketResponse>> getMyTickets(@Header("Authorization") String token);
 }

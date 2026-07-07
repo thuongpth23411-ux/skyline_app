@@ -122,10 +122,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:strokeColor="#E5E7EB"
+                app:cardElevation="2dp"
+                app:strokeColor="#F3F4F6"
                 app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -135,7 +135,8 @@
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            app:cardBackgroundColor="#F3F4F6" app:cardCornerRadius="12dp" app:cardElevation="0dp">
+                            app:cardBackgroundColor="@color/white" app:cardCornerRadius="12dp" app:cardElevation="0dp"
+                            app:strokeColor="#F3F4F6" app:strokeWidth="1dp">
                             <TextView
                                 android:id="@+id/tvBookingId" android:layout_width="wrap_content" android:layout_height="wrap_content"
                                 android:paddingHorizontal="10dp" android:paddingVertical="4dp"
@@ -168,11 +169,14 @@
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="#F3F4F6" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngày đi" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
                             <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12 Th05, 2024" android:textColor="@color/black" android:textStyle="bold" />
                         </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="end" android:orientation="vertical">
+                        <View android:layout_width="12dp" android:layout_height="0dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giờ bay" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
                             <TextView android:id="@+id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:30" android:textColor="@color/black" android:textStyle="bold" />
                         </LinearLayout>
@@ -185,10 +189,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:strokeColor="#E5E7EB"
+                app:cardElevation="2dp"
+                app:strokeColor="#F3F4F6"
                 app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"

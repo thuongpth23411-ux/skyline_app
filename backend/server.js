@@ -13,10 +13,12 @@ app.use(express.json());
 const authRoutes = require("./routes/auth");
 const airportRoutes = require("./routes/airports");
 const flightRoutes = require("./routes/flights");
+const ticketRoutes = require("./routes/tickets");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/airports", airportRoutes);
 app.use("/api/flights", flightRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
