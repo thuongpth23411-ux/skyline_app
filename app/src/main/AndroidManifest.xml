@@ -66,6 +66,12 @@
             android:name=".RankDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".PromotionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyVouchersActivity"
+            android:exported="false" />
+        <activity
             android:name=".TermsActivity"
             android:exported="false" />
         <activity

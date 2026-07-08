@@ -1,6 +1,7 @@
 package com.skyline.app.network;
 
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -34,8 +35,14 @@ public interface ApiService {
     @GET("auth/rank-benefits")
     Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
 
-    @GET("auth/promotions")
-    Call<List<com.skyline.model.Promotion>> getPromotions();
+    @GET("promotions")
+    Call<List<Promotion>> getPromotions();
+
+    @POST("promotions/toggle-save")
+    Call<BaseResponse> toggleSaveVoucher(@Header("Authorization") String token, @Body Map<String, String> body);
+
+    @GET("promotions/my-vouchers")
+    Call<List<Promotion>> getMyVouchers(@Header("Authorization") String token);
 
     @GET("airports")
     Call<List<Airport>> getAirports();

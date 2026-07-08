@@ -6,12 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.skyline.app.databinding.ItemPromotionBinding;
-import com.skyline.model.Promotion;
+import com.skyline.app.network.Promotion;
 import java.util.List;
 
 public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.PromotionViewHolder> {
-    private List<Promotion> items;
-    private OnItemClickListener listener;
+    private final List<Promotion> items;
+    private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Promotion item);
@@ -36,11 +36,11 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items != null ? items.size() : 0;
     }
 
     class PromotionViewHolder extends RecyclerView.ViewHolder {
-        private ItemPromotionBinding binding;
+        private final ItemPromotionBinding binding;
 
         public PromotionViewHolder(ItemPromotionBinding binding) {
             super(binding.getRoot());
@@ -62,7 +62,7 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
             }
 
             binding.tvPromoTitle.setText(item.getTitle());
-            binding.tvPromoDate.setText(item.getDate());
+            binding.tvPromoDate.setText(item.getExpiryDate());
             binding.getRoot().setOnClickListener(v -> listener.onItemClick(item));
         }
     }

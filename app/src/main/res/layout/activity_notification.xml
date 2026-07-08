@@ -54,10 +54,11 @@
 
         <ImageView
             android:id="@+id/imgEmptyNotification"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/img_empty_notification"
+            android:src="@drawable/ic_notifications"
+            app:tint="#E0E0E0"
             android:contentDescription="Chưa có thông báo" />
 
         <TextView
