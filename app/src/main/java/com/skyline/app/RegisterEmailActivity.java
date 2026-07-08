@@ -40,6 +40,19 @@ public class RegisterEmailActivity extends BaseAuthActivity {
                         intent.putExtra("IS_REGISTER", true);
                         startActivity(intent);
                     } else {
+                        // Kiểm tra nếu Email đã tồn tại (Lỗi 400 từ Backend)
+                        if (response.code() == 400) {
+                            try {
+                                String errorBody = response.errorBody().string();
+                                if (errorBody.contains("Email đã được đăng ký")) {
+                                    showRegisteredEmailDialog();
+                                    return;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        
                         String errorMsg = response.body() != null ? response.body().getMessage() : "Gửi OTP thất bại";
                         showErrorDialog(errorMsg);
                     }
@@ -52,5 +65,18 @@ public class RegisterEmailActivity extends BaseAuthActivity {
                 }
             });
         });
+    }
+
+    private void showRegisteredEmailDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Thông báo")
+            .setMessage("Email này đã được đăng ký. Bạn có muốn chuyển qua trang đăng nhập?")
+            .setPositiveButton("Đăng nhập", (dialog, which) -> {
+                Intent intent = new Intent(RegisterEmailActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

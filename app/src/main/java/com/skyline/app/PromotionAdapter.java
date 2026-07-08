@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.skyline.app.databinding.ItemPromotionBinding;
 import com.skyline.model.Promotion;
 import java.util.List;
@@ -47,7 +48,19 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
         }
 
         public void bind(Promotion item) {
-            binding.imgPromo.setImageResource(item.getImageRes());
+            String url = item.getImageUrl();
+            if (url != null && !url.isEmpty()) {
+                Glide.with(binding.imgPromo.getContext())
+                        .load(url)
+                        .placeholder(R.drawable.img_brand_banner)
+                        .error(R.drawable.img_brand_banner)
+                        .into(binding.imgPromo);
+            } else if (item.getImageRes() != 0) {
+                binding.imgPromo.setImageResource(item.getImageRes());
+            } else {
+                binding.imgPromo.setImageResource(R.drawable.img_brand_banner);
+            }
+
             binding.tvPromoTitle.setText(item.getTitle());
             binding.tvPromoDate.setText(item.getDate());
             binding.getRoot().setOnClickListener(v -> listener.onItemClick(item));

@@ -11,16 +11,8 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
-        boolean isEmulator = android.os.Build.FINGERPRINT.contains("generic")
-                || android.os.Build.FINGERPRINT.contains("vbox")
-                || android.os.Build.MODEL.contains("Emulator")
-                || android.os.Build.MODEL.contains("Android SDK built for x86");
-
-        if (isEmulator) {
-            return "http://10.0.2.2:3000/api/"; 
-        } else {
-            return "http://192.168.1.147:3000/api/"; 
-        }
+        // 10.0.2.2 là địa chỉ IP đặc biệt để máy ảo truy cập vào localhost của máy tính
+        return "http://10.0.2.2:3000/api/";
     }
 
     public static ApiService getInstance() {

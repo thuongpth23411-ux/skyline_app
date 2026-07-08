@@ -34,6 +34,9 @@ public interface ApiService {
     @GET("auth/rank-benefits")
     Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
 
+    @GET("auth/promotions")
+    Call<List<com.skyline.model.Promotion>> getPromotions();
+
     @GET("airports")
     Call<List<Airport>> getAirports();
 

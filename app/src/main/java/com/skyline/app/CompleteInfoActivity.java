@@ -179,6 +179,10 @@ public class CompleteInfoActivity extends BaseAuthActivity {
                             SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
                             sessionManager.saveAuthToken(body.getToken());
                             sessionManager.saveUser(body.getUser());
+                            
+                            // Tự động tạo thông báo chúc mừng
+                            sessionManager.addLocalNotification("Chào mừng thành viên mới", 
+                                "Chào mừng " + body.getUser().getName() + " đã gia nhập Skyline! Khám phá ngay các ưu đãi đặc biệt dành riêng cho bạn.");
                         }
                         Toast.makeText(CompleteInfoActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
@@ -197,32 +201,43 @@ public class CompleteInfoActivity extends BaseAuthActivity {
         });
 
         findViewById(R.id.tvSkip).setOnClickListener(v -> {
-            v.setEnabled(false);
-            RegisterRequest request = new RegisterRequest(email, password);
-            RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
-                @Override
-                public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                    v.setEnabled(true);
-                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                        AuthResponse body = response.body();
-                        if (body.getToken() != null) {
-                            SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
-                            sessionManager.saveAuthToken(body.getToken());
-                            sessionManager.saveUser(body.getUser());
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Điều khoản & Chính sách")
+                .setMessage("Bằng cách nhấn 'Đồng ý và Bỏ qua', bạn xác nhận đồng ý tham gia Chương trình Skyline và các Chính sách bảo mật của chúng tôi.")
+                .setPositiveButton("Đồng ý và Bỏ qua", (dialog, which) -> {
+                    v.setEnabled(false);
+                    RegisterRequest request = new RegisterRequest(email, password);
+                    RetrofitClient.getInstance().registerFinalize(request).enqueue(new Callback<AuthResponse>() {
+                        @Override
+                        public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                            v.setEnabled(true);
+                            if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                                AuthResponse body = response.body();
+                                if (body.getToken() != null) {
+                                    SessionManager sessionManager = new SessionManager(CompleteInfoActivity.this);
+                                    sessionManager.saveAuthToken(body.getToken());
+                                    sessionManager.saveUser(body.getUser());
+                                    
+                                    // Tự động tạo thông báo chúc mừng
+                                    sessionManager.addLocalNotification("Chào mừng thành viên mới", 
+                                        "Chào mừng bạn đã gia nhập gia đình Skyline! Hãy hoàn thiện hồ sơ để nhận thêm nhiều ưu đãi nhé.");
+                                }
+                                startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
+                                finishAffinity();
+                            } else {
+                                showErrorDialog(response.body() != null ? response.body().getMessage() : "Đăng ký thất bại");
+                            }
                         }
-                        startActivity(new Intent(CompleteInfoActivity.this, AccountSuccessActivity.class));
-                        finishAffinity();
-                    } else {
-                        showErrorDialog(response.body() != null ? response.body().getMessage() : "Đăng ký thất bại");
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<AuthResponse> call, Throwable t) {
-                    v.setEnabled(true);
-                    showErrorDialog("Lỗi kết nối: " + t.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Call<AuthResponse> call, Throwable t) {
+                            v.setEnabled(true);
+                            showErrorDialog("Lỗi kết nối: " + t.getMessage());
+                        }
+                    });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
         });
     }
 

@@ -62,6 +62,38 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupPromotionPager() {
+        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
+                if (binding == null || !isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    List<Promotion> promotions = response.body();
+                    binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
+                    createDots(binding.promoDots, promotions.size());
+                    selectDot(binding.promoDots, 0);
+
+                    binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            if (binding != null) selectDot(binding.promoDots, position);
+                        }
+                    });
+                } else {
+                    setupLocalPromotions();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {
+                if (binding != null && isAdded()) {
+                    setupLocalPromotions();
+                }
+            }
+        });
+    }
+
+    private void setupLocalPromotions() {
         List<Promotion> promotions = new ArrayList<>();
         promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "11/06/2026 - 10/07/2026", R.drawable.img_promo_bangkok));
         promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/06/2026 - 15/07/2026", R.drawable.img_promo_phuquoc));
@@ -116,13 +148,29 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupClicks() {
-        binding.btnNotification.setOnClickListener(v -> toast("Thông báo"));
+        binding.btnNotification.setOnClickListener(v -> {
+            SessionManager sessionManager = new SessionManager(requireContext());
+            if (sessionManager.isLoggedIn()) {
+                startActivity(new Intent(requireContext(), NotificationActivity.class));
+            } else {
+                showLoginRequiredDialog();
+            }
+        });
         binding.btnExploreNow.setOnClickListener(v -> toast("Mở ưu đãi Thứ 6"));
         binding.promotionHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả ưu đãi"));
         binding.destinationHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả điểm đến"));
         binding.btnAboutUs.setOnClickListener(v -> startActivity(new Intent(requireContext(), AboutActivity.class)));
         binding.memberCard.btnRegister.setOnClickListener(v -> startActivity(new Intent(requireContext(), RegisterEmailActivity.class)));
         binding.memberCard.tvLogin.setOnClickListener(v -> startActivity(new Intent(requireContext(), LoginActivity.class)));
+    }
+
+    private void showLoginRequiredDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Yêu cầu đăng nhập")
+            .setMessage("Vui lòng đăng nhập hoặc đăng ký tài khoản để xem các thông báo cá nhân và ưu đãi từ Skyline.")
+            .setPositiveButton("Đăng nhập", (dialog, which) -> startActivity(new Intent(requireContext(), LoginActivity.class)))
+            .setNegativeButton("Để sau", null)
+            .show();
     }
 
     private void createDots(LinearLayout container, int count) {

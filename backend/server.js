@@ -8,6 +8,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use("/images", express.static("images")); // Cho phép truy cập ảnh từ thư mục images
 
 // Routes
 const authRoutes = require("./routes/auth");
@@ -43,6 +44,33 @@ mongoose.connect(process.env.MONGO_URI)
             { rank: "Vàng", title: "Ưu tiên chọn chỗ ngồi", description: "Miễn phí chọn chỗ ngồi ưa thích trên mọi chuyến bay.", iconType: "voucher" }
         ]);
         console.log("🌱 Seeded/Updated Rank Benefits");
+    }
+
+    // Seed Promotions if empty
+    const Promotion = require("./models/Promotion");
+    const promoCount = await Promotion.countDocuments();
+    if (promoCount === 0) {
+        await Promotion.insertMany([
+            {
+                title: "Xin chào Bangkok! Ưu đãi ngay 20%",
+                description: "Khám phá xứ sở chùa Vàng với giá vé cực sốc.",
+                imageUrl: "https://images.unsplash.com/photo-1508009603885-50cf7c579367?auto=format&fit=crop&w=800&q=80",
+                expiryDate: "10/07/2026"
+            },
+            {
+                title: "Xin chào Phú Quốc! Ưu đãi ngay 20%",
+                description: "Nghỉ dưỡng tại đảo ngọc với đường bay trực tiếp từ Skyline.",
+                imageUrl: "https://images.unsplash.com/photo-1589779267444-64b63897bcad?auto=format&fit=crop&w=800&q=80",
+                expiryDate: "15/07/2026"
+            },
+            {
+                title: "Thứ 6 mở app – giảm đến 10%",
+                description: "Đặt vé vào mỗi thứ 6 hàng tuần để nhận ưu đãi độc quyền.",
+                imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109c0f3?auto=format&fit=crop&w=800&q=80",
+                expiryDate: "01/08/2026"
+            }
+        ]);
+        console.log("🌱 Seeded Promotions");
     }
 })
 .catch((err) => {

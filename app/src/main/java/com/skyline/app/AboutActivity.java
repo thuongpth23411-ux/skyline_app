@@ -62,10 +62,10 @@ public class AboutActivity extends AppCompatActivity {
         }
         
         binding.teamPager.setPageTransformer((page, position) -> {
-            float scaleFactor = 0.85f + (1 - Math.abs(position)) * 0.15f;
+            float scaleFactor = 0.82f + (1 - Math.abs(position)) * 0.18f;
             page.setScaleX(scaleFactor);
             page.setScaleY(scaleFactor);
-            page.setAlpha(0.6f + (1 - Math.abs(position)) * 0.4f);
+            page.setAlpha(0.5f + (1 - Math.abs(position)) * 0.5f);
         });
     }
 
@@ -84,7 +84,9 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void setupClicks() {
-        binding.btnNotification.setOnClickListener(v -> Toast.makeText(this, "Thông báo", Toast.LENGTH_SHORT).show());
+        binding.btnNotification.setOnClickListener(v -> {
+            startActivity(new android.content.Intent(this, NotificationActivity.class));
+        });
         
         binding.btnTeamPrev.setOnClickListener(v -> binding.teamPager.setCurrentItem(binding.teamPager.getCurrentItem() - 1));
         binding.btnTeamNext.setOnClickListener(v -> binding.teamPager.setCurrentItem(binding.teamPager.getCurrentItem() + 1));

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendOTP } = require("../utils/mailer");
 const RankBenefit = require("../models/RankBenefit");
+const Promotion = require("../models/Promotion");
 
 // Generate 6 digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -218,6 +219,30 @@ router.get("/rank-benefits", async (req, res) => {
         });
         res.json(benefits);
     } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
+// Get 3 newest promotions
+router.get("/promotions", async (req, res) => {
+    try {
+        const promotions = await Promotion.find({ status: "Active" })
+            .sort({ createdAt: -1 })
+            .limit(3);
+
+        // Chuyển đổi dữ liệu để App dễ đọc và gắn full URL cho ảnh
+        const formattedPromotions = promotions.map(p => {
+            const baseUrl = req.protocol + '://' + req.get('host');
+            return {
+                title: p.promotionName,
+                endDate: p.endDate ? new Date(p.endDate).toLocaleDateString('vi-VN') : "",
+                imageUrl: p.imageUrl.startsWith('http') ? p.imageUrl : (baseUrl + p.imageUrl)
+            };
+        });
+
+        res.json(formattedPromotions);
+    } catch (error) {
+        console.error("Promo error:", error);
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
 });

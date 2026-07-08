@@ -49,4 +49,23 @@ public class SessionManager {
     
     public String getUserName() { return prefs.getString(USER_NAME, "Khách"); }
     public String getMemberCode() { return prefs.getString(USER_MEMBER_CODE, "---- ---- ----"); }
+
+    public void setNotificationsEnabled(boolean enabled) {
+        prefs.edit().putBoolean("notif_enabled", enabled).apply();
+    }
+
+    public boolean areNotificationsEnabled() {
+        return prefs.getBoolean("notif_enabled", true);
+    }
+
+    public void addLocalNotification(String title, String content) {
+        String existing = prefs.getString("local_notifs", "");
+        String time = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date());
+        String entry = title + "|" + content + "|" + time + ";";
+        prefs.edit().putString("local_notifs", entry + existing).apply();
+    }
+
+    public String getLocalNotifications() {
+        return prefs.getString("local_notifs", "");
+    }
 }
