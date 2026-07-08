@@ -7,9 +7,10 @@ public class GroqRequest {
     private String model;
     private List<Message> messages;
 
-    public GroqRequest(String model, String userText) {
+    public GroqRequest(String model, String systemInstruction, String userText) {
         this.model = model;
         this.messages = new ArrayList<>();
+        this.messages.add(new Message("system", systemInstruction));
         this.messages.add(new Message("user", userText));
     }
 
