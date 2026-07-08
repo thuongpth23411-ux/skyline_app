@@ -45,6 +45,10 @@
             android:name=".ProfileActivity"
             android:exported="true" />
         <activity
+            android:name=".ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".SupportActivity"
             android:exported="false" />
         <activity

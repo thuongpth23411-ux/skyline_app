@@ -67,6 +67,8 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         });
         binding.btnViewDetails.setOnClickListener(v -> toast("Xem chi tiết điểm thưởng"));
+        
+        binding.fabAiChat.setOnClickListener(v -> startActivity(new Intent(ProfileActivity.this, ChatActivity.class)));
     }
 
     private void toast(String message) {

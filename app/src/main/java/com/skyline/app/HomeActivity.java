@@ -49,6 +49,8 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             }
         });
+
+        binding.fabAiChat.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ChatActivity.class)));
     }
 
     private void updateNavSelection(View selectedView) {
