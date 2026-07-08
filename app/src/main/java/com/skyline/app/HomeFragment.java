@@ -143,7 +143,7 @@ public class HomeFragment extends Fragment {
                 showLoginRequiredDialog();
             }
         });
-        
+
         // Nhấn "Khám phá ngay" hoặc "Xem tất cả" mở trang Khuyến mãi
         binding.btnExploreNow.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
         binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));

@@ -92,6 +92,12 @@
         <activity
             android:name=".BaggageSelectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".BlogListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BlogDetailActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:gravity="top"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="3dp"
+        android:src="@drawable/ic_calendar_check"
+        app:tint="#2563EB" />
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:lineSpacingExtra="4dp"
+        android:text="Thời điểm đẹp nhất: Tháng 2 - Tháng 8, trời nắng đẹp, biển xanh."
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+</LinearLayout>

@@ -58,4 +58,13 @@ public interface ApiService {
 
     @GET("flights/{flightId}/seats")
     Call<List<FlightSeat>> getFlightSeats(@Path("flightId") String flightId);
+
+    @GET("blogs")
+    Call<List<Blog>> getBlogs();
+
+    @GET("blogs/featured")
+    Call<List<Blog>> getFeaturedBlogs();
+
+    @GET("blogs/{identifier}")
+    Call<Blog> getBlogByIdentifier(@Path("identifier") String identifier);
 }

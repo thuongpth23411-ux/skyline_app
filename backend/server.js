@@ -15,11 +15,17 @@ const authRoutes = require("./routes/auth");
 const airportRoutes = require("./routes/airports");
 const flightRoutes = require("./routes/flights");
 const promotionRoutes = require("./routes/promotions");
+const ticketRoutes = require("./routes/tickets");
+const airlineRoutes = require("./routes/airlines");
+const blogRoutes = require("./routes/blogs");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/airports", airportRoutes);
 app.use("/api/flights", flightRoutes);
 app.use("/api/promotions", promotionRoutes);
+app.use("/api/airlines", airlineRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/blogs", blogRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)

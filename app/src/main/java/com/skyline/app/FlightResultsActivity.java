@@ -9,6 +9,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.gson.Gson;
 import com.skyline.app.databinding.ActivityFlightResultsBinding;
 import com.skyline.app.network.Flight;
 import com.skyline.app.network.FlightSearchRequest;
@@ -36,6 +38,7 @@ public class FlightResultsActivity extends AppCompatActivity {
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private LinearLayoutManager dateLayoutManager;
+    private final Gson gson = new Gson();
     
     private List<Flight> currentFlights = new ArrayList<>();
     private List<Flight> originalFlights = new ArrayList<>();
@@ -281,13 +284,8 @@ public class FlightResultsActivity extends AppCompatActivity {
 
     private void navigateToFareSelection(Flight f) {
         Intent i = new Intent(this, FareSelectionActivity.class);
-        i.putExtra("flightNumber", f.getFlightNumber());
-        i.putExtra("fromCode", f.getDepartureAirport() != null ? f.getDepartureAirport().getCode() : fromCode);
-        i.putExtra("toCode", f.getArrivalAirport().getCode());
-        i.putExtra("departureTime", f.getDepartureAt());
-        i.putExtra("arrivalTime", f.getArrivalAt());
-        i.putExtra("duration", f.getDuration());
-        i.putExtra("basePrice", f.getBasePrice());
+        // TRUYỀN DỮ LIỆU DƯỚI DẠNG JSON ĐÚNG NHƯ TRANG SAU YÊU CẦU
+        i.putExtra("flight_json", gson.toJson(f));
         startActivity(i);
     }
 

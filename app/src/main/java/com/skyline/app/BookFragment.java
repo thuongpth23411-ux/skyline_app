@@ -126,7 +126,36 @@ public class BookFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupUI();
         loadRecentSearches();
+        
+        if (getArguments() != null) {
+            String destCodeArg = getArguments().getString("destCode");
+            if (destCodeArg != null && !destCodeArg.isEmpty()) {
+                fetchAndSetDestination(destCodeArg);
+            }
+        }
+
         checkLocationPermission();
+    }
+
+    private void fetchAndSetDestination(String code) {
+        RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
+            @Override
+            public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
+                if (binding == null) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    for (Airport a : response.body()) {
+                        if (a.getCode().equals(code)) {
+                            toCode = a.getCode();
+                            toCity = a.getCity();
+                            toAirportName = a.getName();
+                            updateAirportDisplay();
+                            break;
+                        }
+                    }
+                }
+            }
+            @Override public void onFailure(Call<List<Airport>> call, Throwable t) {}
+        });
     }
 
     private void setupUI() {
