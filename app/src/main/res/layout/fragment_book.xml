@@ -1,325 +1,468 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/skyline_bg">
 
+    <!-- Custom Top Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/skyline_blue_dark"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ĐẶT VÉ"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <!-- Header with the NEW Plane Image -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Trip Type Toggle -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="260dp">
+                android:layout_height="56dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
 
-                <View
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleTripType"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="@color/skyline_blue_dark" />
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    app:checkedButton="@+id/btnOneWay"
+                    app:singleSelection="true">
 
-                <ImageView
-                    android:id="@+id/ivHeaderPlane"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/splash_plane"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="20dp"
-                    android:contentDescription="@null" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOneWay"
+                        style="@style/Widget.Material3.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:insetBottom="0dp"
+                        android:insetTop="0dp"
+                        android:text="Một chiều"
+                        android:textAllCaps="false"
+                        android:textColor="@color/skyline_blue_dark"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="8dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="48dp"
-                    android:text="@string/search_flights_title"
-                    android:textColor="@color/white"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRoundTrip"
+                        style="@style/Widget.Material3.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:insetBottom="0dp"
+                        android:insetTop="0dp"
+                        android:text="Khứ hồi"
+                        android:textAllCaps="false"
+                        android:textColor="@color/skyline_blue_dark"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="8dp" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Search Card -->
+            <!-- Sân bay Section -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="-40dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#E5E7EB"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#F3F4F6"
+                app:strokeWidth="1dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/layoutFrom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toStartOf="@+id/btnSwap"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ĐIỂM ĐI:"
+                            android:textColor="@color/skyline_text_secondary"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvFromCode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="42dp"
+                            android:text="+"
+                            android:gravity="center"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="32sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvFromCity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn điểm đi"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btnSwap"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_blue"
+                        android:contentDescription="@null"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_swap"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/white" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutTo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnSwap"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ĐIỂM ĐẾN:"
+                            android:textColor="@color/skyline_text_secondary"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvToCode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="42dp"
+                            android:text="+"
+                            android:gravity="center"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="32sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvToCity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn điểm đến"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Ngày Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#F3F4F6"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:id="@+id/layoutDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="20dp">
+
+                    <!-- Departure Date -->
+                    <LinearLayout
+                        android:id="@+id/btnSelectDepDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="NGÀY ĐI:"
+                            android:textColor="@color/skyline_text_secondary"
+                            android:textSize="12sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="42dp"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <EditText
+                                android:id="@+id/tvDepDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:hint="dd/mm/yyyy"
+                                android:textColor="@color/skyline_blue_dark"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:inputType="number"
+                                android:digits="0123456789/"
+                                android:maxLength="10"
+                                android:autofillHints="none" />
+
+                            <ImageView
+                                android:id="@+id/ivDepCalendar"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/skyline_blue_dark"
+                                android:contentDescription="@null"
+                                android:clickable="true"
+                                android:focusable="true" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvDepError"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới."
+                            android:textColor="@color/auth_error"
+                            android:textSize="10sp"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginTop="4dp" />
+
+                        <!-- Removed tvDepDayOfWeek label -->
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/dateDivider"
+                        android:layout_width="1dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="#E5E7EB" />
+
+                    <!-- Return Date -->
+                    <LinearLayout
+                        android:id="@+id/btnSelectReturnDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="NGÀY VỀ:"
+                            android:textColor="@color/skyline_text_secondary"
+                            android:textSize="12sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="42dp"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <EditText
+                                android:id="@+id/tvReturnDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:hint="dd/mm/yyyy"
+                                android:textColor="@color/skyline_blue_dark"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:inputType="number"
+                                android:digits="0123456789/"
+                                android:maxLength="10"
+                                android:autofillHints="none" />
+
+                            <ImageView
+                                android:id="@+id/ivReturnCalendar"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/skyline_blue_dark"
+                                android:contentDescription="@null"
+                                android:clickable="true"
+                                android:focusable="true" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvReturnError"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới."
+                            android:textColor="@color/auth_error"
+                            android:textSize="10sp"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginTop="4dp" />
+
+                        <!-- Removed tvReturnDayOfWeek label -->
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Passengers Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnSelectPassengers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#F3F4F6"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                    <!-- Trip Type Toggle -->
-                    <com.google.android.material.button.MaterialButtonToggleGroup
-                        android:id="@+id/toggleTripType"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:checkedButton="@+id/btnOneWay"
-                        app:singleSelection="true">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_gray"
+                        android:contentDescription="@null"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_profile"
+                        app:tint="@color/skyline_blue_dark" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnOneWay"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/one_way"
-                            android:textAllCaps="false" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRoundTrip"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/round_trip"
-                            android:textAllCaps="false" />
-                    </com.google.android.material.button.MaterialButtonToggleGroup>
-
-                    <!-- From & To Section -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/from_label"
+                            android:text="HÀNH KHÁCH:"
                             android:textColor="@color/skyline_text_secondary"
                             android:textSize="12sp" />
 
                         <TextView
-                            android:id="@+id/tvFrom"
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:layout_marginTop="8dp"
-                            android:background="@drawable/bg_auth_input"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp"
-                            android:text="Hà Nội (HAN)"
-                            android:textColor="@color/black"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
+                            android:id="@+id/tvPassengers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/to_label"
-                            android:textColor="@color/skyline_text_secondary"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:id="@+id/tvTo"
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:layout_marginTop="8dp"
-                            android:background="@drawable/bg_auth_input"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp"
-                            android:text="TP. Hồ Chí Minh (SGN)"
-                            android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:text="1 Người lớn"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Date Section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/departure_date"
-                                android:textColor="@color/skyline_text_secondary"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:id="@+id/tvDepDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_auth_input"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:text="27/12/2025"
-                                android:textColor="@color/black"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="16dp"
-                            android:layout_height="0dp" />
-
-                        <LinearLayout
-                            android:id="@+id/layoutReturnDate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:alpha="0.5"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/return_date"
-                                android:textColor="@color/skyline_text_secondary"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:id="@+id/tvReturnDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_auth_input"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:text="-- / -- / ----"
-                                android:textColor="@color/black"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Passengers & Class -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/passengers_label"
-                                android:textColor="@color/skyline_text_secondary"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_auth_input"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:text="1 Người lớn"
-                                android:textColor="@color/black"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="16dp"
-                            android:layout_height="0dp" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/class_label"
-                                android:textColor="@color/skyline_text_secondary"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_auth_input"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:text="Phổ thông"
-                                android:textColor="@color/black"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSearch"
-                        android:layout_width="match_parent"
-                        android:layout_height="64dp"
-                        android:layout_marginTop="32dp"
-                        android:backgroundTint="@color/black"
-                        android:text="@string/search_button"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:cornerRadius="16dp" />
-
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_arrow_down"
+                        app:tint="@color/skyline_text_secondary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Popular Routes Section -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSearch"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/skyline_blue_dark"
+                android:text="Tìm kiếm chuyến bay"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_search"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:iconTint="@color/white" />
+
             <TextView
+                android:id="@+id/tvRecentTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="32dp"
-                android:text="@string/popular_routes"
-                android:textColor="@color/black"
+                android:text="Kết quả tìm kiếm gần đây"
+                android:textColor="@color/skyline_blue_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Popular routes would go here (horizontal recycler or static cards) -->
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecentSearches"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="20dp"
-                android:scrollbars="none">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <!-- Placeholder items -->
-                    <include layout="@layout/item_destination" android:layout_width="240dp" android:layout_height="180dp" />
-                    <View android:layout_width="16dp" android:layout_height="0dp" />
-                    <include layout="@layout/item_destination" android:layout_width="240dp" android:layout_height="180dp" />
-                </LinearLayout>
-            </HorizontalScrollView>
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_recent_search" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

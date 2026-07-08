@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="1dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/field_icon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_action_circle"
+            android:backgroundTint="#F2F5F8"
+            android:padding="12dp"
+            android:src="@drawable/ic_mail_auth"
+            app:tint="@color/skyline_text" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/field_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LABEL"
+                android:textColor="@color/skyline_text_secondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/field_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Value text"
+                android:textColor="@color/skyline_text"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/edt_field_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/skyline_text"
+                android:textSize="15sp"
+                android:visibility="gone"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_lock"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_lock_auth"
+            android:visibility="gone"
+            app:tint="@color/dot_inactive" />
+
+        <ImageView
+            android:id="@+id/img_edit"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_edit"
+            android:visibility="gone"
+            app:tint="@color/skyline_teal" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

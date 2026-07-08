@@ -1,12 +1,16 @@
 <resources>
     <style name="Theme.Skyline" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
-        <item name="colorPrimary">@color/skyline_blue</item>
+        <item name="colorPrimary">@color/skyline_blue_dark</item>
         <item name="colorSecondary">@color/skyline_teal</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowActionModeOverlay">true</item>
+
+        <!-- Custom Date Picker integration -->
+        <item name="materialCalendarTheme">@style/CustomDatePickerTheme</item>
+        <item name="materialCalendarFullscreenTheme">@style/CustomDatePickerTheme</item>
     </style>
 
     <style name="Theme.Skyline.Splash" parent="Theme.Skyline">
@@ -31,5 +35,18 @@
         <item name="cornerSizeTopRight">28dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Custom Date Picker Theme -->
+    <style name="SkylineDatePicker" parent="Theme.Material3.Light.Dialog">
+        <item name="colorPrimary">@color/skyline_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="CustomDialogTheme" parent="Theme.Material3.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFrame">@null</item>
     </style>
 </resources>

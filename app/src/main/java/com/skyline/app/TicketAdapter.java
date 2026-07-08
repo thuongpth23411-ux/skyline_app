@@ -11,15 +11,17 @@ import java.util.List;
 public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketViewHolder> {
 
     private final List<Ticket> tickets;
-    private final OnDetailClickListener onDetailClickListener;
+    private final OnTicketActionListener listener;
 
-    public interface OnDetailClickListener {
+    public interface OnTicketActionListener {
         void onDetailClick(Ticket ticket);
+        void onCancelClick(Ticket ticket);
+        void onChangeClick(Ticket ticket);
     }
 
-    public TicketAdapter(List<Ticket> tickets, OnDetailClickListener onDetailClickListener) {
+    public TicketAdapter(List<Ticket> tickets, OnTicketActionListener listener) {
         this.tickets = tickets;
-        this.onDetailClickListener = onDetailClickListener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -49,9 +51,9 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
         binding.tvTime.setText(ticket.getTime());
         binding.tvSeat.setText(ticket.getSeat());
 
-        binding.btnDetail.setOnClickListener(v -> onDetailClickListener.onDetailClick(ticket));
-        binding.btnChange.setOnClickListener(v -> { /* Handle change */ });
-        binding.btnCancel.setOnClickListener(v -> { /* Handle cancel */ });
+        binding.btnDetail.setOnClickListener(v -> listener.onDetailClick(ticket));
+        binding.btnChange.setOnClickListener(v -> listener.onChangeClick(ticket));
+        binding.btnCancel.setOnClickListener(v -> listener.onCancelClick(ticket));
     }
 
     @Override

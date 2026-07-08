@@ -183,6 +183,54 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_ticket" />
 
+            <!-- No Tickets State -->
+            <LinearLayout
+                android:id="@+id/layoutNoFlights"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_plane"
+                    app:tint="#D1D5DB"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/no_flights_yet"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/fly_with_skyline"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBookNow"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:backgroundTint="@color/black"
+                    android:paddingHorizontal="32dp"
+                    android:text="@string/book_now"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="24dp" />
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

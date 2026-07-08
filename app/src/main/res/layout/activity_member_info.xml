@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/skyline_bg">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/skyline_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/member_info_title"
+            android:textColor="@color/skyline_text"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_back"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/layout_buttons"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Profile Header -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img_avatar"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:padding="2dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_team1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeColor="@color/white"
+                    app:strokeWidth="2dp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_check_auth"
+                    app:layout_constraintBottom_toBottomOf="@id/img_avatar"
+                    app:layout_constraintEnd_toEndOf="@id/img_avatar"
+                    app:tint="@color/skyline_blue" />
+
+                <TextView
+                    android:id="@+id/tv_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="Thương Phạm"
+                    android:textColor="@color/skyline_text"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/img_avatar"
+                    app:layout_constraintTop_toTopOf="@id/img_avatar" />
+
+                <TextView
+                    android:id="@+id/tv_rank_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_terms_rank"
+                    android:backgroundTint="#ECEFF1"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="ĐỒNG"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/tv_username"
+                    app:layout_constraintTop_toBottomOf="@id/tv_username" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Membership Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_member_card_gradient"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/member_info_sky_points"
+                                android:textColor="@color/skyline_text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tv_sky_points"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/skyline_text"
+                                android:textSize="32sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:orientation="vertical"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/member_info_id"
+                                android:textColor="@color/skyline_text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tv_member_id"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="---- ---- ----"
+                                android:textColor="@color/skyline_text"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progress_tier"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:progress="0"
+                        app:indicatorColor="@color/skyline_teal"
+                        app:trackColor="#E0F2F1"
+                        app:trackCornerRadius="4dp"
+                        app:trackThickness="8dp" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <TextView
+                            android:id="@+id/tv_member_tier"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="8dp"
+                            android:text="Hạng Đồng"
+                            android:textColor="@color/skyline_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:drawableStartCompat="@drawable/ic_notifications"
+                            app:drawableTint="@color/dot_inactive"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                        <TextView
+                            android:id="@+id/btn_benefits"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/member_info_benefits"
+                            android:textColor="@color/skyline_text"
+                            android:textSize="12sp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackground"
+                            app:drawableEndCompat="@drawable/ic_arrow_right"
+                            app:drawableTint="@color/skyline_text"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Personal Info Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/member_info_personal_section"
+                android:textColor="@color/skyline_text_secondary"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <!-- Email (Locked) -->
+                <include
+                    android:id="@+id/item_email"
+                    layout="@layout/item_member_field" />
+
+                <!-- Date of Birth (Editable) -->
+                <include
+                    android:id="@+id/item_dob"
+                    layout="@layout/item_member_field" />
+
+                <!-- Join Date (Locked) -->
+                <include
+                    android:id="@+id/item_join_date"
+                    layout="@layout/item_member_field" />
+
+                <!-- Phone (Locked) -->
+                <include
+                    android:id="@+id/item_phone"
+                    layout="@layout/item_member_field" />
+
+                <!-- CCCD (Locked) -->
+                <include
+                    android:id="@+id/item_cccd"
+                    layout="@layout/item_member_field" />
+
+                <!-- Passport (Editable) -->
+                <include
+                    android:id="@+id/item_passport"
+                    layout="@layout/item_member_field" />
+
+                <!-- Country (Editable) -->
+                <include
+                    android:id="@+id/item_country"
+                    layout="@layout/item_member_field" />
+
+                <!-- Gender (Editable) -->
+                <include
+                    android:id="@+id/item_gender"
+                    layout="@layout/item_member_field" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit_info"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#2D4369"
+            android:text="@string/member_info_edit"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_home_auth"
+            app:iconGravity="textStart"
+            app:iconPadding="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_change_password"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#E0F7FA"
+            android:text="@string/member_info_change_password"
+            android:textAllCaps="false"
+            android:textColor="@color/skyline_teal"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_lock_reset"
+            app:iconGravity="textStart"
+            app:iconPadding="10dp"
+            app:iconTint="@color/skyline_teal" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
