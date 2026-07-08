@@ -92,11 +92,27 @@ public class AboutActivity extends AppCompatActivity {
         binding.btnTeamNext.setOnClickListener(v -> binding.teamPager.setCurrentItem(binding.teamPager.getCurrentItem() + 1));
 
         binding.bottomNav.navHome.setOnClickListener(v -> finish());
-        binding.bottomNav.navBook.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Đặt vé", Toast.LENGTH_SHORT).show());
-        binding.bottomNav.navFlights.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Chuyến bay", Toast.LENGTH_SHORT).show());
+
+        binding.bottomNav.navBook.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "BOOK");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
+        binding.bottomNav.navFlights.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
         binding.bottomNav.navProfile.setOnClickListener(v -> {
             if (sessionManager.isLoggedIn()) {
                 startActivity(new Intent(this, ProfileActivity.class));
+                finish();
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
             }
