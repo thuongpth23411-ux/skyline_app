@@ -80,6 +80,7 @@
                         android:layout_height="16dp"
                         android:layout_centerInParent="true"
                         android:src="@drawable/ic_plane"
+                        android:rotation="90"
                         app:tint="@color/skyline_blue_dark"
                         android:contentDescription="@null" />
                 </RelativeLayout>
@@ -125,9 +126,10 @@
 
             <ImageView
                 android:id="@+id/ivAirlineLogo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_plane"
+                android:layout_width="120dp"
+                android:layout_height="68dp"
+                android:scaleType="fitCenter"
+                android:padding="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -163,9 +165,19 @@
                 android:id="@+id/btnDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chi tiết chuyến bay >"
+                android:background="@drawable/bg_detail_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="Chi tiết chuyến bay"
                 android:textColor="@color/skyline_blue_dark"
                 android:textSize="12sp"
+                android:textStyle="bold"
+                app:drawableEndCompat="@drawable/ic_chevron_right"
+                app:drawableTint="@color/skyline_blue_dark"
+                android:drawablePadding="6dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

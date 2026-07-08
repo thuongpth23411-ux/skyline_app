@@ -1,11 +1,20 @@
 package com.skyline.app;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.skyline.app.network.Flight;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -66,6 +75,41 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
         int mins = duration % 60;
         holder.tvDuration.setText(hours + "g" + mins + "p");
 
+        holder.ivAirlineLogo.setImageDrawable(null);
+        holder.ivAirlineLogo.setRotation(0);
+
+        if (flight.getAirline() != null && flight.getAirline().getLogo() != null) {
+            String originalUrl = flight.getAirline().getLogo();
+            String finalUrl = originalUrl;
+
+            if (originalUrl.toLowerCase().endsWith(".svg") || originalUrl.contains("wikipedia")) {
+                finalUrl = "https://images.weserv.nl/?url=" + originalUrl + "&w=400&output=png";
+            }
+
+            Glide.with(holder.itemView.getContext())
+                    .load(finalUrl)
+                    .placeholder(android.R.color.transparent)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            holder.ivAirlineLogo.setImageResource(R.drawable.ic_plane);
+                            holder.ivAirlineLogo.setRotation(90);
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            holder.ivAirlineLogo.setRotation(0);
+                            return false;
+                        }
+                    })
+                    .into(holder.ivAirlineLogo);
+        } else {
+            holder.ivAirlineLogo.setImageResource(R.drawable.ic_plane);
+            holder.ivAirlineLogo.setRotation(90);
+        }
+
         holder.btnSelect.setOnClickListener(v -> listener.onFlightClick(flight));
         holder.btnDetail.setOnClickListener(v -> listener.onDetailClick(flight));
     }
@@ -77,6 +121,7 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvDepTime, tvArrTime, tvDepCode, tvArrCode, tvAirlineName, tvPrice, tvDuration, btnDetail, tvAircraft;
+        ImageView ivAirlineLogo;
         View btnSelect;
 
         public ViewHolder(@NonNull View itemView) {
@@ -91,6 +136,7 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
             tvDuration = itemView.findViewById(R.id.tvDuration);
             btnDetail = itemView.findViewById(R.id.btnDetail);
             btnSelect = itemView.findViewById(R.id.btnSelect);
+            ivAirlineLogo = itemView.findViewById(R.id.ivAirlineLogo);
         }
     }
 }

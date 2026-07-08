@@ -3,8 +3,10 @@ package com.skyline.app.network;
 public class RecentSearch {
     public String fromAirportId;
     public String fromCity;
+    public String fromAirportName;
     public String toAirportId;
     public String toCity;
+    public String toAirportName;
     public String departureDate;
     public String returnDate;
     public boolean isRoundTrip;

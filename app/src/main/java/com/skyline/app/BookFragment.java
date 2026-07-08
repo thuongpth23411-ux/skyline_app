@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -45,8 +43,8 @@ import retrofit2.Response;
 public class BookFragment extends Fragment {
 
     private FragmentBookBinding binding;
-    private String fromCode = "", fromCity = "Chọn điểm đi", fromError = "";
-    private String toCode = "", toCity = "Chọn điểm đến", toError = "";
+    private String fromCode = "", fromCity = "Chọn điểm đi", fromAirportName = "", fromError = "";
+    private String toCode = "", toCity = "Chọn điểm đến", toAirportName = "", toError = "";
     private long departureDate = 0;
     private long returnDate = 0;
     private int adults = 1, children = 0, infants = 0;
@@ -80,31 +78,35 @@ public class BookFragment extends Fragment {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     boolean isFrom = result.getData().getBooleanExtra("isFrom", true);
-                    String code = result.getData().getStringExtra("code");
-                    String city = result.getData().getStringExtra("city");
-                    if (code == null) code = "";
-                    if (city == null) city = "";
+                    String codeStr = result.getData().getStringExtra("code");
+                    String cityStr = result.getData().getStringExtra("city");
+                    String nameStr = result.getData().getStringExtra("name");
+                    if (codeStr == null) codeStr = "";
+                    if (cityStr == null) cityStr = "";
+                    if (nameStr == null) nameStr = "";
                     
                     if (isFrom) {
-                        if (code.equals(toCode) && !code.isEmpty()) {
+                        if (codeStr.equals(toCode) && !codeStr.isEmpty()) {
                             fromError = "Điểm đi không được trùng với điểm đến";
                             fromCode = "";
                             updateAirportDisplay();
                             return;
                         }
-                        fromCode = code;
-                        fromCity = city;
+                        fromCode = codeStr;
+                        fromCity = cityStr;
+                        fromAirportName = nameStr;
                         fromError = "";
                         updateAirportDisplay();
                     } else {
-                        if (code.equals(fromCode) && !code.isEmpty()) {
+                        if (codeStr.equals(fromCode) && !codeStr.isEmpty()) {
                             toError = "Điểm đến không được trùng với điểm đi";
                             toCode = "";
                             updateAirportDisplay();
                             return;
                         }
-                        toCode = code;
-                        toCity = city;
+                        toCode = codeStr;
+                        toCity = cityStr;
+                        toAirportName = nameStr;
                         toError = "";
                         updateAirportDisplay();
                     }
@@ -159,10 +161,13 @@ public class BookFragment extends Fragment {
             }
             String tempCode = fromCode;
             String tempCity = fromCity;
+            String tempName = fromAirportName;
             fromCode = toCode;
             fromCity = toCity;
+            fromAirportName = toAirportName;
             toCode = tempCode;
             toCity = tempCity;
+            toAirportName = tempName;
             
             fromError = "";
             toError = "";
@@ -186,6 +191,7 @@ public class BookFragment extends Fragment {
         });
 
         binding.btnSearch.setOnClickListener(v -> {
+            if (binding == null) return;
             boolean hasAirportError = false;
             
             if (fromCode.isEmpty()) {
@@ -240,13 +246,20 @@ public class BookFragment extends Fragment {
             
             Intent intent = new Intent(requireContext(), FlightResultsActivity.class);
             intent.putExtra("fromCode", fromCode);
-            intent.putExtra("toCode", toCode);
+            intent.putExtra("toCode", toCode); // DÒNG QUAN TRỌNG NHẤT
+
+            String finalFromName = (fromAirportName != null && !fromAirportName.isEmpty()) ? fromAirportName : fromCode;
+            String finalToName = (toAirportName != null && !toAirportName.isEmpty()) ? toAirportName : toCode;
+            
+            intent.putExtra("fromName", finalFromName);
+            intent.putExtra("toName", finalToName);
             intent.putExtra("date", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(departureDate)));
             startActivity(intent);
         });
     }
 
     private void updateAirportDisplay() {
+        if (binding == null) return;
         if (!fromError.isEmpty()) {
             binding.tvFromCode.setText("+");
             binding.tvFromCity.setText(fromError);
@@ -477,10 +490,12 @@ public class BookFragment extends Fragment {
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
+                if (binding == null) return;
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     Airport first = response.body().get(0);
                     fromCode = first.getCode();
                     fromCity = first.getCity();
+                    fromAirportName = first.getName();
                     updateAirportDisplay();
                 }
             }
@@ -495,10 +510,12 @@ public class BookFragment extends Fragment {
         RetrofitClient.getInstance().getAirports().enqueue(new Callback<List<Airport>>() {
             @Override
             public void onResponse(Call<List<Airport>> call, Response<List<Airport>> response) {
+                if (binding == null) return;
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     Airport first = response.body().get(0);
                     fromCode = first.getCode();
                     fromCity = first.getCity();
+                    fromAirportName = first.getName();
                     updateAirportDisplay();
                 }
             }
@@ -515,8 +532,10 @@ public class BookFragment extends Fragment {
         RecentSearch search = new RecentSearch();
         search.fromAirportId = fromCode;
         search.fromCity = fromCity;
+        search.fromAirportName = fromAirportName;
         search.toAirportId = toCode;
         search.toCity = toCity;
+        search.toAirportName = toAirportName;
         search.departureDate = dateFormat.format(new Date(departureDate));
         search.returnDate = isRoundTrip ? (returnDate != 0 ? dateFormat.format(new Date(returnDate)) : null) : null;
         search.isRoundTrip = isRoundTrip;
@@ -548,46 +567,57 @@ public class BookFragment extends Fragment {
         List<RecentSearch> list = gson.fromJson(json, new TypeToken<List<RecentSearch>>(){}.getType());
 
         if (list.isEmpty()) {
-            binding.tvRecentTitle.setVisibility(View.GONE);
-            binding.rvRecentSearches.setVisibility(View.GONE);
+            if (binding != null) {
+                binding.tvRecentTitle.setVisibility(View.GONE);
+                binding.rvRecentSearches.setVisibility(View.GONE);
+            }
         } else {
             if (list.size() > 5) list = list.subList(0, 5);
             
-            binding.tvRecentTitle.setVisibility(View.VISIBLE);
-            binding.rvRecentSearches.setVisibility(View.VISIBLE);
-            binding.rvRecentSearches.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-            binding.rvRecentSearches.setAdapter(new RecentSearchAdapter(list, item -> {
-                fromCode = item.fromAirportId;
-                fromCity = item.fromCity;
-                toCode = item.toAirportId;
-                toCity = item.toCity;
-                isRoundTrip = item.isRoundTrip;
-                adults = item.adults;
-                children = item.children;
-                infants = item.infants;
-                
-                try {
-                    Date dDate = dateFormat.parse(item.departureDate);
-                    if (dDate != null) departureDate = dDate.getTime();
+            if (binding != null) {
+                binding.tvRecentTitle.setVisibility(View.VISIBLE);
+                binding.rvRecentSearches.setVisibility(View.VISIBLE);
+                binding.rvRecentSearches.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                binding.rvRecentSearches.setAdapter(new RecentSearchAdapter(list, item -> {
+                    fromCode = item.fromAirportId;
+                    fromCity = item.fromCity;
+                    fromAirportName = item.fromAirportName;
+                    toCode = item.toAirportId;
+                    toCity = item.toCity;
+                    toAirportName = item.toAirportName;
+                    isRoundTrip = item.isRoundTrip;
+                    adults = item.adults;
+                    children = item.children;
+                    infants = item.infants;
+
+                    fromError = "";
+                    toError = "";
+                    binding.tvDepError.setVisibility(View.GONE);
+                    binding.tvReturnError.setVisibility(View.GONE);
                     
-                    if (item.returnDate != null) {
-                        Date rDate = dateFormat.parse(item.returnDate);
-                        if (rDate != null) returnDate = rDate.getTime();
-                    } else {
+                    try {
+                        Date dDate = dateFormat.parse(item.departureDate);
+                        if (dDate != null) departureDate = dDate.getTime();
+                        
+                        if (item.returnDate != null) {
+                            Date rDate = dateFormat.parse(item.returnDate);
+                            if (rDate != null) returnDate = rDate.getTime();
+                        } else {
+                            returnDate = 0;
+                        }
+                    } catch (Exception e) {
+                        departureDate = 0;
                         returnDate = 0;
                     }
-                } catch (Exception e) {
-                    departureDate = 0;
-                    returnDate = 0;
-                }
-                
-                updateAirportDisplay();
-                binding.toggleTripType.check(isRoundTrip ? R.id.btnRoundTrip : R.id.btnOneWay);
-                
-                updatePassengersDisplay();
-                updateTabUI();
-                updateDateUI();
-            }));
+                    
+                    updateAirportDisplay();
+                    binding.toggleTripType.check(isRoundTrip ? R.id.btnRoundTrip : R.id.btnOneWay);
+                    
+                    updatePassengersDisplay();
+                    updateTabUI();
+                    updateDateUI();
+                }));
+            }
         }
     }
 

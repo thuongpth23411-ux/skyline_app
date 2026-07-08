@@ -2,7 +2,9 @@ package com.skyline.app.network;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Airline {
+import java.io.Serializable;
+
+public class Airline implements Serializable {
     @SerializedName("airlineId")
     private String id;
     private String code;

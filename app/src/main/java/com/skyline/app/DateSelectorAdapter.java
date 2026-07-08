@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ public class DateSelectorAdapter extends RecyclerView.Adapter<DateSelectorAdapte
 
     public static class DateItem {
         public Date date;
-        public long minPrice; // -1 means no data, 0 means no flights
+        public long minPrice; 
         public boolean isSelected;
 
         public DateItem(Date date, long minPrice, boolean isSelected) {
@@ -35,7 +36,7 @@ public class DateSelectorAdapter extends RecyclerView.Adapter<DateSelectorAdapte
     private DecimalFormat priceFormat = new DecimalFormat("#,###");
 
     public interface OnDateSelectedListener {
-        void onDateSelected(Date date);
+        void onDateSelected(Date date, int position);
     }
 
     public DateSelectorAdapter(List<DateItem> items, OnDateSelectedListener listener) {
@@ -58,39 +59,44 @@ public class DateSelectorAdapter extends RecyclerView.Adapter<DateSelectorAdapte
 
         holder.tvDayOfWeek.setText(capitalize(dayFormat.format(item.date)));
         holder.tvDate.setText(dateFormat.format(item.date));
-
+        
         if (item.minPrice > 0) {
             holder.tvPrice.setText("từ " + priceFormat.format(item.minPrice) + " VND");
-        } else if (item.minPrice == 0) {
-            holder.tvPrice.setText("Hết vé");
+            holder.tvPrice.setVisibility(View.VISIBLE);
         } else {
-            holder.tvPrice.setText("..."); // Đang tải hoặc chưa có dữ liệu
+            // Hide the price if it's 0 or -1, as requested (don't show "Hết vé")
+            holder.tvPrice.setVisibility(View.INVISIBLE);
         }
 
-        int activeColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.skyline_blue_dark);
-        int inactiveColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.skyline_text_secondary);
-
         if (item.isSelected) {
-            holder.tvDayOfWeek.setTextColor(activeColor);
-            holder.tvDate.setTextColor(activeColor);
-            holder.tvPrice.setTextColor(activeColor);
+            holder.rootLayout.setBackgroundColor(Color.WHITE);
+            holder.tvDayOfWeek.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.skyline_blue_dark));
+            holder.tvDate.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.skyline_blue_dark));
+            holder.tvPrice.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.skyline_blue_dark));
             holder.indicator.setVisibility(View.VISIBLE);
+            holder.tvDate.setTextSize(20);
         } else {
-            holder.tvDayOfWeek.setTextColor(inactiveColor);
-            holder.tvDate.setTextColor(inactiveColor);
-            holder.tvPrice.setTextColor(inactiveColor);
+            holder.rootLayout.setBackgroundColor(Color.parseColor("#F3F4F6"));
+            holder.tvDayOfWeek.setTextColor(Color.parseColor("#9CA3AF"));
+            holder.tvDate.setTextColor(Color.parseColor("#4B5563"));
+            holder.tvPrice.setTextColor(Color.parseColor("#9CA3AF"));
             holder.indicator.setVisibility(View.INVISIBLE);
+            holder.tvDate.setTextSize(18);
         }
 
         holder.itemView.setOnClickListener(v -> {
             if (!item.isSelected) {
-                for (int i = 0; i < items.size(); i++) {
-                    items.get(i).isSelected = (i == position);
-                }
-                notifyDataSetChanged();
-                listener.onDateSelected(item.date);
+                updateSelection(position);
+                listener.onDateSelected(item.date, position);
             }
         });
+    }
+
+    public void updateSelection(int position) {
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).isSelected = (i == position);
+        }
+        notifyDataSetChanged();
     }
 
     private String capitalize(String str) {
@@ -104,15 +110,16 @@ public class DateSelectorAdapter extends RecyclerView.Adapter<DateSelectorAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        View rootLayout, indicator;
         TextView tvDayOfWeek, tvDate, tvPrice;
-        View indicator;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            rootLayout = itemView.findViewById(R.id.rootLayout);
+            indicator = itemView.findViewById(R.id.indicator);
             tvDayOfWeek = itemView.findViewById(R.id.tvDayOfWeek);
             tvDate = itemView.findViewById(R.id.tvDate);
             tvPrice = itemView.findViewById(R.id.tvPrice);
-            indicator = itemView.findViewById(R.id.indicator);
         }
     }
 }

@@ -14,10 +14,12 @@ const authRoutes = require("./routes/auth");
 const airportRoutes = require("./routes/airports");
 const flightRoutes = require("./routes/flights");
 const ticketRoutes = require("./routes/tickets");
+const airlineRoutes = require("./routes/airlines");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/airports", airportRoutes);
 app.use("/api/flights", flightRoutes);
+app.use("/api/airlines", airlineRoutes);
 app.use("/api/tickets", ticketRoutes);
 
 // MongoDB Connection

@@ -138,4 +138,18 @@
     <style name="CustomNegativeButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:visibility">gone</item>
     </style>
+
+    <style name="FilterChipStyle" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/filter_chip_bg_selector</item>
+        <item name="chipStrokeColor">#D1D5DB</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/filter_chip_text_selector</item>
+        <item name="chipIconVisible">false</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="showMotionSpec">@null</item>
+        <item name="hideMotionSpec">@null</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="rippleColor">@color/skyline_blue_light</item>
+    </style>
 </resources>

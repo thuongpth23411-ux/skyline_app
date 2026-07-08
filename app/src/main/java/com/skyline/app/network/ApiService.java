@@ -37,6 +37,9 @@ public interface ApiService {
     @GET("airports")
     Call<List<Airport>> getAirports();
 
+    @GET("airlines")
+    Call<List<Airline>> getAirlines();
+
     @POST("flights/search")
     Call<List<Flight>> searchFlights(@Body FlightSearchRequest request);
 

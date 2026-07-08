@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardFilter"
+    android:layout_width="112dp"
+    android:layout_height="80dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#D1D5DB"
+    app:strokeWidth="1dp">
+
+    <TextView
+        android:id="@+id/tvLabel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="Nửa đêm\n(00:00-05:59)"
+        android:textAlignment="center"
+        android:textColor="@color/skyline_text_secondary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+</com.google.android.material.card.MaterialCardView>
