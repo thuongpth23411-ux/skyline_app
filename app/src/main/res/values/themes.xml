@@ -30,6 +30,31 @@
         <item name="backgroundTint">@color/white</item>
     </style>
 
+    <style name="CustomSideDialogTheme" parent="Theme.Material3.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/SideDialogAnimation</item>
+    </style>
+
+    <style name="SideDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_right</item>
+    </style>
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="bottomSheetStyle">@style/CustomSettingsBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomSettingsBottomSheetStyle" parent="Widget.Material3.BottomSheet">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.BottomSheet</item>
+        <item name="backgroundTint">@color/skyline_blue_dark</item>
+    </style>
+
     <style name="ShapeAppearance.App.BottomSheet" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerSizeTopLeft">28dp</item>
         <item name="cornerSizeTopRight">28dp</item>

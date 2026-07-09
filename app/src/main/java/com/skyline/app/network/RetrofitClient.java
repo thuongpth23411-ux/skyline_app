@@ -11,8 +11,7 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
-        // 10.0.2.2 là địa chỉ IP đặc biệt để máy ảo truy cập vào localhost của máy tính
-        return "http://10.0.2.2:3000/api/";
+        return "http://127.0.0.1:3000/api/";
     }
 
     public static ApiService getInstance() {

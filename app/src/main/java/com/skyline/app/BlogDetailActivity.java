@@ -38,6 +38,8 @@ public class BlogDetailActivity extends AppCompatActivity {
     private Blog blog;
     private final List<View> sectionViews = new ArrayList<>();
 
+    private boolean isFavorited = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +102,16 @@ public class BlogDetailActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(share, "Chia sẻ bài viết"));
         });
 
-        binding.btnSave.setOnClickListener(v -> Toast.makeText(this, "Đã lưu vào danh sách yêu thích", Toast.LENGTH_SHORT).show());
+        binding.btnSave.setOnClickListener(v -> {
+            isFavorited = !isFavorited;
+            if (isFavorited) {
+                binding.ivSaveIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#E11D48"))); // Red
+                Toast.makeText(this, "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
+            } else {
+                binding.ivSaveIcon.setImageTintList(ColorStateList.valueOf(Color.WHITE)); // Back to white
+                Toast.makeText(this, "Đã xóa khỏi mục yêu thích", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if (blog.cta != null) {
             binding.btnBookNow.setOnClickListener(v -> {

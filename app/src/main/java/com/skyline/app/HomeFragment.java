@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment {
         binding.btnExploreNow.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
         binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
 
-        binding.destinationHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả điểm đến"));
+        binding.destinationHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), BlogListActivity.class)));
         binding.btnAboutUs.setOnClickListener(v -> startActivity(new Intent(requireContext(), AboutActivity.class)));
         binding.memberCard.btnRegister.setOnClickListener(v -> startActivity(new Intent(requireContext(), RegisterEmailActivity.class)));
         binding.memberCard.tvLogin.setOnClickListener(v -> startActivity(new Intent(requireContext(), LoginActivity.class)));
