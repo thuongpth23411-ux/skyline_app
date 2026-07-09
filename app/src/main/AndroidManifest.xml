@@ -99,6 +99,9 @@
         <activity
             android:name=".BlogDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".BookingConfirmationActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
