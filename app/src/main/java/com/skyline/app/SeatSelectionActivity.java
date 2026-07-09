@@ -309,7 +309,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
             setTextSafe(R.id.tvArrTime, timeF.format(aDate));
             setTextSafe(R.id.tvArrDate, dateF.format(aDate));
         }
-        if (flight.getDuration() > 0) setTextSafe(R.id.tvDuration, (flight.getDuration()/60) + "h " + (flight.getDuration()%60) + "m");
+        if (flight.getDuration() > 0) setTextSafe(R.id.tvDuration, (flight.getDuration()/60) + "g " + (flight.getDuration()%60) + "p");
     }
 
     private void startPlaneAnimation() {

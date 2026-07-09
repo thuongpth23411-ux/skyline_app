@@ -56,6 +56,9 @@ public interface ApiService {
     @GET("tickets/my-tickets")
     Call<List<TicketResponse>> getMyTickets(@Header("Authorization") String token);
 
+    @POST("tickets/create")
+    Call<BaseResponse> createBooking(@Body Map<String, Object> bookingData);
+
     @GET("flights/{flightId}/seats")
     Call<List<FlightSeat>> getFlightSeats(@Path("flightId") String flightId);
 

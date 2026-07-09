@@ -99,7 +99,7 @@ public class FareSelectionActivity extends AppCompatActivity {
         if (durationMinutes > 0) {
             int h = durationMinutes / 60;
             int m = durationMinutes % 60;
-            tvDuration.setText(h + "h " + m + "m");
+            tvDuration.setText(h + "g " + m + "p");
         }
     }
 

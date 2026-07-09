@@ -132,7 +132,7 @@
 
                     <TextView
                         android:id="@+id/tvDuration"
-                        android:text="1h 10m"
+                        android:text="1g 10p"
                         android:textColor="#CCFFFFFF"
                         android:textSize="13sp"
                         android:textStyle="bold"

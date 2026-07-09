@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.skyline.app.network.Flight;
@@ -25,7 +24,7 @@ public class AddonServiceActivity extends AppCompatActivity {
 
     private Flight flight;
     private final Gson gson = new Gson();
-    private double baseFarePrice, addonPrice = 0;
+    private double baseFarePrice, addonPrice = 0, seatPrice = 0, taxesAndFees = 450000;
     private String fareType;
     private TextView txtTotalPrice;
 
@@ -85,7 +84,7 @@ public class AddonServiceActivity extends AppCompatActivity {
             intent.putExtra("flight_json", gson.toJson(flight));
             intent.putExtra("initialB10", baggage10);
             intent.putExtra("initialB23", baggage23);
-            intent.putExtra("fareType", fareType); // Thêm dòng này
+            intent.putExtra("fareType", fareType);
             startActivityForResult(intent, REQUEST_CODE_BAGGAGE);
         });
     }
@@ -100,6 +99,8 @@ public class AddonServiceActivity extends AppCompatActivity {
                 if (tvSelectSeat != null) {
                     tvSelectSeat.setText(selectedSeat != null && !selectedSeat.isEmpty() ? selectedSeat : "Chọn");
                 }
+                // Giả sử chọn ghế là miễn phí cho Economy, hoặc có phí nếu sau này backend trả về
+                seatPrice = 0; 
             } else if (requestCode == REQUEST_CODE_BAGGAGE) {
                 baggage10 = data.getIntExtra("baggage10", 0);
                 baggage23 = data.getIntExtra("baggage23", 0);
@@ -113,8 +114,8 @@ public class AddonServiceActivity extends AppCompatActivity {
                         tvSelectBaggage.setText("Chọn");
                     }
                 }
-                updateTotalPrice();
             }
+            updateTotalPrice();
         }
     }
 
@@ -164,7 +165,7 @@ public class AddonServiceActivity extends AppCompatActivity {
         if (durationMinutes > 0) {
             int h = durationMinutes / 60;
             int m = durationMinutes % 60;
-            setTextSafe(R.id.tvDuration, h + "h " + m + "m");
+            setTextSafe(R.id.tvDuration, h + "g " + m + "p");
         }
     }
 
@@ -202,14 +203,19 @@ public class AddonServiceActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         if (txtTotalPrice != null) {
             DecimalFormat df = new DecimalFormat("#,###");
-            txtTotalPrice.setText(df.format(baseFarePrice + addonPrice) + " VND");
+            txtTotalPrice.setText(df.format(baseFarePrice + addonPrice + seatPrice + taxesAndFees) + " VND");
         }
     }
 
     private void goNext() {
-        Intent intent = new Intent(this, ConfirmPaymentActivity.class);
-        intent.putExtra("flightNumber", flight.getFlightNumber());
-        intent.putExtra("totalPrice", baseFarePrice + addonPrice);
+        Intent intent = new Intent(this, BookingConfirmationActivity.class);
+        intent.putExtra("flight_json", gson.toJson(flight));
+        intent.putExtra("totalPrice", baseFarePrice);
+        intent.putExtra("fareType", fareType);
+        intent.putExtra("selectedSeat", selectedSeat);
+        intent.putExtra("addonPrice", addonPrice);
+        intent.putExtra("seatPrice", seatPrice);
+        intent.putExtra("taxes", taxesAndFees);
         startActivity(intent);
     }
 }

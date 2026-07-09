@@ -107,6 +107,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupMenuClicks() {
+        binding.btnMenuTop.setOnClickListener(v -> {
+            SettingsSideDialog dialog = new SettingsSideDialog();
+            dialog.show(getSupportFragmentManager(), "SettingsSideDialog");
+        });
+
         binding.btnSupport.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, SupportActivity.class));
         });

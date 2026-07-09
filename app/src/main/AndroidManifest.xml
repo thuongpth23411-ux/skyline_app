@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -98,6 +99,10 @@
             android:exported="false" />
         <activity
             android:name=".BlogDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingConfirmationActivity"
             android:exported="false" />
 
         <provider
