@@ -196,13 +196,18 @@ router.get("/profile", async (req, res) => {
             return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
         }
 
-        // Làm sạch dữ liệu cho App Android
+        // Đảm bảo trả về JSON "phẳng" cho Android
         const userObj = user.toObject();
-        userObj._id = user._id.toString();
-        if (user.createdAt) userObj.createdAt = user.createdAt.toISOString();
+        const responseData = {
+            ...userObj,
+            _id: user._id.toString(),
+            createdAt: user.createdAt ? user.createdAt.toISOString() : null,
+            updatedAt: user.updatedAt ? user.updatedAt.toISOString() : null
+        };
 
-        res.json(userObj);
+        res.status(200).json(responseData);
     } catch (error) {
+        console.error("Profile Error:", error);
         res.status(401).json({ success: false, message: "Xác thực không hợp lệ" });
     }
 });

@@ -14,10 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 import com.skyline.app.databinding.FragmentHomeBinding;
+import com.skyline.app.network.Promotion;
 import com.skyline.app.utils.SessionManager;
 import com.skyline.model.Destination;
 import com.skyline.model.Experience;
-import com.skyline.model.Promotion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,33 +62,20 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupPromotionPager() {
-        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
+        // Chỉ nạp dữ liệu Banner du lịch cố định cho trang chủ cho đẹp
+        List<Promotion> promotions = new ArrayList<>();
+        promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "10/07/2026", R.drawable.img_promo_bangkok));
+        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/07/2026", R.drawable.img_promo_phuquoc));
+        promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "01/08/2026", R.drawable.img_brand_banner));
+
+        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
+        createDots(binding.promoDots, promotions.size());
+        selectDot(binding.promoDots, 0);
+
+        binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
-                if (binding == null || !isAdded()) return;
-
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    List<Promotion> promotions = response.body();
-                    binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
-                    createDots(binding.promoDots, promotions.size());
-                    selectDot(binding.promoDots, 0);
-
-                    binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                        @Override
-                        public void onPageSelected(int position) {
-                            if (binding != null) selectDot(binding.promoDots, position);
-                        }
-                    });
-                } else {
-                    setupLocalPromotions();
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {
-                if (binding != null && isAdded()) {
-                    setupLocalPromotions();
-                }
+            public void onPageSelected(int position) {
+                if (binding != null) selectDot(binding.promoDots, position);
             }
         });
     }
@@ -156,8 +143,11 @@ public class HomeFragment extends Fragment {
                 showLoginRequiredDialog();
             }
         });
-        binding.btnExploreNow.setOnClickListener(v -> toast("Mở ưu đãi Thứ 6"));
-        binding.promotionHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả ưu đãi"));
+
+        // Nhấn "Khám phá ngay" hoặc "Xem tất cả" mở trang Khuyến mãi
+        binding.btnExploreNow.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
+        binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
+
         binding.destinationHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả điểm đến"));
         binding.btnAboutUs.setOnClickListener(v -> startActivity(new Intent(requireContext(), AboutActivity.class)));
         binding.memberCard.btnRegister.setOnClickListener(v -> startActivity(new Intent(requireContext(), RegisterEmailActivity.class)));

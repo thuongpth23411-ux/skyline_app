@@ -36,8 +36,15 @@ public class HomeActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         String target = intent != null ? intent.getStringExtra("TARGET_FRAGMENT") : null;
         if ("BOOK".equals(target)) {
+            String destCode = intent.getStringExtra("DESTINATION_CODE");
+            BookFragment fragment = new BookFragment();
+            if (destCode != null) {
+                Bundle args = new Bundle();
+                args.putString("destCode", destCode);
+                fragment.setArguments(args);
+            }
             updateNavSelection(binding.bottomNavigation.navBook);
-            showFragment(new BookFragment());
+            showFragment(fragment);
         } else if ("FLIGHTS".equals(target)) {
             updateNavSelection(binding.bottomNavigation.navFlights);
             showFragment(new FlightsFragment2());

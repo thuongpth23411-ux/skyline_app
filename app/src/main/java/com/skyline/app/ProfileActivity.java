@@ -135,6 +135,11 @@ public class ProfileActivity extends AppCompatActivity {
         binding.btnViewDetails.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
         });
+
+        // Nhấn vào mục Voucher trong Profile để xem Voucher của tôi
+        binding.btnMyVouchers.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, MyVouchersActivity.class));
+        });
     }
 
     private void toast(String message) {
