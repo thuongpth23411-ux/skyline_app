@@ -11,7 +11,8 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
-        return "http://127.0.0.1:3000/api/";
+        // Sử dụng 10.0.2.2 để kết nối tới localhost của máy tính từ Android Emulator
+        return "http://10.0.2.2:3000/api/";
     }
 
     public static ApiService getInstance() {

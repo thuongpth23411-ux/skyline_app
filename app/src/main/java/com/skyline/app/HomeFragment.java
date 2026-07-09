@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.util.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,12 +40,85 @@ public class HomeFragment extends Fragment {
         setupDestinations();
         setupExperiences();
         setupClicks();
+        updateNotificationBadge();
+        checkNewPromotions();
+    }
+
+    private void updateNotificationBadge() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        int count = sessionManager.getUnreadNotifCount();
+        if (count > 0) {
+            binding.tvNotifBadge.setVisibility(View.VISIBLE);
+            binding.tvNotifBadge.setText(String.valueOf(count));
+        } else {
+            binding.tvNotifBadge.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkNewPromotions() {
+        // Giả lập nhận thông báo mới khi vào app
+        // Trong thực tế, logic này có thể chạy trong một Background Service hoặc dùng WebSocket/FCM
+        Log.d("HomeFragment", "Checking for new promotions to notify user...");
+        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    // Để demo, ta lấy cái mới nhất và giả định nó là thông báo mới
+                    Promotion latest = response.body().get(0);
+                    showNotificationPopup(latest);
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {}
+        });
+    }
+
+    private void showNotificationPopup(Promotion promotion) {
+        if (getActivity() == null) return;
+        
+        View popupView = getLayoutInflater().inflate(R.layout.layout_notification_popup, null);
+        android.widget.TextView tvTitle = popupView.findViewById(R.id.tv_notif_title);
+        android.widget.TextView tvDesc = popupView.findViewById(R.id.tv_notif_desc);
+        
+        tvTitle.setText("Khuyến mãi: " + promotion.getTitle());
+        tvDesc.setText("Nhấn để xem chi tiết ưu đãi hấp dẫn ngay!");
+
+        android.widget.PopupWindow popupWindow = new android.widget.PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        );
+
+        popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
+        
+        popupView.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            Intent intent = new Intent(requireContext(), PromotionsActivity.class);
+            intent.putExtra("OPEN_PROMO_NAME", promotion.getTitle());
+            startActivity(intent);
+        });
+
+        popupView.findViewById(R.id.btn_close_popup).setOnClickListener(v -> popupWindow.dismiss());
+
+        // Hiển thị đổ xuống từ top
+        binding.getRoot().post(() -> {
+            if (binding != null) {
+                popupWindow.showAtLocation(binding.getRoot(), android.view.Gravity.TOP, 0, 100);
+                
+                // Lưu vào danh sách thông báo
+                SessionManager sm = new SessionManager(requireContext());
+                sm.addLocalNotification("Khuyến mãi mới", promotion.getTitle());
+                updateNotificationBadge();
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         checkLoginStatus();
+        updateNotificationBadge();
     }
 
     private void checkLoginStatus() {
@@ -62,11 +136,71 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupPromotionPager() {
-        // Chỉ nạp dữ liệu Banner du lịch cố định cho trang chủ cho đẹp
+        Log.d("HomeFragment", "Fetching promotions...");
+        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
+                if (binding == null || !isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    List<Promotion> allPromotions = response.body();
+                    Log.d("HomeFragment", "Promotions received: " + allPromotions.size());
+                    
+                    // Sắp xếp: Ưu tiên cái có tên "Thứ 6 Mở App - Giảm đến 10%" lên đầu
+                    List<Promotion> filtered = new ArrayList<>();
+                    Promotion priorityItem = null;
+                    
+                    for (Promotion p : allPromotions) {
+                        if (p.getTitle().contains("Thứ 6 Mở App")) {
+                            priorityItem = p;
+                            break;
+                        }
+                    }
+                    
+                    if (priorityItem != null) {
+                        filtered.add(priorityItem);
+                    }
+                    
+                    for (Promotion p : allPromotions) {
+                        if (p != priorityItem) {
+                            filtered.add(p);
+                        }
+                        if (filtered.size() == 3) break;
+                    }
+                    
+                    List<Promotion> displayList = filtered.isEmpty() ? allPromotions : filtered;
+                    if (displayList.size() > 3) displayList = displayList.subList(0, 3);
+                    
+                    binding.promoPager.setAdapter(new PromotionAdapter(displayList, item -> toast("Đã chọn: " + item.getTitle())));
+                    createDots(binding.promoDots, displayList.size());
+                    selectDot(binding.promoDots, 0);
+
+                    binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            if (binding != null) selectDot(binding.promoDots, position);
+                        }
+                    });
+                } else {
+                    Log.e("HomeFragment", "Promotions response error or empty: " + response.code());
+                    setupLocalPromotions(); // Vẫn giữ fallback nhưng log lỗi rõ ràng
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {
+                Log.e("HomeFragment", "Promotions API failure: " + t.getMessage());
+                if (binding != null && isAdded()) {
+                    setupLocalPromotions();
+                }
+            }
+        });
+    }
+
+    private void setupLocalPromotions() {
         List<Promotion> promotions = new ArrayList<>();
-        promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "10/07/2026", R.drawable.img_promo_bangkok));
-        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/07/2026", R.drawable.img_promo_phuquoc));
-        promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "01/08/2026", R.drawable.img_brand_banner));
+        promotions.add(new Promotion("Ưu đãi bay Bangkok", "Hết hạn: 31/12/2025", R.drawable.img_promo_bangkok));
+        promotions.add(new Promotion("Khám phá Phú Quốc", "Hết hạn: 30/11/2025", R.drawable.img_promo_phuquoc));
 
         binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
         createDots(binding.promoDots, promotions.size());
@@ -80,31 +214,68 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void setupLocalPromotions() {
-        List<Promotion> promotions = new ArrayList<>();
-        promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "11/06/2026 - 10/07/2026", R.drawable.img_promo_bangkok));
-        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/06/2026 - 15/07/2026", R.drawable.img_promo_phuquoc));
-        promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "17/06/2026 - 01/07/2026", R.drawable.img_brand_banner));
-
-        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
-        createDots(binding.promoDots, promotions.size());
-        selectDot(binding.promoDots, 0);
-
-        binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+    private void setupDestinations() {
+        Log.d("HomeFragment", "Fetching destination blogs...");
+        com.skyline.app.network.RetrofitClient.getInstance().getDestinationBlogs().enqueue(new retrofit2.Callback<List<Destination>>() {
             @Override
-            public void onPageSelected(int position) {
-                selectDot(binding.promoDots, position);
+            public void onResponse(retrofit2.Call<List<Destination>> call, retrofit2.Response<List<Destination>> response) {
+                if (binding == null || !isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Destination> allBlogs = response.body();
+                    Log.d("HomeFragment", "Blogs received: " + allBlogs.size());
+                    
+                    List<Destination> filtered = new ArrayList<>();
+                    
+                    // Ưu tiên lấy đà nẵng, hà nội, hồ chí minh
+                    String[] targets = {"Đà Nẵng", "Hà Nội", "Hồ Chí Minh"};
+                    for (String city : targets) {
+                        for (Destination d : allBlogs) {
+                            if (d.getCountry() != null && d.getCountry().toLowerCase().contains(city.toLowerCase())) {
+                                filtered.add(d);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Nếu không đủ 3 thì lấy thêm từ danh sách gốc
+                    if (filtered.size() < 3) {
+                        for (Destination d : allBlogs) {
+                            if (!filtered.contains(d)) {
+                                filtered.add(d);
+                                if (filtered.size() == 3) break;
+                            }
+                        }
+                    }
+                    
+                    List<Destination> displayList = filtered.isEmpty() ? allBlogs : filtered;
+                    if (displayList.size() > 3) displayList = displayList.subList(0, 3);
+
+                    binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                    binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> toast("Khám phá " + item.getCountry())));
+                } else {
+                    Log.e("HomeFragment", "Blogs response error: " + response.code());
+                    setupLocalDestinations();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Destination>> call, Throwable t) {
+                Log.e("HomeFragment", "Blogs API failure: " + t.getMessage());
+                if (binding != null && isAdded()) {
+                    setupLocalDestinations();
+                }
             }
         });
     }
 
-    private void setupDestinations() {
+    private void setupLocalDestinations() {
         List<Destination> destinations = new ArrayList<>();
-        destinations.add(new Destination("Việt Nam", "Phú Quốc – “đảo ngọc” xinh đẹp của Việt Nam", R.drawable.img_destination_phuquoc));
-        destinations.add(new Destination("Việt Nam", "Đà Nẵng – thành phố đáng sống nhất Việt Nam", R.drawable.img_destination_danang));
+        destinations.add(new Destination("Phú Quốc", "“đảo ngọc” xinh đẹp của Việt Nam", R.drawable.img_destination_phuquoc));
+        destinations.add(new Destination("Đà Nẵng", "thành phố đáng sống nhất Việt Nam", R.drawable.img_destination_danang));
 
         binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.destinationRecycler.setAdapter(new DestinationAdapter(destinations, item -> toast("Khám phá " + item.getTitle())));
+        binding.destinationRecycler.setAdapter(new DestinationAdapter(destinations, item -> toast("Khám phá " + item.getCountry())));
     }
 
     private void setupExperiences() {
@@ -138,6 +309,8 @@ public class HomeFragment extends Fragment {
         binding.btnNotification.setOnClickListener(v -> {
             SessionManager sessionManager = new SessionManager(requireContext());
             if (sessionManager.isLoggedIn()) {
+                sessionManager.clearUnreadNotifCount();
+                updateNotificationBadge();
                 startActivity(new Intent(requireContext(), NotificationActivity.class));
             } else {
                 showLoginRequiredDialog();
@@ -145,7 +318,12 @@ public class HomeFragment extends Fragment {
         });
 
         // Nhấn "Khám phá ngay" hoặc "Xem tất cả" mở trang Khuyến mãi
-        binding.btnExploreNow.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
+        binding.btnExploreNow.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), PromotionsActivity.class);
+            intent.putExtra("OPEN_PROMO_NAME", "Thứ 6 Mở App");
+            startActivity(intent);
+        });
+
         binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
 
         binding.destinationHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), BlogListActivity.class)));

@@ -63,6 +63,18 @@ public class SessionManager {
         String time = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date());
         String entry = title + "|" + content + "|" + time + ";";
         prefs.edit().putString("local_notifs", entry + existing).apply();
+        
+        // Tăng số lượng thông báo chưa đọc
+        int unreadCount = prefs.getInt("unread_notif_count", 0);
+        prefs.edit().putInt("unread_notif_count", unreadCount + 1).apply();
+    }
+
+    public int getUnreadNotifCount() {
+        return prefs.getInt("unread_notif_count", 0);
+    }
+
+    public void clearUnreadNotifCount() {
+        prefs.edit().putInt("unread_notif_count", 0).apply();
     }
 
     public String getLocalNotifications() {

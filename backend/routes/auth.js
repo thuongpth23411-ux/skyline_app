@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { sendOTP } = require("../utils/mailer");
 const RankBenefit = require("../models/RankBenefit");
 const Promotion = require("../models/Promotion");
+const Blog = require("../models/Blog");
 
 // Generate 6 digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -248,6 +249,32 @@ router.get("/promotions", async (req, res) => {
         res.json(formattedPromotions);
     } catch (error) {
         console.error("Promo error:", error);
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
+// Get 2 newest destination blogs
+router.get("/destination-blogs", async (req, res) => {
+    try {
+        const blogs = await Blog.find({
+            status: "published",
+            categorySlug: "diem-den"
+        })
+        .sort({ createdAt: -1 })
+        .limit(2);
+
+        const formattedBlogs = blogs.map(b => {
+            const baseUrl = req.protocol + '://' + req.get('host');
+            return {
+                title: b.destination || b.title,
+                description: b.shortDescription,
+                imageUrl: b.thumbnailUrl.startsWith('http') ? b.thumbnailUrl : (baseUrl + b.thumbnailUrl)
+            };
+        });
+
+        res.json(formattedBlogs);
+    } catch (error) {
+        console.error("Blog error:", error);
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
 });
