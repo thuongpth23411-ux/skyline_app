@@ -136,7 +136,7 @@ public class BlogDetailActivity extends AppCompatActivity {
             int iconRes = R.drawable.ic_location;
             if ("calendar".equals(info.icon)) iconRes = R.drawable.ic_calendar;
             else if ("temperature".equals(info.icon)) iconRes = R.drawable.ic_trending_up;
-            else if ("beach".equals(info.icon)) iconRes = R.drawable.ic_ticket; // Better icon for experiences
+            else if ("beach".equals(info.icon) || "experience".equals(info.icon)) iconRes = R.drawable.ic_ticket;
             
             infoBinding.ivIcon.setImageResource(iconRes);
             
@@ -211,10 +211,19 @@ public class BlogDetailActivity extends AppCompatActivity {
                         reasonBinding.tvDescription.setText(item.description);
                         int iconRes = R.drawable.ic_priority;
                         int color = Color.parseColor("#0B4DA2");
-                        if ("leaf".equals(item.icon)) { iconRes = R.drawable.ic_sparkle; color = Color.parseColor("#16A34A"); }
-                        else if ("users".equals(item.icon)) { iconRes = R.drawable.ic_profile; color = Color.parseColor("#9333EA"); }
-                        else if ("building".equals(item.icon)) { iconRes = R.drawable.ic_building; color = Color.parseColor("#EA580C"); }
-                        else if ("heart".equals(item.icon)) { iconRes = R.drawable.ic_heart; color = Color.parseColor("#E11D48"); }
+                        if ("leaf".equals(item.icon) || "nature".equals(item.icon)) {
+                            iconRes = R.drawable.ic_sparkle;
+                            color = Color.parseColor("#16A34A");
+                        } else if ("users".equals(item.icon) || "people".equals(item.icon)) {
+                            iconRes = R.drawable.ic_profile;
+                            color = Color.parseColor("#9333EA");
+                        } else if ("building".equals(item.icon) || "infrastructure".equals(item.icon) || "city".equals(item.icon)) {
+                            iconRes = R.drawable.ic_building;
+                            color = Color.parseColor("#EA580C");
+                        } else if ("heart".equals(item.icon) || "lifestyle".equals(item.icon)) {
+                            iconRes = R.drawable.ic_heart;
+                            color = Color.parseColor("#E11D48");
+                        }
                         reasonBinding.ivIcon.setImageResource(iconRes);
                         reasonBinding.ivIcon.setImageTintList(ColorStateList.valueOf(color));
                         itemView = reasonBinding.getRoot();

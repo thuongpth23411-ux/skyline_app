@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -27,6 +28,8 @@ public class FareSelectionActivity extends AppCompatActivity {
     
     private Flight flight;
     private final Gson gson = new Gson();
+    private boolean isRoundTrip, isReturnLeg;
+    private String returnDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,10 @@ public class FareSelectionActivity extends AppCompatActivity {
         if (json != null) {
             flight = gson.fromJson(json, Flight.class);
         }
+
+        isRoundTrip = getIntent().getBooleanExtra("isRoundTrip", false);
+        isReturnLeg = getIntent().getBooleanExtra("isReturnLeg", false);
+        returnDate = getIntent().getStringExtra("returnDate");
 
         if (flight == null) {
             finish();
@@ -161,11 +168,41 @@ public class FareSelectionActivity extends AppCompatActivity {
     }
 
     private void navigateToAddon(String fareType, double price) {
-        Intent intent = new Intent(this, AddonServiceActivity.class);
-        intent.putExtra("flight_json", gson.toJson(flight));
-        intent.putExtra("fareType", fareType);
-        intent.putExtra("totalPrice", price);
-        startActivity(intent);
+        if (isRoundTrip && !isReturnLeg) {
+            Intent intent = new Intent(this, FlightResultsActivity.class);
+
+            intent.putExtra("fromCode", flight.getArrivalAirport().getCode());
+            intent.putExtra("toCode", flight.getDepartureAirport().getCode());
+            intent.putExtra("fromName", flight.getArrivalAirport().getName());
+            intent.putExtra("toName", flight.getDepartureAirport().getName());
+
+            intent.putExtra("date", returnDate);
+
+            intent.putExtra("isRoundTrip", true);
+            intent.putExtra("isReturnLeg", true);
+
+            intent.putExtra("departure_flight_json", gson.toJson(flight));
+            intent.putExtra("departure_fare_type", fareType);
+            intent.putExtra("departure_fare_price", price);
+
+            showCustomToast("Chọn chiều đi thành công!");
+            startActivity(intent);
+            finish();
+        } else {
+            Intent intent = new Intent(this, AddonServiceActivity.class);
+            intent.putExtra("flight_json", gson.toJson(flight));
+            intent.putExtra("fareType", fareType);
+            intent.putExtra("totalPrice", price);
+
+            if (isReturnLeg) {
+                intent.putExtra("isRoundTrip", true);
+                intent.putExtra("departure_flight_json", getIntent().getStringExtra("departure_flight_json"));
+                intent.putExtra("departure_fare_type", getIntent().getStringExtra("departure_fare_type"));
+                intent.putExtra("departure_fare_price", getIntent().getDoubleExtra("departure_fare_price", 0));
+            }
+            
+            startActivity(intent);
+        }
     }
 
     private void setupFareDetails(View fareView, String title, String subtitle, String price, int themeColor) {
@@ -223,6 +260,18 @@ public class FareSelectionActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
         }
         return null;
+    }
+
+    private void showCustomToast(String message) {
+        View layout = getLayoutInflater().inflate(R.layout.layout_custom_toast, findViewById(android.R.id.content), false);
+        TextView text = layout.findViewById(R.id.tvToastMessage);
+        text.setText(message);
+
+        android.widget.Toast toast = new android.widget.Toast(getApplicationContext());
+        toast.setDuration(android.widget.Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(android.view.Gravity.BOTTOM, 0, 100);
+        toast.show();
     }
 
     private String cleanAirportName(String name) {

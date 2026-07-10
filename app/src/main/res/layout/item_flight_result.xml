@@ -61,12 +61,14 @@
                     android:layout_height="wrap_content"
                     android:text="2g10p"
                     android:textColor="@color/skyline_text_secondary"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:layout_marginBottom="6dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginBottom="6dp">
 
                     <View
                         android:layout_width="match_parent"
