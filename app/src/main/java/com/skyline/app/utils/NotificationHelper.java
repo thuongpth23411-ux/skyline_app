@@ -20,7 +20,22 @@ public class NotificationHelper {
     }
 
     public static void showDropDownNotification(Activity activity, String title, String content, NotifType type, String targetData) {
+        showDropDownNotification(activity, null, title, content, type, targetData);
+    }
+
+    public static void showDropDownNotification(Activity activity, String id, String title, String content, NotifType type, String targetData) {
         if (activity == null || activity.isFinishing()) return;
+
+        SessionManager sm = new SessionManager(activity);
+        
+        // Nếu có ID và đã nhận rồi thì không hiện nữa
+        if (id != null && !id.isEmpty()) {
+            if (sm.isNotificationReceived(id)) {
+                return;
+            }
+            // Đánh dấu đã nhận NGAY LẬP TỨC để tránh lặp khi gọi post/delay
+            sm.markNotificationAsReceived(id);
+        }
 
         LayoutInflater inflater = LayoutInflater.from(activity);
         View popupView = inflater.inflate(R.layout.layout_notification_popup, null);
@@ -61,11 +76,8 @@ public class NotificationHelper {
         rootView.post(() -> {
             popupWindow.showAtLocation(rootView, Gravity.TOP, 0, 50);
             
-            // Lưu vào SessionManager
-            SessionManager sm = new SessionManager(activity);
-            sm.addLocalNotification(title, content);
-            
-            // Nếu activity có phương thức cập nhật badge thì gọi (sẽ xử lý sau)
+            // Lưu vào danh sách hiển thị
+            sm.addLocalNotification(id, title, content, type.name(), targetData);
         });
     }
 
@@ -75,6 +87,14 @@ public class NotificationHelper {
             case PROMOTION:
                 intent = new Intent(activity, PromotionsActivity.class);
                 if (targetData != null) intent.putExtra("OPEN_PROMO_NAME", targetData);
+                break;
+            case TICKET:
+                // Giả sử có một trang xem vé hoặc HomeActivity -> Tab Flights
+                intent = new Intent(activity, com.skyline.app.HomeActivity.class);
+                intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
+                break;
+            case PROFILE:
+                intent = new Intent(activity, com.skyline.app.ProfileActivity.class);
                 break;
             default:
                 intent = new Intent(activity, NotificationActivity.class);

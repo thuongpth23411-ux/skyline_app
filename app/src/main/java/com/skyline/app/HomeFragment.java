@@ -63,26 +63,34 @@ public class HomeFragment extends Fragment {
             binding.getRoot().postDelayed(() -> {
                 if (isAdded() && getActivity() != null) {
                     NotificationHelper.showDropDownNotification(
-                        getActivity(), 
+                        getActivity(),
+                        "PROMO_DANANG_20", 
                         "Ưu đãi vé bay", 
                         "Giảm ngay 20% khi đặt vé đi Đà Nẵng hôm nay!", 
                         NotificationHelper.NotifType.PROMOTION, 
-                        "Thứ 6 Mở App"
+                        "Khám phá Phú Quốc" // Dùng tên thật trong danh sách để test redirect
                     );
                     updateNotificationBadge();
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).updateBottomNavBadge();
+                    }
                 }
             }, 3000);
 
             binding.getRoot().postDelayed(() -> {
                 if (isAdded() && getActivity() != null) {
                     NotificationHelper.showDropDownNotification(
-                        getActivity(), 
+                        getActivity(),
+                        "PROFILE_RANK_UP_SILVER", 
                         "Cập nhật hồ sơ", 
                         "Chúc mừng! Bạn đã được thăng hạng hội viên BẠC.", 
                         NotificationHelper.NotifType.PROFILE, 
-                        null
+                        "" // targetData
                     );
                     updateNotificationBadge();
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).updateBottomNavBadge();
+                    }
                 }
             }, 8000);
         }

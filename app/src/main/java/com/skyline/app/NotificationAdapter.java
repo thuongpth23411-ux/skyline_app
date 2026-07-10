@@ -1,5 +1,8 @@
 package com.skyline.app;
 
+import com.skyline.app.utils.NotificationHelper;
+import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,44 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.tvTitle.setText(item.getTitle());
         holder.tvContent.setText(item.getContent());
         holder.tvTime.setText(item.getTime());
+
+        holder.itemView.setOnClickListener(v -> {
+            if (v.getContext() instanceof Activity) {
+                Activity activity = (Activity) v.getContext();
+                if (item.getType() != null && !item.getType().isEmpty()) {
+                    try {
+                        NotificationHelper.NotifType type = NotificationHelper.NotifType.valueOf(item.getType());
+                        handleRedirection(activity, type, item.getTargetData());
+                    } catch (IllegalArgumentException e) {
+                        // Fallback if type is invalid
+                        activity.startActivity(new Intent(activity, NotificationActivity.class));
+                    }
+                } else {
+                    // Default if no type
+                    activity.startActivity(new Intent(activity, NotificationActivity.class));
+                }
+            }
+        });
+    }
+
+    private void handleRedirection(Activity activity, NotificationHelper.NotifType type, String targetData) {
+        Intent intent;
+        switch (type) {
+            case PROMOTION:
+                intent = new Intent(activity, PromotionsActivity.class);
+                if (targetData != null) intent.putExtra("OPEN_PROMO_NAME", targetData);
+                break;
+            case TICKET:
+                intent = new Intent(activity, HomeActivity.class);
+                intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
+                break;
+            case PROFILE:
+                intent = new Intent(activity, ProfileActivity.class);
+                break;
+            default:
+                return;
+        }
+        activity.startActivity(intent);
     }
 
     @Override

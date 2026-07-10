@@ -339,6 +339,25 @@
 
     <!-- Support Extra -->
     <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="clear_all_notifs">Xóa tất cả</string>
+
+    <!-- Payment Failure Strings -->
+    <string name="payment_failure_title">THANH TOÁN THẤT BẠI</string>
+    <string name="payment_failure_desc">Rất tiếc, giao dịch của bạn không thể thực hiện. Vui lòng kiểm tra lại số dư tài khoản hoặc thử phương thức khác.</string>
+    <string name="retry">THỬ LẠI</string>
+    <string name="change_payment_method">ĐỔI PHƯƠNG THỨC THANH TOÁN</string>
+    <string name="retry_after_time">Thử lại sau %s</string>
+    <string name="retry_now">Thử lại ngay</string>
+
+    <!-- Payment Success Strings -->
+    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG</string>
+    <string name="transaction_id_label">Mã giao dịch: &#8212;</string>
+    <string name="passenger_caps">HÀNH KHÁCH</string>
+    <string name="flight_caps">CHUYẾN BAY</string>
+    <string name="seat_caps">CHỖ NGỒI</string>
+    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
+    <string name="payment_success_email_note">Thông tin vé và hóa đơn điện tử đã được gửi về email của bạn. Vui lòng kiểm tra hộp thư.</string>
+    <string name="back_to_home">Về trang chủ</string>
 
     <!-- Override Material Date Picker strings -->
     <string name="mtrl_picker_out_of_range" xmlns:tools="http://schemas.android.com/tools" tools:override="true">Vui lòng chọn thời gian hợp lệ!</string>

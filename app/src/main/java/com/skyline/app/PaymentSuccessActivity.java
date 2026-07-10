@@ -1,5 +1,7 @@
 package com.skyline.app;
 
+import com.skyline.app.utils.NotificationHelper;
+import com.skyline.app.utils.SessionManager;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,6 +25,7 @@ public class PaymentSuccessActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         displayData();
+        triggerNotification();
 
         binding.btnGoHome.setOnClickListener(v -> {
             Intent intent = new Intent(this, HomeActivity.class);
@@ -66,5 +69,16 @@ public class PaymentSuccessActivity extends AppCompatActivity {
             // Hiển thị thêm thông tin khứ hồi nếu cần, hoặc đơn giản là thông báo đã lưu 2 vé
             binding.tvTransactionId.append("\n(Đã lưu vé Chiều đi & Chiều về)");
         }
+    }
+
+    private void triggerNotification() {
+        NotificationHelper.showDropDownNotification(
+            this,
+            "BOOKING_SUCCESS_" + System.currentTimeMillis(),
+            "Đặt vé thành công",
+            "Chúc mừng! Bạn đã đặt vé thành công. Nhấn để xem lịch trình.",
+            NotificationHelper.NotifType.TICKET,
+            null
+        );
     }
 }
