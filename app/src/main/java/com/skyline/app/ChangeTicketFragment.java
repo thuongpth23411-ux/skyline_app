@@ -32,7 +32,11 @@ public class ChangeTicketFragment extends Fragment {
     private String fromCode, toCode, selectedDateStr;
     private DecimalFormat priceFormat = new DecimalFormat("#,###");
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
-    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+    public ChangeTicketFragment() {
+        apiDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     public static ChangeTicketFragment newInstance(String bookingId, String fromCode, String toCode, double oldPrice) {
         ChangeTicketFragment fragment = new ChangeTicketFragment();
@@ -70,7 +74,8 @@ public class ChangeTicketFragment extends Fragment {
             selectedDateStr = apiDateFormat.format(dateItems.get(0).date);
             fetchAvailableFlights(selectedDateStr);
         } else {
-            selectedDateStr = apiDateFormat.format(new Date());
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            selectedDateStr = apiDateFormat.format(cal.getTime());
             fetchAvailableFlights(selectedDateStr);
         }
     }
@@ -78,7 +83,13 @@ public class ChangeTicketFragment extends Fragment {
     private void setupDateSelector() {
         dateItems.clear();
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        // Bắt đầu từ ngày mai (chỉ các ngày chưa tới mới đổi được)
+        // Đặt về 0h để đồng bộ hóa ngày tháng chính xác
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        // Bắt đầu từ ngày mai
         cal.add(Calendar.DAY_OF_MONTH, 1);
 
         for (int i = 0; i < 14; i++) {
@@ -93,23 +104,75 @@ public class ChangeTicketFragment extends Fragment {
 
         binding.rvDateSelector.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.rvDateSelector.setAdapter(adapter);
+
+        fetchAllPrices();
+    }
+
+    private void fetchAllPrices() {
+        for (int i = 0; i < dateItems.size(); i++) {
+            final int pos = i;
+            String date = apiDateFormat.format(dateItems.get(pos).date);
+            RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(fromCode, toCode, date)).enqueue(new Callback<List<Flight>>() {
+                @Override
+                public void onResponse(Call<List<Flight>> call, Response<List<Flight>> response) {
+                    if (isAdded() && response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                        long min = Long.MAX_VALUE;
+                        for (Flight f : response.body()) {
+                            if (f.getBasePrice() > 0 && f.getBasePrice() < min) min = (long) f.getBasePrice();
+                        }
+                        if (min != Long.MAX_VALUE) {
+                            dateItems.get(pos).minPrice = min;
+                            if (binding != null && binding.rvDateSelector.getAdapter() != null) {
+                                binding.rvDateSelector.getAdapter().notifyItemChanged(pos);
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<List<Flight>> call, Throwable t) {}
+            });
+        }
     }
 
     private void fetchAvailableFlights(String date) {
         if (fromCode == null || toCode == null) return;
+        
+        if (binding != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.rvFlights.setVisibility(View.GONE);
+            binding.tvNoFlights.setVisibility(View.GONE);
+            updateSummary(0); // Reset summary khi đổi ngày
+        }
 
         FlightSearchRequest request = new FlightSearchRequest(fromCode, toCode, date);
         RetrofitClient.getInstance().searchFlights(request).enqueue(new Callback<List<Flight>>() {
             @Override
             public void onResponse(Call<List<Flight>> call, Response<List<Flight>> response) {
-                if (isAdded() && response.isSuccessful() && response.body() != null) {
-                    setupRecyclerView(response.body());
+                if (!isAdded() || binding == null) return;
+                
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Flight> flights = response.body();
+                    if (flights.isEmpty()) {
+                        binding.tvNoFlights.setVisibility(View.VISIBLE);
+                        binding.rvFlights.setVisibility(View.GONE);
+                    } else {
+                        binding.tvNoFlights.setVisibility(View.GONE);
+                        binding.rvFlights.setVisibility(View.VISIBLE);
+                        // Mặc định sắp xếp theo giá thấp nhất
+                        java.util.Collections.sort(flights, (f1, f2) -> Double.compare(f1.getBasePrice(), f2.getBasePrice()));
+                        setupRecyclerView(flights);
+                    }
+                } else {
+                    binding.tvNoFlights.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Flight>> call, Throwable t) {
-                if (isAdded()) {
+                if (isAdded() && binding != null) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.tvNoFlights.setVisibility(View.VISIBLE);
                     Toast.makeText(requireContext(), "Lỗi tải chuyến bay: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -125,6 +188,8 @@ public class ChangeTicketFragment extends Fragment {
     }
 
     private void updateSummary(double priceDiff) {
+        if (binding == null) return;
+
         double changeFee = 600000;
         double total = changeFee + priceDiff;
 
@@ -144,6 +209,14 @@ public class ChangeTicketFragment extends Fragment {
                 .replace(R.id.fragmentContainer, new TicketPolicyFragment())
                 .addToBackStack(null)
                 .commit();
+        });
+
+        binding.btnSort.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Đã sắp xếp theo giá thấp nhất", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.btnFilter.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Tính năng lọc đang được đồng bộ", Toast.LENGTH_SHORT).show();
         });
     }
 

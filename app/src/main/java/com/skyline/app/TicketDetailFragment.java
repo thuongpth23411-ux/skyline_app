@@ -40,7 +40,7 @@ public class TicketDetailFragment extends Fragment {
     private SessionManager sessionManager;
 
     public static TicketDetailFragment newInstance(String flightNo, String originCode, String originCity, 
-                                                   String destCode, String destCity, String date, String time, String seat, String passengerName) {
+                                                   String destCode, String destCity, String date, String time, String seat, String passengerName, double totalAmount) {
         TicketDetailFragment fragment = new TicketDetailFragment();
         Bundle args = new Bundle();
         args.putString("flightNo", flightNo);
@@ -52,6 +52,7 @@ public class TicketDetailFragment extends Fragment {
         args.putString("time", time);
         args.putString("seat", seat);
         args.putString("passengerName", passengerName);
+        args.putDouble("totalAmount", totalAmount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,7 +89,7 @@ public class TicketDetailFragment extends Fragment {
 
         setupClickListeners();
         
-        binding.ivQR.setAlpha(0.2f);
+        binding.ivQR.setAlpha(0.6f);
         binding.btnUnlock.setVisibility(View.VISIBLE);
     }
 
@@ -209,7 +210,7 @@ public class TicketDetailFragment extends Fragment {
                     getArguments().getString("flightNo"),
                     getArguments().getString("originCode"),
                     getArguments().getString("destCode"),
-                    0 // old price logic could be added here
+                    getArguments().getDouble("totalAmount", 0)
                 );
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragmentContainer, fragment)

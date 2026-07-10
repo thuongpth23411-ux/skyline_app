@@ -92,6 +92,7 @@
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp">
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilter"
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -105,6 +106,7 @@
                     app:strokeColor="#E5E7EB"
                     app:strokeWidth="1dp" />
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSort"
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -121,14 +123,37 @@
                     app:strokeWidth="1dp" />
             </LinearLayout>
 
-            <!-- Flight List -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvFlights"
+            <!-- Flight List Area -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingHorizontal="16dp"
-                android:nestedScrollingEnabled="false" />
+                android:layout_marginTop="16dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFlights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="40dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvNoFlights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:gravity="center"
+                    android:text="Không có chuyến bay nào trong ngày này"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:visibility="gone" />
+            </FrameLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

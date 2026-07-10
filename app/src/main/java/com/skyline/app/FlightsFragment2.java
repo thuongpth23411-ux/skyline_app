@@ -145,7 +145,8 @@ public class FlightsFragment2 extends Fragment {
                     fromCode, fromCity, toCode, toCity,
                     time, seatNum != null ? seatNum : "--",
                     res.getTotalAmount(),
-                    res.getPassengerName() != null ? res.getPassengerName() : sessionManager.getUserName()
+                    res.getPassengerName() != null ? res.getPassengerName() : sessionManager.getUserName(),
+                    res.getTicketType() != null ? res.getTicketType() : "Một chiều"
                 ));
             } catch (Exception e) {
                 Log.e("FlightsFragment2", "Parse error for ticket: " + e.getMessage());
@@ -185,7 +186,8 @@ public class FlightsFragment2 extends Fragment {
             ticket.getDestCode(), ticket.getDestCity(),
             ticket.getDay() + " " + ticket.getMonthYear().replace("\n", " "),
             ticket.getTime(), ticket.getSeat(),
-            ticket.getPassengerName() // Pass the passenger name from ticket object
+            ticket.getPassengerName(),
+            ticket.getTotalAmount()
         );
         getParentFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)

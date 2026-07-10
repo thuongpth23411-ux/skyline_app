@@ -41,6 +41,12 @@
         <activity
             android:name=".ConfirmPaymentActivity"
             android:exported="false" />
+        <activity android:name=".PaymentProcessingActivity" android:exported="false" />
+        <activity android:name=".VietQRPaymentActivity" android:exported="false" />
+        <activity android:name=".CardPaymentActivity" android:exported="false" />
+        <activity android:name=".PaymentOtpActivity" android:exported="false" />
+        <activity android:name=".PaymentSuccessActivity" android:exported="false" />
+        <activity android:name=".PaymentFailureActivity" android:exported="false" />
         <activity
             android:name=".HomeActivity"
             android:exported="true" />
@@ -92,6 +98,9 @@
             android:exported="false" />
         <activity
             android:name=".BaggageSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BookingConfirmationActivity"
             android:exported="false" />
 
         <activity

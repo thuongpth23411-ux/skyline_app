@@ -8,6 +8,7 @@ const ticketSchema = new mongoose.Schema({
     seatId: { type: String },
     passengerName: { type: String },
     passengerType: { type: String },
+    ticketType: { type: String }, // "Departure", "Return"
     totalAmount: { type: Number },
     paymentStatus: { type: String },
     ticketStatus: { type: String }, // "Booked", "Cancelled", v.v.

@@ -55,14 +55,17 @@
         <TextView
             android:id="@+id/tvPriceDetail"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:paddingHorizontal="12dp"
+            android:gravity="center"
             android:text="@string/price_detail"
             android:textColor="@color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:clickable="true"
             android:focusable="true"
+            android:elevation="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,14 +108,31 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/choose_payment_method"
-                android:textColor="@color/skyline_text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="24dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/choose_payment_method"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPaymentTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="15:00"
+                    android:textColor="#DC2626"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <!-- Payment Methods -->
             <LinearLayout
@@ -128,9 +148,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
+                    app:cardElevation="0dp"
+                    app:strokeColor="#F3F4F6"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -143,14 +168,14 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="20dp">
 
-                            <RadioButton
+                            <androidx.appcompat.widget.AppCompatRadioButton
                                 android:id="@+id/rbPaymentCard"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:button="@drawable/payment_radio_selector"
-                                android:background="@null"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:button="@null"
+                                android:background="@drawable/payment_radio_selector"
                                 android:clickable="false"
-                                app:useMaterialThemeColors="false" />
+                                android:focusable="false" />
 
                             <TextView
                                 android:layout_width="0dp"
@@ -312,9 +337,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
+                    app:cardElevation="0dp"
+                    app:strokeColor="#F3F4F6"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -327,14 +357,14 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="20dp">
 
-                            <RadioButton
+                            <androidx.appcompat.widget.AppCompatRadioButton
                                 android:id="@+id/rbVNPay"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:button="@drawable/payment_radio_selector"
-                                android:background="@null"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:button="@null"
+                                android:background="@drawable/payment_radio_selector"
                                 android:clickable="false"
-                                app:useMaterialThemeColors="false" />
+                                android:focusable="false" />
 
                             <TextView
                                 android:layout_width="0dp"
@@ -371,9 +401,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
+                    app:cardElevation="0dp"
+                    app:strokeColor="#F3F4F6"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -386,14 +421,14 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="20dp">
 
-                            <RadioButton
+                            <androidx.appcompat.widget.AppCompatRadioButton
                                 android:id="@+id/rbVietQR"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:button="@drawable/payment_radio_selector"
-                                android:background="@null"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:button="@null"
+                                android:background="@drawable/payment_radio_selector"
                                 android:clickable="false"
-                                app:useMaterialThemeColors="false" />
+                                android:focusable="false" />
 
                             <TextView
                                 android:layout_width="0dp"
@@ -430,9 +465,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
+                    app:cardElevation="0dp"
+                    app:strokeColor="#F3F4F6"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -445,14 +485,14 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="20dp">
 
-                            <RadioButton
+                            <androidx.appcompat.widget.AppCompatRadioButton
                                 android:id="@+id/rbMomo"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:button="@drawable/payment_radio_selector"
-                                android:background="@null"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:button="@null"
+                                android:background="@drawable/payment_radio_selector"
                                 android:clickable="false"
-                                app:useMaterialThemeColors="false" />
+                                android:focusable="false" />
 
                             <TextView
                                 android:layout_width="0dp"
