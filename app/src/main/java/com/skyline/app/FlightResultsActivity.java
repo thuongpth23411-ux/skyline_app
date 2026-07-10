@@ -183,19 +183,41 @@ public class FlightResultsActivity extends AppCompatActivity {
 
     private void setupDateSelector() {
         dateItems.clear();
-        int initialPos = 0;
-        try {
-            Date initialDate = apiDateFormat.parse(selectedDateStr);
-            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            if (initialDate != null) { cal.setTime(initialDate); cal.add(Calendar.DAY_OF_MONTH, -10); }
-            for (int i = 0; i < 30; i++) {
-                Date d = cal.getTime();
-                String dStr = apiDateFormat.format(d);
-                if (dStr.equals(selectedDateStr)) initialPos = i;
-                dateItems.add(new DateSelectorAdapter.DateItem(d, 0, dStr.equals(selectedDateStr)));
-                cal.add(Calendar.DAY_OF_MONTH, 1);
-            }
-        } catch (Exception e) {}
+
+        Calendar localCal = Calendar.getInstance();
+        localCal.add(Calendar.DAY_OF_MONTH, 1);
+        int year = localCal.get(Calendar.YEAR);
+        int month = localCal.get(Calendar.MONTH);
+        int day = localCal.get(Calendar.DAY_OF_MONTH);
+
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(year, month, day, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        Date tomorrow = cal.getTime();
+        String tomorrowStr = apiDateFormat.format(tomorrow);
+
+        if (selectedDateStr == null || selectedDateStr.compareTo(tomorrowStr) < 0) {
+            selectedDateStr = tomorrowStr;
+        }
+
+        int initialPos = -1;
+        for (int i = 0; i < 90; i++) {
+            Date d = cal.getTime();
+            String dStr = apiDateFormat.format(d);
+
+            boolean isSelected = dStr.equals(selectedDateStr);
+            if (isSelected) initialPos = i;
+
+            dateItems.add(new DateSelectorAdapter.DateItem(d, 0, isSelected));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        if (initialPos == -1) {
+            initialPos = 0;
+            selectedDateStr = apiDateFormat.format(dateItems.get(0).date);
+            dateItems.get(0).isSelected = true;
+        }
 
         dateAdapter = new DateSelectorAdapter(dateItems, (date, pos) -> {
             centerItem(pos, true);
