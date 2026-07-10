@@ -202,57 +202,29 @@ public class HomeFragment extends Fragment {
                     List<Destination> allBlogs = response.body();
                     Log.d("HomeFragment", "Blogs received: " + allBlogs.size());
                     
-                    List<Destination> filtered = new ArrayList<>();
-                    
-                    // Ưu tiên lấy đà nẵng, hà nội, hồ chí minh
-                    String[] targets = {"Đà Nẵng", "Hà Nội", "Hồ Chí Minh"};
-                    for (String city : targets) {
-                        for (Destination d : allBlogs) {
-                            if (d.getCountry() != null && d.getCountry().toLowerCase().contains(city.toLowerCase())) {
-                                filtered.add(d);
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // Nếu không đủ 3 thì lấy thêm từ danh sách gốc
-                    if (filtered.size() < 3) {
-                        for (Destination d : allBlogs) {
-                            if (!filtered.contains(d)) {
-                                filtered.add(d);
-                                if (filtered.size() == 3) break;
-                            }
-                        }
-                    }
-                    
-                    List<Destination> displayList = filtered.isEmpty() ? allBlogs : filtered;
-                    if (displayList.size() > 3) displayList = displayList.subList(0, 3);
+                    // Lấy 3 bài viết đầu tiên từ server
+                    List<Destination> displayList = allBlogs.size() > 3 ? allBlogs.subList(0, 3) : allBlogs;
 
                     binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-                    binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> toast("Khám phá " + item.getCountry())));
+                    binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> {
+                        if (item.getBlogSlug() != null && !item.getBlogSlug().isEmpty()) {
+                            Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
+                            intent.putExtra("slug", item.getBlogSlug());
+                            startActivity(intent);
+                        } else {
+                            toast("Khám phá " + item.getCountry());
+                        }
+                    }));
                 } else {
                     Log.e("HomeFragment", "Blogs response error: " + response.code());
-                    setupLocalDestinations();
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<List<Destination>> call, Throwable t) {
                 Log.e("HomeFragment", "Blogs API failure: " + t.getMessage());
-                if (binding != null && isAdded()) {
-                    setupLocalDestinations();
-                }
             }
         });
-    }
-
-    private void setupLocalDestinations() {
-        List<Destination> destinations = new ArrayList<>();
-        destinations.add(new Destination("Phú Quốc", "“đảo ngọc” xinh đẹp của Việt Nam", R.drawable.img_destination_phuquoc));
-        destinations.add(new Destination("Đà Nẵng", "thành phố đáng sống nhất Việt Nam", R.drawable.img_destination_danang));
-
-        binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.destinationRecycler.setAdapter(new DestinationAdapter(destinations, item -> toast("Khám phá " + item.getCountry())));
     }
 
     private void setupExperiences() {

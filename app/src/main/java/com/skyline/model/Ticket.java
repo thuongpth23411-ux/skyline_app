@@ -1,18 +1,21 @@
 package com.skyline.model;
 
 public class Ticket {
-    private String day;
-    private String monthYear;
-    private String flightClass;
-    private String flightNo;
-    private String originCode;
-    private String originCity;
-    private String destCode;
-    private String destCity;
-    private String time;
-    private String seat;
+    private final String day;
+    private final String monthYear;
+    private final String flightClass;
+    private final String flightNo;
+    private final String originCode;
+    private final String originCity;
+    private final String destCode;
+    private final String destCity;
+    private final String time;
+    private final String seat;
+    private final String ticketType;
+    private final double totalAmount;
+    private final String passengerName;
 
-    public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat) {
+    public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat, double totalAmount, String passengerName, String ticketType) {
         this.day = day;
         this.monthYear = monthYear;
         this.flightClass = flightClass;
@@ -23,6 +26,9 @@ public class Ticket {
         this.destCity = destCity;
         this.time = time;
         this.seat = seat;
+        this.totalAmount = totalAmount;
+        this.passengerName = passengerName;
+        this.ticketType = ticketType;
     }
 
     public String getDay() { return day; }
@@ -35,4 +41,7 @@ public class Ticket {
     public String getDestCity() { return destCity; }
     public String getTime() { return time; }
     public String getSeat() { return seat; }
+    public double getTotalAmount() { return totalAmount; }
+    public String getPassengerName() { return passengerName; }
+    public String getTicketType() { return ticketType; }
 }

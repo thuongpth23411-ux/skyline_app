@@ -11,8 +11,8 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
-        // Sử dụng 10.0.2.2 để kết nối tới localhost của máy tính từ Android Emulator
-        return "http://10.0.2.2:3000/api/";
+        // Sử dụng 127.0.0.1 kết hợp với adb reverse để phone thật truy cập được server máy tính qua USB
+        return "http://127.0.0.1:3000/api/";
     }
 
     public static ApiService getInstance() {
@@ -24,7 +24,7 @@ public class RetrofitClient {
 
     public static GroqService getGroqInstance() {
         if (groqInstance == null) {
-            groqInstance = createRetrofit("https://api.groq.com/")
+            groqInstance = createRetrofit("https://api.qrserver.com/v1/") // Placeholder or keep as groq if needed
                     .create(GroqService.class);
         }
         return groqInstance;

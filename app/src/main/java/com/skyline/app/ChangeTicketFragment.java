@@ -8,11 +8,46 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.skyline.app.databinding.FragmentChangeTicketBinding;
+import com.skyline.app.network.Flight;
+import com.skyline.app.network.FlightSearchRequest;
+import com.skyline.app.network.RetrofitClient;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChangeTicketFragment extends Fragment {
 
     private FragmentChangeTicketBinding binding;
+    private double oldPrice = 0;
+    private String fromCode, toCode, selectedDateStr;
+    private DecimalFormat priceFormat = new DecimalFormat("#,###");
+    private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
+    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+    public ChangeTicketFragment() {
+        apiDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    public static ChangeTicketFragment newInstance(String bookingId, String fromCode, String toCode, double oldPrice) {
+        ChangeTicketFragment fragment = new ChangeTicketFragment();
+        Bundle args = new Bundle();
+        args.putString("bookingId", bookingId);
+        args.putString("fromCode", fromCode);
+        args.putString("toCode", toCode);
+        args.putDouble("oldPrice", oldPrice);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -25,15 +60,148 @@ public class ChangeTicketFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (getArguments() != null) {
+            fromCode = getArguments().getString("fromCode");
+            toCode = getArguments().getString("toCode");
+            oldPrice = getArguments().getDouble("oldPrice", 0);
+        }
+
         setupClickListeners();
-        setupMockDates();
+        setupDateSelector();
+        
+        // Mặc định chọn ngày đầu tiên trong danh sách (ngày mai)
+        if (!dateItems.isEmpty()) {
+            selectedDateStr = apiDateFormat.format(dateItems.get(0).date);
+            fetchAvailableFlights(selectedDateStr);
+        } else {
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            selectedDateStr = apiDateFormat.format(cal.getTime());
+            fetchAvailableFlights(selectedDateStr);
+        }
+    }
+
+    private void setupDateSelector() {
+        dateItems.clear();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        // Đặt về 0h để đồng bộ hóa ngày tháng chính xác
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        // Bắt đầu từ ngày mai
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+
+        for (int i = 0; i < 14; i++) {
+            dateItems.add(new DateSelectorAdapter.DateItem(cal.getTime(), -1, i == 0));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        DateSelectorAdapter adapter = new DateSelectorAdapter(dateItems, (date, position) -> {
+            selectedDateStr = apiDateFormat.format(date);
+            fetchAvailableFlights(selectedDateStr);
+        });
+
+        binding.rvDateSelector.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.rvDateSelector.setAdapter(adapter);
+
+        fetchAllPrices();
+    }
+
+    private void fetchAllPrices() {
+        for (int i = 0; i < dateItems.size(); i++) {
+            final int pos = i;
+            String date = apiDateFormat.format(dateItems.get(pos).date);
+            RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(fromCode, toCode, date)).enqueue(new Callback<List<Flight>>() {
+                @Override
+                public void onResponse(Call<List<Flight>> call, Response<List<Flight>> response) {
+                    if (isAdded() && response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                        long min = Long.MAX_VALUE;
+                        for (Flight f : response.body()) {
+                            if (f.getBasePrice() > 0 && f.getBasePrice() < min) min = (long) f.getBasePrice();
+                        }
+                        if (min != Long.MAX_VALUE) {
+                            dateItems.get(pos).minPrice = min;
+                            if (binding != null && binding.rvDateSelector.getAdapter() != null) {
+                                binding.rvDateSelector.getAdapter().notifyItemChanged(pos);
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<List<Flight>> call, Throwable t) {}
+            });
+        }
+    }
+
+    private void fetchAvailableFlights(String date) {
+        if (fromCode == null || toCode == null) return;
+        
+        if (binding != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.rvFlights.setVisibility(View.GONE);
+            binding.tvNoFlights.setVisibility(View.GONE);
+            updateSummary(0); // Reset summary khi đổi ngày
+        }
+
+        FlightSearchRequest request = new FlightSearchRequest(fromCode, toCode, date);
+        RetrofitClient.getInstance().searchFlights(request).enqueue(new Callback<List<Flight>>() {
+            @Override
+            public void onResponse(Call<List<Flight>> call, Response<List<Flight>> response) {
+                if (!isAdded() || binding == null) return;
+                
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Flight> flights = response.body();
+                    if (flights.isEmpty()) {
+                        binding.tvNoFlights.setVisibility(View.VISIBLE);
+                        binding.rvFlights.setVisibility(View.GONE);
+                    } else {
+                        binding.tvNoFlights.setVisibility(View.GONE);
+                        binding.rvFlights.setVisibility(View.VISIBLE);
+                        // Mặc định sắp xếp theo giá thấp nhất
+                        java.util.Collections.sort(flights, (f1, f2) -> Double.compare(f1.getBasePrice(), f2.getBasePrice()));
+                        setupRecyclerView(flights);
+                    }
+                } else {
+                    binding.tvNoFlights.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Flight>> call, Throwable t) {
+                if (isAdded() && binding != null) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.tvNoFlights.setVisibility(View.VISIBLE);
+                    Toast.makeText(requireContext(), "Lỗi tải chuyến bay: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void setupRecyclerView(List<Flight> flights) {
+        ChangeFlightAdapter adapter = new ChangeFlightAdapter(flights, oldPrice, (flight, priceDiff) -> {
+            updateSummary(priceDiff);
+        });
+        binding.rvFlights.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvFlights.setAdapter(adapter);
+    }
+
+    private void updateSummary(double priceDiff) {
+        if (binding == null) return;
+
+        double changeFee = 600000;
+        double total = changeFee + priceDiff;
+
+        binding.tvChangeFee.setText(priceFormat.format(changeFee) + " VNĐ");
+        binding.tvPriceDiffTotal.setText("+ " + priceFormat.format(priceDiff) + " VNĐ");
+        binding.tvTotalCost.setText(priceFormat.format(total) + " VNĐ");
     }
 
     private void setupClickListeners() {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         binding.btnConfirm.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Đang xác nhận đổi vé...", Toast.LENGTH_LONG).show();
-            // Handle confirmation logic
         });
         
         binding.btnPolicy.setOnClickListener(v -> {
@@ -42,18 +210,14 @@ public class ChangeTicketFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         });
-    }
 
-    private void setupMockDates() {
-        // Example logic to highlight T3 - 24
-        View dateItem = binding.layoutDates.getChildAt(1);
-        if (dateItem != null) {
-            View circle = dateItem.findViewById(R.id.tvDate);
-            if (circle != null) {
-                circle.setBackgroundResource(R.drawable.bg_circle_black);
-                ((android.widget.TextView)circle).setTextColor(getResources().getColor(R.color.white));
-            }
-        }
+        binding.btnSort.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Đã sắp xếp theo giá thấp nhất", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.btnFilter.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Tính năng lọc đang được đồng bộ", Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override

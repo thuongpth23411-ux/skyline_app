@@ -140,10 +140,13 @@ public class FlightsFragment2 extends Fragment {
 
                 displayTickets.add(new Ticket(
                     day, monthYear,
-                    "Phổ thông", 
+                    res.getTicketClass() != null ? res.getTicketClass() : "Phổ thông", 
                     res.getBookingCode(),
                     fromCode, fromCity, toCode, toCity,
-                    time, seatNum != null ? seatNum : "--"
+                    time, seatNum != null ? seatNum : "--",
+                    res.getTotalAmount(),
+                    res.getPassengerName() != null ? res.getPassengerName() : sessionManager.getUserName(),
+                    res.getTicketType() != null ? res.getTicketType() : "Một chiều"
                 ));
             } catch (Exception e) {
                 Log.e("FlightsFragment2", "Parse error for ticket: " + e.getMessage());
@@ -179,7 +182,12 @@ public class FlightsFragment2 extends Fragment {
 
     private void openDetail(Ticket ticket) {
         TicketDetailFragment fragment = TicketDetailFragment.newInstance(
-            ticket.getFlightNo(), ticket.getOriginCode(), ticket.getDestCode(), ticket.getTime(), ticket.getSeat()
+            ticket.getFlightNo(), ticket.getOriginCode(), ticket.getOriginCity(),
+            ticket.getDestCode(), ticket.getDestCity(),
+            ticket.getDay() + " " + ticket.getMonthYear().replace("\n", " "),
+            ticket.getTime(), ticket.getSeat(),
+            ticket.getPassengerName(),
+            ticket.getTotalAmount()
         );
         getParentFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
@@ -192,7 +200,8 @@ public class FlightsFragment2 extends Fragment {
             ticket.getFlightNo(), ticket.getOriginCode(), ticket.getOriginCity(), 
             ticket.getDestCode(), ticket.getDestCity(), 
             ticket.getDay() + " " + ticket.getMonthYear().replace("\n", " "),
-            ticket.getTime()
+            ticket.getTime(),
+            ticket.getTotalAmount()
         );
         getParentFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
@@ -201,8 +210,11 @@ public class FlightsFragment2 extends Fragment {
     }
 
     private void openChange(Ticket ticket) {
+        ChangeTicketFragment fragment = ChangeTicketFragment.newInstance(
+            ticket.getFlightNo(), ticket.getOriginCode(), ticket.getDestCode(), ticket.getTotalAmount()
+        );
         getParentFragmentManager().beginTransaction()
-            .replace(R.id.fragmentContainer, new ChangeTicketFragment())
+            .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit();
     }

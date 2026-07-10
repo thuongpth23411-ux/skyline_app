@@ -9,6 +9,8 @@ public class TicketResponse {
     private String seatId;
     @SerializedName("ticketStatus")
     private String status;
+    private String ticketClass;
+    private String ticketType;
     private String passengerName;
     private double totalAmount;
     
@@ -19,7 +21,9 @@ public class TicketResponse {
     public String getBookingCode() { return bookingCode; }
     public String getSeatId() { return seatId; }
     public String getStatus() { return status; }
+    public String getTicketClass() { return ticketClass; }
     public String getPassengerName() { return passengerName; }
     public double getTotalAmount() { return totalAmount; }
+    public String getTicketType() { return ticketType; }
     public Flight getFlight() { return flight; }
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 public class SessionManager {
     private SharedPreferences prefs;
     private static final String PREF_NAME = "skyline_prefs";
+    public static final String USER_ID = "user_id";
     public static final String USER_TOKEN = "user_token";
     public static final String USER_NAME = "user_name";
     public static final String USER_EMAIL = "user_email";
@@ -30,6 +31,7 @@ public class SessionManager {
     public void saveUser(com.skyline.app.network.User user) {
         if (user == null) return;
         SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(USER_ID, user.getId());
         editor.putString(USER_NAME, user.getName());
         editor.putString(USER_EMAIL, user.getEmail());
         editor.putString(USER_MEMBER_CODE, user.getMemberCode());
@@ -47,7 +49,9 @@ public class SessionManager {
         editor.apply();
     }
     
+    public String getUserId() { return prefs.getString(USER_ID, null); }
     public String getUserName() { return prefs.getString(USER_NAME, "Khách"); }
+    public String getUserEmail() { return prefs.getString(USER_EMAIL, ""); }
     public String getMemberCode() { return prefs.getString(USER_MEMBER_CODE, "---- ---- ----"); }
 
     public void setNotificationsEnabled(boolean enabled) {

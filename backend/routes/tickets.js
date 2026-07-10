@@ -17,6 +17,43 @@ const verifyToken = (req, res, next) => {
     } catch (err) { res.status(401).json({ success: false }); }
 };
 
+router.post("/create", async (req, res) => {
+    try {
+        const { userId, flights, passengerName, totalAmount, paymentMethod } = req.body;
+        const bookingCode = "SKL" + Math.floor(100000 + Math.random() * 900000);
+
+        const createdTickets = [];
+
+        for (let i = 0; i < flights.length; i++) {
+            const flight = flights[i];
+            const ticketId = "TKT" + Math.floor(10000000 + Math.random() * 90000000);
+
+            const newTicket = new Ticket({
+                ticketId: ticketId,
+                bookingCode: bookingCode,
+                userId: userId,
+                flightId: flight.flightId,
+                seatId: flight.seatNumber || "N/A",
+                passengerName: passengerName,
+                passengerType: "Adult",
+                ticketType: flight.ticketType || "OneWay", // Nhận từ request
+                totalAmount: i === 0 ? totalAmount : 0,
+                paymentStatus: "Paid",
+                ticketStatus: "Booked",
+                bookedAt: new Date()
+            });
+
+            await newTicket.save();
+            createdTickets.push(newTicket);
+        }
+
+        res.json({ success: true, bookingCode, tickets: createdTickets });
+    } catch (error) {
+        console.error("❌ Error creating booking:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 router.get("/my-tickets", verifyToken, async (req, res) => {
     try {
         console.log(`🎫 Fetching tickets for userId: ${req.userId}`);

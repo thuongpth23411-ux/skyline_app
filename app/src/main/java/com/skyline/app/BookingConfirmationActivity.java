@@ -215,6 +215,10 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         // Lưu ý: Chúng ta truyền đi để trang Thanh toán của bên kia sử dụng, không can thiệp vào code của họ
         Intent intent = new Intent(this, ConfirmPaymentActivity.class);
         intent.putExtra("totalAmount", baseFarePrice + addonPrice + seatPrice + taxes);
+        intent.putExtra("baseFare", baseFarePrice);
+        intent.putExtra("addonPrice", addonPrice);
+        intent.putExtra("seatPrice", seatPrice);
+        intent.putExtra("taxes", taxes);
         intent.putExtra("passenger_email", email);
         intent.putExtra("passenger_name", lastName + " " + firstName);
         intent.putExtra("passenger_phone", phone);
