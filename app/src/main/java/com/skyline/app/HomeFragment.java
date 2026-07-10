@@ -57,7 +57,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkNewPromotions() {
-        Log.d("HomeFragment", "Simulating various notifications...");
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (!sessionManager.isLoggedIn()) {
+            Log.d("HomeFragment", "User not logged in, skipping simulated notifications.");
+            return;
+        }
+
+        Log.d("HomeFragment", "Simulating various notifications for logged-in user...");
         // Giả lập nhận các loại thông báo khác nhau sau một khoảng trễ ngắn
         if (binding != null) {
             binding.getRoot().postDelayed(() -> {

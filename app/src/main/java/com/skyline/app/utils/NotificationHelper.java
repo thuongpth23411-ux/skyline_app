@@ -27,6 +27,11 @@ public class NotificationHelper {
         if (activity == null || activity.isFinishing()) return;
 
         SessionManager sm = new SessionManager(activity);
+
+        // Chỉ hiện thông báo nếu đã đăng nhập
+        if (!sm.isLoggedIn()) {
+            return;
+        }
         
         // Nếu có ID và đã nhận rồi thì không hiện nữa
         if (id != null && !id.isEmpty()) {
