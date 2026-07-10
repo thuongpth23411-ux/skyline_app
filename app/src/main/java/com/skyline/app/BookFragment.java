@@ -145,9 +145,17 @@ public class BookFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     for (Airport a : response.body()) {
                         if (a.getCode().equals(code)) {
+                            // // Kiểm tra trùng lặp ngay khi nạp từ Blog
+                            if (a.getCode().equals(fromCode)) {
+                                toError = "Điểm đến không được trùng với điểm đi";
+                                toCode = "";
+                                updateAirportDisplay();
+                                return;
+                            }
                             toCode = a.getCode();
                             toCity = a.getCity();
                             toAirportName = a.getName();
+                            toError = "";
                             updateAirportDisplay();
                             break;
                         }
@@ -232,6 +240,12 @@ public class BookFragment extends Fragment {
                 hasAirportError = true;
             }
 
+            // // Ràng buộc không cho phép chọn trùng sân bay đi và đến
+            if (!fromCode.isEmpty() && !toCode.isEmpty() && fromCode.equals(toCode)) {
+                toError = "Điểm đến không được trùng với điểm đi";
+                hasAirportError = true;
+            }
+
             if (hasAirportError) {
                 updateAirportDisplay();
             }
@@ -282,7 +296,12 @@ public class BookFragment extends Fragment {
             
             intent.putExtra("fromName", finalFromName);
             intent.putExtra("toName", finalToName);
-            intent.putExtra("date", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(departureDate)));
+            
+            // Sử dụng UTC để định dạng ngày gửi đi, khớp với màn hình kết quả
+            SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            apiFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            intent.putExtra("date", apiFormat.format(new Date(departureDate)));
+
             startActivity(intent);
         });
     }
