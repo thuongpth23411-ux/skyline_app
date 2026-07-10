@@ -56,8 +56,8 @@ public class ChangeFlightAdapter extends RecyclerView.Adapter<ChangeFlightAdapte
             holder.tvDestTime.setText("--:--");
         }
 
-        holder.tvOriginCode.setText(flight.getDepartureAirport().getCode());
-        holder.tvDestCode.setText(flight.getArrivalAirport().getCode());
+        holder.tvOriginCode.setText(flight.getDepartureAirport() != null ? flight.getDepartureAirport().getCode() : "");
+        holder.tvDestCode.setText(flight.getArrivalAirport() != null ? flight.getArrivalAirport().getCode() : "");
         
         int duration = flight.getDuration();
         holder.tvDuration.setText((duration / 60) + "h " + (duration % 60) + "m");

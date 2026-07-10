@@ -11,8 +11,10 @@ public class Ticket {
     private String destCity;
     private String time;
     private String seat;
+    private double totalAmount;
+    private String passengerName;
 
-    public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat) {
+    public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat, double totalAmount, String passengerName) {
         this.day = day;
         this.monthYear = monthYear;
         this.flightClass = flightClass;
@@ -23,6 +25,8 @@ public class Ticket {
         this.destCity = destCity;
         this.time = time;
         this.seat = seat;
+        this.totalAmount = totalAmount;
+        this.passengerName = passengerName;
     }
 
     public String getDay() { return day; }
@@ -35,4 +39,6 @@ public class Ticket {
     public String getDestCity() { return destCity; }
     public String getTime() { return time; }
     public String getSeat() { return seat; }
+    public double getTotalAmount() { return totalAmount; }
+    public String getPassengerName() { return passengerName; }
 }

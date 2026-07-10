@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/skyline_bg">
 
     <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/skyline_blue_dark"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -18,11 +18,11 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
-            android:src="@drawable/ic_arrow_left_auth"
+            android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black" />
+            app:tint="@color/white" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -38,15 +38,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/total_price_label"
-                android:textColor="@color/skyline_text_secondary"
-                android:textSize="10sp" />
+                android:textColor="#B3FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvTotalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/total_price_value"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -57,8 +58,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/price_detail"
-            android:textColor="@color/skyline_text_secondary"
+            android:textColor="@color/white"
             android:textSize="11sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -80,7 +85,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_warning_banner"
+                android:background="@drawable/bg_warning_light"
                 android:gravity="center_vertical"
                 android:padding="16dp">
 
@@ -88,7 +93,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_info_auth"
-                    app:tint="#D97706" />
+                    app:tint="#DC2626" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -96,7 +101,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="@string/payment_warning"
-                    android:textColor="#92400E"
+                    android:textColor="#991B1B"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -123,10 +128,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#E5E7EB"
-                    app:strokeWidth="1dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -145,6 +149,7 @@
                                 android:layout_height="24dp"
                                 android:button="@drawable/payment_radio_selector"
                                 android:background="@null"
+                                android:clickable="false"
                                 app:useMaterialThemeColors="false" />
 
                             <TextView
@@ -154,7 +159,8 @@
                                 android:layout_weight="1"
                                 android:text="@string/payment_card"
                                 android:textColor="@color/black"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:layout_width="32dp"
@@ -175,35 +181,23 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
                                 android:layout_marginBottom="16dp"
-                                android:background="#E5E7EB" />
+                                android:background="#F3F4F6" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/card_type"
                                 android:textColor="@color/skyline_text_secondary"
-                                android:textSize="11sp" />
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                            <Spinner
+                                android:id="@+id/spinnerCardType"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="48dp"
                                 android:layout_marginTop="6dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxStrokeColor="@color/skyline_blue"
-                                app:hintEnabled="false">
-
-                                <AutoCompleteTextView
-                                    android:id="@+id/spinnerCardType"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="none"
-                                    android:text="@string/visa"
-                                    android:textSize="14sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
+                                android:background="@drawable/bg_auth_input"
+                                android:paddingHorizontal="12dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -211,27 +205,18 @@
                                 android:layout_marginTop="12dp"
                                 android:text="@string/card_number"
                                 android:textColor="@color/skyline_text_secondary"
-                                android:textSize="11sp" />
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="48dp"
                                 android:layout_marginTop="6dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxStrokeColor="@color/skyline_blue"
-                                app:hintEnabled="false">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/card_number_hint"
-                                    android:inputType="number"
-                                    android:textSize="14sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
+                                android:background="@drawable/bg_auth_input"
+                                android:paddingHorizontal="12dp"
+                                android:hint="@string/card_number_hint"
+                                android:inputType="number"
+                                android:textSize="14sp" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -250,32 +235,23 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/card_expiry"
                                         android:textColor="@color/skyline_text_secondary"
-                                        android:textSize="11sp" />
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
 
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    <EditText
+                                        android:id="@+id/etExpiry"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
+                                        android:layout_height="48dp"
                                         android:layout_marginTop="6dp"
-                                        app:boxCornerRadiusBottomEnd="12dp"
-                                        app:boxCornerRadiusBottomStart="12dp"
-                                        app:boxCornerRadiusTopEnd="12dp"
-                                        app:boxCornerRadiusTopStart="12dp"
-                                        app:boxStrokeColor="@color/skyline_blue"
-                                        app:hintEnabled="false">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/etExpiry"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:hint="@string/card_expiry_hint"
-                                            android:inputType="none"
-                                            android:focusable="false"
-                                            android:clickable="true"
-                                            android:drawableEnd="@drawable/ic_calendar_auth"
-                                            android:drawableTint="@color/black"
-                                            android:textSize="14sp" />
-                                    </com.google.android.material.textfield.TextInputLayout>
+                                        android:background="@drawable/bg_auth_input"
+                                        android:paddingHorizontal="12dp"
+                                        android:hint="@string/card_expiry_hint"
+                                        android:inputType="none"
+                                        android:focusable="false"
+                                        android:clickable="true"
+                                        android:drawableEnd="@drawable/ic_calendar"
+                                        android:drawableTint="@color/skyline_text_secondary"
+                                        android:textSize="14sp" />
                                 </LinearLayout>
 
                                 <View
@@ -293,27 +269,18 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/card_cvv"
                                         android:textColor="@color/skyline_text_secondary"
-                                        android:textSize="11sp" />
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
 
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    <EditText
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
+                                        android:layout_height="48dp"
                                         android:layout_marginTop="6dp"
-                                        app:boxCornerRadiusBottomEnd="12dp"
-                                        app:boxCornerRadiusBottomStart="12dp"
-                                        app:boxCornerRadiusTopEnd="12dp"
-                                        app:boxCornerRadiusTopStart="12dp"
-                                        app:boxStrokeColor="@color/skyline_blue"
-                                        app:hintEnabled="false">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:hint="@string/card_cvv_hint"
-                                            android:inputType="numberPassword"
-                                            android:textSize="14sp" />
-                                    </com.google.android.material.textfield.TextInputLayout>
+                                        android:background="@drawable/bg_auth_input"
+                                        android:paddingHorizontal="12dp"
+                                        android:hint="@string/card_cvv_hint"
+                                        android:inputType="numberPassword"
+                                        android:textSize="14sp" />
                                 </LinearLayout>
                             </LinearLayout>
 
@@ -323,48 +290,18 @@
                                 android:layout_marginTop="12dp"
                                 android:text="@string/card_holder"
                                 android:textColor="@color/skyline_text_secondary"
-                                android:textSize="11sp" />
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="48dp"
                                 android:layout_marginTop="6dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxStrokeColor="@color/skyline_blue"
-                                app:hintEnabled="false">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/card_holder_hint"
-                                    android:inputType="text"
-                                    android:textSize="14sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="24dp"
-                                android:gravity="center_vertical">
-
-                                <ImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@drawable/ic_lock_auth"
-                                    app:tint="#166534" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="@string/payment_secure"
-                                    android:textColor="#166534"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
+                                android:background="@drawable/bg_auth_input"
+                                android:paddingHorizontal="12dp"
+                                android:hint="@string/card_holder_hint"
+                                android:inputType="textCapCharacters"
+                                android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -375,10 +312,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#E5E7EB"
-                    app:strokeWidth="1dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -397,6 +333,7 @@
                                 android:layout_height="24dp"
                                 android:button="@drawable/payment_radio_selector"
                                 android:background="@null"
+                                android:clickable="false"
                                 app:useMaterialThemeColors="false" />
 
                             <TextView
@@ -406,7 +343,8 @@
                                 android:layout_weight="1"
                                 android:text="@string/vnpay"
                                 android:textColor="@color/black"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:layout_width="32dp"
@@ -433,10 +371,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#E5E7EB"
-                    app:strokeWidth="1dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -455,6 +392,7 @@
                                 android:layout_height="24dp"
                                 android:button="@drawable/payment_radio_selector"
                                 android:background="@null"
+                                android:clickable="false"
                                 app:useMaterialThemeColors="false" />
 
                             <TextView
@@ -464,7 +402,8 @@
                                 android:layout_weight="1"
                                 android:text="@string/vietqr"
                                 android:textColor="@color/black"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:layout_width="32dp"
@@ -491,10 +430,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#E5E7EB"
-                    app:strokeWidth="1dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -513,6 +451,7 @@
                                 android:layout_height="24dp"
                                 android:button="@drawable/payment_radio_selector"
                                 android:background="@null"
+                                android:clickable="false"
                                 app:useMaterialThemeColors="false" />
 
                             <TextView
@@ -522,7 +461,8 @@
                                 android:layout_weight="1"
                                 android:text="@string/momo"
                                 android:textColor="@color/black"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:layout_width="32dp"
@@ -549,62 +489,72 @@
     </androidx.core.widget.NestedScrollView>
 
     <!-- Footer -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:padding="20dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="20dp"
+        app:cardCornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <CheckBox
-                android:id="@+id/cbTerms"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:button="@drawable/terms_checkbox_selector"
-                android:background="@null"
-                app:useMaterialThemeColors="false" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbTerms"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="2dp"
+                    android:button="@null"
+                    android:background="@drawable/terms_checkbox_selector"
+                    app:useMaterialThemeColors="false" />
+
+                <TextView
+                    android:id="@+id/tvTerms"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="@string/payment_terms"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="2dp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPay"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/skyline_blue_dark"
+                android:enabled="false"
+                android:alpha="0.5"
+                android:text="@string/pay_now"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
 
             <TextView
-                android:id="@+id/tvTerms"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/payment_terms"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/payment_footer_note"
                 android:textColor="@color/skyline_text_secondary"
-                android:textSize="11sp" />
+                android:textSize="9sp" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPay"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/black"
-            android:enabled="false"
-            android:text="@string/pay_now"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="28dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:text="@string/payment_footer_note"
-            android:textColor="@color/skyline_text_secondary"
-            android:textSize="9sp" />
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

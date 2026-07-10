@@ -11,6 +11,7 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
+        // Sử dụng 127.0.0.1 kết hợp với adb reverse để phone thật truy cập được server máy tính qua USB
         return "http://127.0.0.1:3000/api/";
     }
 

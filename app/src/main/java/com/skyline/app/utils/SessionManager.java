@@ -48,6 +48,7 @@ public class SessionManager {
     }
     
     public String getUserName() { return prefs.getString(USER_NAME, "Khách"); }
+    public String getUserEmail() { return prefs.getString(USER_EMAIL, ""); }
     public String getMemberCode() { return prefs.getString(USER_MEMBER_CODE, "---- ---- ----"); }
 
     public void setNotificationsEnabled(boolean enabled) {

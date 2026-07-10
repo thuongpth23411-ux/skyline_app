@@ -14,7 +14,7 @@ public class CancelTicketFragment extends Fragment {
 
     private FragmentCancelTicketBinding binding;
 
-    public static CancelTicketFragment newInstance(String bookingId, String fromCode, String fromCity, String toCode, String toCity, String date, String time) {
+    public static CancelTicketFragment newInstance(String bookingId, String fromCode, String fromCity, String toCode, String toCity, String date, String time, double originalPrice) {
         CancelTicketFragment fragment = new CancelTicketFragment();
         Bundle args = new Bundle();
         args.putString("bookingId", bookingId);
@@ -24,6 +24,7 @@ public class CancelTicketFragment extends Fragment {
         args.putString("toCity", toCity);
         args.putString("date", date);
         args.putString("time", time);
+        args.putDouble("originalPrice", originalPrice);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,10 +54,15 @@ public class CancelTicketFragment extends Fragment {
             binding.tvDate.setText(getArguments().getString("date"));
             binding.tvTime.setText(getArguments().getString("time"));
             
-            // Giả lập dữ liệu hoàn tiền (có thể load từ API sau này)
-            binding.tvOriginalPrice.setText("2,450,000 VND");
-            binding.tvCancelFee.setText("- 600,000 VND");
-            binding.tvRefundAmount.setText("1,850,000 VND");
+            double originalPrice = getArguments().getDouble("originalPrice", 0);
+            double cancelFee = 300000; // Fixed fee for now or logic based on policy
+            double refundAmount = originalPrice - cancelFee;
+            if (refundAmount < 0) refundAmount = 0;
+
+            java.text.DecimalFormat df = new java.text.DecimalFormat("#,###");
+            binding.tvOriginalPrice.setText(df.format(originalPrice) + " VND");
+            binding.tvCancelFee.setText("- " + df.format(cancelFee) + " VND");
+            binding.tvRefundAmount.setText(df.format(refundAmount) + " VND");
         }
     }
 

@@ -14,10 +14,7 @@ import com.skyline.app.databinding.ActivityConfirmPaymentBinding;
 import com.skyline.app.network.Flight;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class ConfirmPaymentActivity extends AppCompatActivity {
@@ -57,6 +54,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
     private void initViews() {
         binding.btnBack.setOnClickListener(v -> finish());
+        binding.tvPriceDetail.setOnClickListener(v -> showPriceDetails());
 
         // Setup Card Type Spinner
         String[] cardTypes = {"Visa", "Mastercard", "JCB", "American Express"};
@@ -64,10 +62,10 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding.spinnerCardType.setAdapter(adapter);
 
         // Payment Method Selection
-        binding.cardPaymentMethod.setOnClickListener(v -> toggleCardDetails(true));
-        binding.vnpayMethod.setOnClickListener(v -> toggleCardDetails(false));
-        binding.vietqrMethod.setOnClickListener(v -> toggleCardDetails(false));
-        binding.momoMethod.setOnClickListener(v -> toggleCardDetails(false));
+        binding.cardPaymentMethod.setOnClickListener(v -> selectPaymentMethod("card"));
+        binding.vnpayMethod.setOnClickListener(v -> selectPaymentMethod("vnpay"));
+        binding.vietqrMethod.setOnClickListener(v -> selectPaymentMethod("vietqr"));
+        binding.momoMethod.setOnClickListener(v -> selectPaymentMethod("momo"));
 
         binding.etExpiry.setOnClickListener(v -> showExpiryPicker());
 
@@ -77,13 +75,32 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         });
 
         binding.btnPay.setOnClickListener(v -> processPayment());
+        
+        // Default selection
+        selectPaymentMethod("card");
     }
 
-    private void toggleCardDetails(boolean show) {
-        binding.cardDetails.setVisibility(show ? View.VISIBLE : View.GONE);
-        binding.rbPaymentCard.setChecked(show);
-        binding.rbVNPay.setChecked(!show && binding.vnpayMethod.isPressed());
-        // Simple logic for radio buttons in sample
+    private void selectPaymentMethod(String method) {
+        binding.rbPaymentCard.setChecked("card".equals(method));
+        binding.rbVNPay.setChecked("vnpay".equals(method));
+        binding.rbVietQR.setChecked("vietqr".equals(method));
+        binding.rbMomo.setChecked("momo".equals(method));
+
+        binding.cardDetails.setVisibility("card".equals(method) ? View.VISIBLE : View.GONE);
+        binding.tvVNPayRedirect.setVisibility("vnpay".equals(method) ? View.VISIBLE : View.GONE);
+        binding.tvVietQRRedirect.setVisibility("vietqr".equals(method) ? View.VISIBLE : View.GONE);
+        binding.tvMomoRedirect.setVisibility("momo".equals(method) ? View.VISIBLE : View.GONE);
+    }
+
+    private void showPriceDetails() {
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.dialog_price_detail, null);
+        dialog.setContentView(view);
+        
+        view.findViewById(R.id.btnClose).setOnClickListener(v -> dialog.dismiss());
+        view.findViewById(R.id.btnConfirm).setOnClickListener(v -> dialog.dismiss());
+        
+        dialog.show();
     }
 
     private void showExpiryPicker() {
@@ -112,7 +129,6 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         Toast.makeText(this, "Thanh toán thành công! Vé đã được gửi tới: " + passengerEmail, Toast.LENGTH_LONG).show();
 
         binding.btnPay.postDelayed(() -> {
-//            Intent intent = new Intent(this, SuccessActivity.class);
             Intent intent = new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);

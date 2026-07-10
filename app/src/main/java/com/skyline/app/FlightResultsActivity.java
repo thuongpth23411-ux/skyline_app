@@ -226,11 +226,13 @@ public class FlightResultsActivity extends AppCompatActivity {
                     View centerView = snapHelper.findSnapView(dateLayoutManager);
                     if (centerView != null) {
                         int pos = dateLayoutManager.getPosition(centerView);
-                        String newDate = apiDateFormat.format(dateItems.get(pos).date);
-                        if (!newDate.equals(selectedDateStr)) {
-                            selectedDateStr = newDate;
-                            dateAdapter.updateSelection(pos);
-                            searchFlights(fromCode, toCode, selectedDateStr);
+                        if (pos != RecyclerView.NO_POSITION && pos < dateItems.size()) {
+                            String newDate = apiDateFormat.format(dateItems.get(pos).date);
+                            if (!newDate.equals(selectedDateStr)) {
+                                selectedDateStr = newDate;
+                                dateAdapter.updateSelection(pos);
+                                searchFlights(fromCode, toCode, selectedDateStr);
+                            }
                         }
                     }
                 }
