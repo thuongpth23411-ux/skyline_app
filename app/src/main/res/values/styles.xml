@@ -91,28 +91,31 @@
     <style name="CustomCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
         <item name="android:background">@color/white</item>
         <item name="backgroundTint">@color/white</item>
-        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:minHeight">0dp</item>
     </style>
 
     <style name="CustomCalendarHeaderTitle" parent="Widget.Material3.MaterialCalendar.HeaderTitle">
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">30sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/skyline_blue_dark</item>
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
         <item name="android:paddingBottom">0dp</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="CustomCalendarHeaderSelection" parent="Widget.Material3.MaterialCalendar.HeaderSelection">
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/skyline_blue_dark</item>
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:translationY">-4dp</item>
     </style>
 
     <style name="HideViewStyle">
@@ -126,12 +129,10 @@
         <item name="backgroundTint">@color/skyline_blue_dark</item>
         <item name="android:paddingLeft">24dp</item>
         <item name="android:paddingRight">24dp</item>
-        <item name="android:minHeight">48dp</item>
+        <item name="android:minHeight">44dp</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="cornerRadius">24dp</item>
+        <item name="cornerRadius">22dp</item>
     </style>
 
     <style name="CustomNegativeButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
