@@ -17,9 +17,10 @@
         android:padding="16dp">
 
         <ImageView
+            android:id="@+id/img_notif_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_gift"
+            android:src="@drawable/ic_notifications"
             app:tint="@color/skyline_blue" />
 
         <LinearLayout
@@ -33,7 +34,7 @@
                 android:id="@+id/tv_notif_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Khuyến mãi mới!"
+                android:text="Thông báo mới"
                 android:textColor="@color/skyline_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -45,7 +46,7 @@
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:text="Bạn có một ưu đãi mới hấp dẫn, nhấn để xem ngay."
+                android:text="Bạn có một thông báo mới, nhấn để xem ngay."
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="13sp" />
         </LinearLayout>

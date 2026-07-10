@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 import com.skyline.app.databinding.FragmentHomeBinding;
 import com.skyline.app.network.Promotion;
+import com.skyline.app.utils.NotificationHelper;
 import com.skyline.app.utils.SessionManager;
 import com.skyline.model.Destination;
 import com.skyline.model.Experience;
@@ -56,62 +57,38 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkNewPromotions() {
-        // Giả lập nhận thông báo mới khi vào app
-        // Trong thực tế, logic này có thể chạy trong một Background Service hoặc dùng WebSocket/FCM
-        Log.d("HomeFragment", "Checking for new promotions to notify user...");
-        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
-            @Override
-            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    // Để demo, ta lấy cái mới nhất và giả định nó là thông báo mới
-                    Promotion latest = response.body().get(0);
-                    showNotificationPopup(latest);
+        Log.d("HomeFragment", "Simulating various notifications...");
+        // Giả lập nhận các loại thông báo khác nhau sau một khoảng trễ ngắn
+        if (binding != null) {
+            binding.getRoot().postDelayed(() -> {
+                if (isAdded() && getActivity() != null) {
+                    NotificationHelper.showDropDownNotification(
+                        getActivity(), 
+                        "Ưu đãi vé bay", 
+                        "Giảm ngay 20% khi đặt vé đi Đà Nẵng hôm nay!", 
+                        NotificationHelper.NotifType.PROMOTION, 
+                        "Thứ 6 Mở App"
+                    );
+                    updateNotificationBadge();
                 }
-            }
-            @Override
-            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {}
-        });
+            }, 3000);
+
+            binding.getRoot().postDelayed(() -> {
+                if (isAdded() && getActivity() != null) {
+                    NotificationHelper.showDropDownNotification(
+                        getActivity(), 
+                        "Cập nhật hồ sơ", 
+                        "Chúc mừng! Bạn đã được thăng hạng hội viên BẠC.", 
+                        NotificationHelper.NotifType.PROFILE, 
+                        null
+                    );
+                    updateNotificationBadge();
+                }
+            }, 8000);
+        }
     }
 
     private void showNotificationPopup(Promotion promotion) {
-        if (getActivity() == null) return;
-        
-        View popupView = getLayoutInflater().inflate(R.layout.layout_notification_popup, null);
-        android.widget.TextView tvTitle = popupView.findViewById(R.id.tv_notif_title);
-        android.widget.TextView tvDesc = popupView.findViewById(R.id.tv_notif_desc);
-        
-        tvTitle.setText("Khuyến mãi: " + promotion.getTitle());
-        tvDesc.setText("Nhấn để xem chi tiết ưu đãi hấp dẫn ngay!");
-
-        android.widget.PopupWindow popupWindow = new android.widget.PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
-        );
-
-        popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-        
-        popupView.setOnClickListener(v -> {
-            popupWindow.dismiss();
-            Intent intent = new Intent(requireContext(), PromotionsActivity.class);
-            intent.putExtra("OPEN_PROMO_NAME", promotion.getTitle());
-            startActivity(intent);
-        });
-
-        popupView.findViewById(R.id.btn_close_popup).setOnClickListener(v -> popupWindow.dismiss());
-
-        // Hiển thị đổ xuống từ top
-        binding.getRoot().post(() -> {
-            if (binding != null) {
-                popupWindow.showAtLocation(binding.getRoot(), android.view.Gravity.TOP, 0, 100);
-                
-                // Lưu vào danh sách thông báo
-                SessionManager sm = new SessionManager(requireContext());
-                sm.addLocalNotification("Khuyến mãi mới", promotion.getTitle());
-                updateNotificationBadge();
-            }
-        });
     }
 
     @Override
