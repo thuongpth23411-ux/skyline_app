@@ -24,7 +24,7 @@ public class RetrofitClient {
 
     public static GroqService getGroqInstance() {
         if (groqInstance == null) {
-            groqInstance = createRetrofit("https://api.groq.com/")
+            groqInstance = createRetrofit("https://api.qrserver.com/v1/") // Placeholder or keep as groq if needed
                     .create(GroqService.class);
         }
         return groqInstance;

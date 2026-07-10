@@ -110,6 +110,7 @@ public class FullPromotionAdapter extends RecyclerView.Adapter<FullPromotionAdap
                         .placeholder(placeholderRes)
                         .error(placeholderRes)
                         .centerCrop()
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                         .into(binding.imgPromo);
             } else {
                 binding.imgPromo.setImageResource(placeholderRes);
