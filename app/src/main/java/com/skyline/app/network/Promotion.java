@@ -92,5 +92,13 @@ public class Promotion {
     }
     
     public String getCode() { return promotionCode != null ? promotionCode : ""; }
+    public String getDiscountType() { return discountType; }
+    public double getDiscountValue() { return discountValue; }
+    public double getMaxDiscount() { return maxDiscount; }
+    public double getMinimumOrder() { return minimumOrder; }
+    public int getQuantity() { return quantity; }
+    public String getStatus() { return status; }
+    public String getStartDate() { return startDate; }
+    public String getEndDateRaw() { return endDate; }
     public int getImageRes() { return imageRes; }
 }

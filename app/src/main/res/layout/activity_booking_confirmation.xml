@@ -226,15 +226,19 @@
 
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="SỐ ĐIỆN THOẠI" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:orientation="horizontal">
-                            <Spinner android:id="@+id/spPhoneCountry" android:layout_width="100dp" android:layout_height="48dp" android:background="@drawable/bg_auth_input" />
+                            <Spinner android:id="@+id/spPhoneCountry" android:layout_width="100dp" android:layout_height="48dp" android:background="@drawable/bg_auth_input" android:spinnerMode="dropdown" />
                             <View android:layout_width="12dp" android:layout_height="0dp" />
-                            <EditText android:id="@+id/edtPhone" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="Nhập số điện thoại" android:textColor="@color/skyline_blue_dark" android:inputType="phone" android:textSize="14sp" />
+                            <EditText android:id="@+id/edtPhone" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="Nhập số điện thoại" android:textColor="@color/skyline_blue_dark" android:inputType="number" android:textSize="14sp" />
                         </LinearLayout>
+                        <TextView android:id="@+id/tvErrorPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FF4D4D" android:textSize="10sp" android:visibility="gone" android:layout_marginTop="2dp" />
 
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="EMAIL" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
                         <EditText android:id="@+id/edtEmail" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="example@domain.com" android:textColor="@color/skyline_blue_dark" android:inputType="textEmailAddress" android:textSize="14sp" />
+                        <TextView android:id="@+id/tvErrorEmail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FF4D4D" android:textSize="10sp" android:visibility="gone" android:layout_marginTop="2dp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
+
 
                 <!-- DỊCH VỤ ĐÃ CHỌN (TÁCH BIỆT THEO NGƯỜI) -->
                 <com.google.android.material.card.MaterialCardView
@@ -271,6 +275,62 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- VOUCHER SELECTION ROW (Shopee Style) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardVoucherRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
+                    <LinearLayout
+                        android:id="@+id/layoutVoucherClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_gift"
+                            app:tint="@color/skyline_teal"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Skyline Voucher"
+                            android:textColor="@color/skyline_blue_dark"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedVoucherTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn voucher"
+                            android:textColor="@color/skyline_text_secondary"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/skyline_text_secondary"
+                            android:contentDescription="@null" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <!-- CHI TIẾT THANH TOÁN -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardPaymentDetails"
@@ -295,9 +355,10 @@
                             android:id="@+id/containerPaymentDetails"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
                             android:orientation="vertical" />
 
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="8dp" />
 
                         <!-- ƯU ĐÃI KHỨ HỒI -->
                         <RelativeLayout android:id="@+id/layoutRoundTripDiscount" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone">
@@ -305,7 +366,14 @@
                             <TextView android:id="@+id/txtRoundTripDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
                         </RelativeLayout>
 
-                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+                        <RelativeLayout android:id="@+id/layoutVoucherDiscount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:visibility="gone">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GIẢM GIÁ VOUCHER" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/txtVoucherDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="12dp" />
+
+                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TỔNG CỘNG" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
                             <TextView android:id="@+id/txtGrandTotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textSize="18sp" android:textStyle="bold" />
                         </RelativeLayout>

@@ -38,10 +38,10 @@ public class BaseAuthActivity extends AppCompatActivity {
                         isPasswordVisible[0] = !isPasswordVisible[0];
                         if (isPasswordVisible[0]) {
                             editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                            editText.setCompoundDrawablesWithIntrinsicBounds(editText.getCompoundDrawables()[0], null, AppCompatResources.getDrawable(this, R.drawable.ic_eye_off_auth), null);
+                            editText.setCompoundDrawablesWithIntrinsicBounds(editText.getCompoundDrawables()[0], null, AppCompatResources.getDrawable(this, R.drawable.ic_eye_auth), null);
                         } else {
                             editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                            editText.setCompoundDrawablesWithIntrinsicBounds(editText.getCompoundDrawables()[0], null, AppCompatResources.getDrawable(this, R.drawable.ic_eye_auth), null);
+                            editText.setCompoundDrawablesWithIntrinsicBounds(editText.getCompoundDrawables()[0], null, AppCompatResources.getDrawable(this, R.drawable.ic_eye_off_auth), null);
                         }
                         editText.setSelection(editText.getText().length());
                         v.performClick();

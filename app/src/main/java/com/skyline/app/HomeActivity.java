@@ -57,10 +57,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupClicks() {
-        binding.bottomNavigation.navHome.setOnClickListener(v -> {
-            updateNavSelection(v);
+        View.OnClickListener homeListener = v -> {
+            updateNavSelection(binding.bottomNavigation.navHome);
             showFragment(new HomeFragment());
-        });
+        };
+        binding.bottomNavigation.navHome.setOnClickListener(homeListener);
+        binding.bottomNavigation.tvNavHomeText.setOnClickListener(homeListener);
+
         binding.bottomNavigation.navBook.setOnClickListener(v -> {
             updateNavSelection(v);
             showFragment(new BookFragment());

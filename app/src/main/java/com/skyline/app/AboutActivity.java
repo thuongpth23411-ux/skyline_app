@@ -91,13 +91,22 @@ public class AboutActivity extends AppCompatActivity {
         binding.btnTeamPrev.setOnClickListener(v -> binding.teamPager.setCurrentItem(binding.teamPager.getCurrentItem() - 1));
         binding.btnTeamNext.setOnClickListener(v -> binding.teamPager.setCurrentItem(binding.teamPager.getCurrentItem() + 1));
 
-        binding.bottomNav.navHome.setOnClickListener(v -> finish());
+        binding.bottomNav.navHome.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
+
+        binding.bottomNav.tvNavHomeText.setOnClickListener(v -> binding.bottomNav.navHome.performClick());
 
         binding.bottomNav.navBook.setOnClickListener(v -> {
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("TARGET_FRAGMENT", "BOOK");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
+            overridePendingTransition(0, 0);
             finish();
         });
 
@@ -106,12 +115,14 @@ public class AboutActivity extends AppCompatActivity {
             intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
+            overridePendingTransition(0, 0);
             finish();
         });
 
         binding.bottomNav.navProfile.setOnClickListener(v -> {
             if (sessionManager.isLoggedIn()) {
                 startActivity(new Intent(this, ProfileActivity.class));
+                overridePendingTransition(0, 0);
                 finish();
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
