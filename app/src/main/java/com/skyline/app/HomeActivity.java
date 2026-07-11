@@ -101,11 +101,9 @@ public class HomeActivity extends AppCompatActivity {
 
     public void updateBottomNavBadge() {
         int count = sessionManager.getUnreadNotifCount();
-        if (count > 0) {
-            binding.bottomNavigation.tvHomeBadge.setVisibility(View.VISIBLE);
-            binding.bottomNavigation.tvHomeBadge.setText(String.valueOf(count));
-        } else {
-            binding.bottomNavigation.tvHomeBadge.setVisibility(View.GONE);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if (currentFragment instanceof HomeFragment) {
+            ((HomeFragment) currentFragment).updateNotificationBadge(count);
         }
     }
 

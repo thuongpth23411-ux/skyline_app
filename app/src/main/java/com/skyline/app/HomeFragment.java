@@ -45,6 +45,17 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         checkLoginStatus();
+        updateNotificationBadge(new SessionManager(requireContext()).getUnreadNotifCount());
+    }
+
+    public void updateNotificationBadge(int count) {
+        if (binding == null) return;
+        if (count > 0) {
+            binding.tvNotifBadge.setVisibility(View.VISIBLE);
+            binding.tvNotifBadge.setText(String.valueOf(count));
+        } else {
+            binding.tvNotifBadge.setVisibility(View.GONE);
+        }
     }
 
     private void checkLoginStatus() {

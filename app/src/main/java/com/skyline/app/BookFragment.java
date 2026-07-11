@@ -173,7 +173,8 @@ public class BookFragment extends Fragment {
 
         binding.btnBack.setOnClickListener(v -> {
             if (getActivity() instanceof HomeActivity) {
-                getActivity().findViewById(R.id.navHome).performClick();
+                HomeActivity home = (HomeActivity) getActivity();
+                home.findViewById(R.id.navHome).performClick();
             }
         });
 

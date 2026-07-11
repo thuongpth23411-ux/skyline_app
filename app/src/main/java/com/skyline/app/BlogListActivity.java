@@ -98,7 +98,7 @@ public class BlogListActivity extends AppCompatActivity {
 
         binding.chipDestination.setCardBackgroundColor(android.content.res.ColorStateList.valueOf(selectedCategory.equals("DIEM_DEN") ? activeColor : inactiveColor));
         binding.tvTextDest.setTextColor(selectedCategory.equals("DIEM_DEN") ? activeText : inactiveText);
-        binding.ivIconDest.setImageTintList(android.content.res.ColorStateList.valueOf(selectedCategory.equals("DIEM_DEN") ? activeText : activeText));
+        binding.ivIconDest.setImageTintList(android.content.res.ColorStateList.valueOf(selectedCategory.equals("DIEM_DEN") ? activeText : inactiveText));
 
         binding.chipTips.setCardBackgroundColor(android.content.res.ColorStateList.valueOf(selectedCategory.equals("KINH_NGHIEM") ? activeColor : inactiveColor));
         binding.tvTextTips.setTextColor(selectedCategory.equals("KINH_NGHIEM") ? activeText : inactiveText);
