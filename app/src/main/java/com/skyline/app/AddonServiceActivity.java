@@ -207,6 +207,17 @@ public class AddonServiceActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SeatSelectionActivity.class);
             intent.putExtra("flight_json", gson.toJson(isReturn ? returnFlight : flight));
             intent.putExtra("initialSeat", isReturn ? returnSelectedSeats.get(index) : selectedSeats.get(index));
+            
+            // Gửi kèm các ghế mà những người khác trong đoàn đã chọn
+            ArrayList<String> otherSeats = new ArrayList<>();
+            List<String> sourceList = isReturn ? returnSelectedSeats : selectedSeats;
+            for (int i = 0; i < sourceList.size(); i++) {
+                if (i != index && !sourceList.get(i).isEmpty()) {
+                    otherSeats.add(sourceList.get(i));
+                }
+            }
+            intent.putStringArrayListExtra("otherGroupSeats", otherSeats);
+
             intent.putExtra("fareType", isReturn ? returnFareType : fareType);
             intent.putExtra("isRoundTrip", isRoundTrip);
             startActivityForResult(intent, isReturn ? REQUEST_CODE_SEAT_RETURN : REQUEST_CODE_SEAT);
@@ -313,16 +324,28 @@ public class AddonServiceActivity extends AppCompatActivity {
 
         if (isRoundTrip && returnFlight != null) {
             findViewById(R.id.cardFlightReturn).setVisibility(View.VISIBLE);
-            setTextSafe(R.id.tvDepCodeReturn, returnFlight.getDepartureAirport().getCode());
-            setTextSafe(R.id.tvArrCodeReturn, returnFlight.getArrivalAirport().getCode());
-            setTextSafe(R.id.tvDepAirportReturn, cleanAirportName(returnFlight.getDepartureAirport().getName()));
-            setTextSafe(R.id.tvArrAirportReturn, cleanAirportName(returnFlight.getArrivalAirport().getName()));
+            
+            // Thống nhất vị trí sân bay: SGN bên trái, DAD bên phải cho cả 2 lượt
+            // Lượt về: Điểm đến (SGN) hiện ở cột bên trái, Điểm đi (DAD) hiện ở cột bên phải
+            setTextSafe(R.id.tvDepCodeReturn, returnFlight.getArrivalAirport().getCode());
+            setTextSafe(R.id.tvArrCodeReturn, returnFlight.getDepartureAirport().getCode());
+            setTextSafe(R.id.tvDepAirportReturn, cleanAirportName(returnFlight.getArrivalAirport().getName()));
+            setTextSafe(R.id.tvArrAirportReturn, cleanAirportName(returnFlight.getDepartureAirport().getName()));
             setTextSafe(R.id.tvFlightNumberRet, returnFlight.getFlightNumber());
 
             Date dDateR = parseIsoDate(returnFlight.getDepartureAt());
             Date aDateR = parseIsoDate(returnFlight.getArrivalAt());
-            if (dDateR != null) { setTextSafe(R.id.tvDepTimeReturn, timeFormat.format(dDateR)); setTextSafe(R.id.tvDepDateReturn, dateFormat.format(dDateR)); }
-            if (aDateR != null) { setTextSafe(R.id.tvArrTimeReturn, timeFormat.format(aDateR)); setTextSafe(R.id.tvArrDateReturn, dateFormat.format(aDateR)); }
+            
+            // Giờ đi của lượt về (DAD) hiển thị bên phải, Giờ đến (SGN) hiển thị bên trái
+            if (aDateR != null) { 
+                setTextSafe(R.id.tvDepTimeReturn, timeFormat.format(aDateR)); 
+                setTextSafe(R.id.tvDepDateReturn, dateFormat.format(aDateR)); 
+            }
+            if (dDateR != null) { 
+                setTextSafe(R.id.tvArrTimeReturn, timeFormat.format(dDateR)); 
+                setTextSafe(R.id.tvArrDateReturn, dateFormat.format(dDateR)); 
+            }
+
             if (returnFlight.getDuration() > 0) setTextSafe(R.id.tvDurationReturn, (returnFlight.getDuration()/60) + "g " + (returnFlight.getDuration()%60) + "p");
         }
     }
@@ -346,23 +369,32 @@ public class AddonServiceActivity extends AppCompatActivity {
 
     private void updateTotalPrice() {
         int totalPax = adults + children;
+
+        // baseFarePrice là giá TỔNG từ data (đã gồm thuế phí)
+        double adultTotalOut = baseFarePrice;
+        // Trẻ em được giảm 25% trên phần giá vé (không giảm trên phí sân bay 450k)
+        double childTotalOut = 0.75 * (adultTotalOut - 450000) + 450000;
+        double totalOut = (adultTotalOut * adults) + (childTotalOut * children);
+
+        double totalIn = 0;
+        double roundTripDiscount = 0;
+        if (isRoundTrip) {
+            double adultTotalIn = returnBasePrice;
+            double childTotalIn = 0.75 * (adultTotalIn - 450000) + 450000;
+            totalIn = (adultTotalIn * adults) + (childTotalIn * children);
+
+            // Giảm giá khứ hồi 5% trên tổng giá vé (không tính trên phí 450k)
+            double farePartOut = (adultTotalOut - 450000) * adults + (childTotalOut - 450000) * children;
+            double farePartIn = (adultTotalIn - 450000) * adults + (childTotalIn - 450000) * children;
+            roundTripDiscount = (farePartOut + farePartIn) * 0.05;
+        }
+
         double totalBaggage = 0;
         for (int i = 0; i < baggage10s.size(); i++) {
             totalBaggage += baggage10s.get(i) * 200000 + baggage23s.get(i) * 450000;
             if (isRoundTrip) totalBaggage += returnB10s.get(i) * 200000 + returnB23s.get(i) * 450000;
         }
 
-        double vatOut = (baseFarePrice * totalPax) * 0.10;
-        double totalOut = (baseFarePrice * totalPax) + vatOut + (450000 * totalPax);
-        
-        double totalIn = 0;
-        double roundTripDiscount = 0;
-        if (isRoundTrip) {
-            double vatIn = (returnBasePrice * totalPax) * 0.10;
-            totalIn = (returnBasePrice * totalPax) + vatIn + (450000 * totalPax);
-            roundTripDiscount = ((baseFarePrice + returnBasePrice) * totalPax) * 0.05;
-        }
-        
         txtTotalPrice.setText(new DecimalFormat("#,###").format(totalOut + totalIn + totalBaggage - roundTripDiscount) + " VND");
     }
 

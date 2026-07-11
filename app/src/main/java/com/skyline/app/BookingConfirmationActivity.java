@@ -4,12 +4,14 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +83,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         RadioGroup rgGender;
         Spinner spNationality, spDocumentType;
         TextView tvErrorLastName, tvErrorFirstName, tvErrorBirthDate, tvErrorDocumentNo;
+        View btnLoadContact;
     }
 
     // Static storage to persist data across navigation (Draft)
@@ -156,6 +159,16 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             binding.layoutVoucherClick.setOnClickListener(voucherClick);
         }
 
+        binding.edtPhone.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) validateSinglePhone();
+        });
+        binding.edtEmail.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) validateSingleEmail();
+        });
+
+        setupTextWatcher(binding.edtEmail, binding.tvErrorEmail);
+        setupTextWatcher(binding.edtPhone, binding.tvErrorPhone);
+
         // Restore contact draft
         if (!draftEmail.isEmpty()) binding.edtEmail.setText(draftEmail);
         if (!draftPhone.isEmpty()) binding.edtPhone.setText(draftPhone);
@@ -197,7 +210,18 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         final double[] tempDiscount = { voucherDiscountAmount };
 
         int totalPax = adults + children;
-        final double subTotal = (baseFarePrice * 1.1 + 450000) * totalPax + (isRoundTrip ? (returnBasePrice * 1.1 + 450000) * totalPax : 0);
+        // adultTotalOut là baseFarePrice (giá từ data đã gồm thuế phí)
+        double childTotalOut = 0.75 * (baseFarePrice - 450000) + 450000;
+        double farePartOut = (baseFarePrice - 450000) * adults + (childTotalOut - 450000) * children;
+
+        double farePartIn = 0;
+        if (isRoundTrip) {
+            double childTotalIn = 0.75 * (returnBasePrice - 450000) + 450000;
+            farePartIn = (returnBasePrice - 450000) * adults + (childTotalIn - 450000) * children;
+        }
+
+        double rtDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
+        final double subTotal = (baseFarePrice * adults + childTotalOut * children) + (isRoundTrip ? (returnBasePrice * adults + (0.75 * (returnBasePrice - 450000) + 450000) * children) : 0) - rtDiscount;
 
         if (allPromotions != null && !allPromotions.isEmpty()) {
             VoucherAdapter adapter = new VoucherAdapter(allPromotions, 
@@ -375,8 +399,19 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         if (allPromotions == null || allPromotions.isEmpty()) return;
 
         int totalPax = adults + children;
-        double subTotal = (baseFarePrice * 1.1 + 450000) * totalPax;
-        if (isRoundTrip) subTotal += (returnBasePrice * 1.1 + 450000) * totalPax;
+        double childTotalOut = 0.75 * (baseFarePrice - 450000) + 450000;
+        double farePartOut = (baseFarePrice - 450000) * adults + (childTotalOut - 450000) * children;
+
+        double farePartIn = 0;
+        double adultTotalIn = isRoundTrip ? returnBasePrice : 0;
+        double childTotalIn = isRoundTrip ? (0.75 * (adultTotalIn - 450000) + 450000) : 0;
+        if (isRoundTrip) {
+            farePartIn = (adultTotalIn - 450000) * adults + (childTotalIn - 450000) * children;
+        }
+
+        double rtDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
+        double subTotal = (baseFarePrice * adults + childTotalOut * children);
+        if (isRoundTrip) subTotal += (adultTotalIn * adults + childTotalIn * children) - rtDiscount;
 
         com.skyline.app.network.Promotion best = null;
         double maxDiscount = 0;
@@ -434,6 +469,15 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         form.tvErrorFirstName = view.findViewById(R.id.tvErrorFirstName);
         form.tvErrorBirthDate = view.findViewById(R.id.tvErrorBirthDate);
         form.tvErrorDocumentNo = view.findViewById(R.id.tvErrorDocumentNo);
+        form.btnLoadContact = view.findViewById(R.id.btnLoadContact);
+        
+        // Chỉ hiển thị nút danh bạ nếu đã đăng nhập
+        if (sessionManager.isLoggedIn()) {
+            form.btnLoadContact.setVisibility(View.VISIBLE);
+            form.btnLoadContact.setOnClickListener(v -> showContactPicker(form));
+        } else {
+            form.btnLoadContact.setVisibility(View.GONE);
+        }
 
         TextView tvTitle = view.findViewById(R.id.tvPassengerTitle);
         String typeName = type.equals("ADULT") ? "NGƯỜI LỚN" : "TRẺ EM";
@@ -455,10 +499,37 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         setupSpinner(form.spNationality, new String[]{"Việt Nam", "Thái Lan", "Singapore", "Nhật Bản", "Hàn Quốc"});
         setupSpinner(form.spDocumentType, new String[]{"CCCD", "Hộ chiếu"});
 
-        form.edtBirthDate.setFocusable(true);
-        form.edtBirthDate.setClickable(true);
-        form.edtBirthDate.setFocusableInTouchMode(true);
         view.findViewById(R.id.ivCalendar).setOnClickListener(v -> showBirthDatePicker(form));
+
+        // Real-time validation for focus loss
+        form.edtLastName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && form.edtLastName.getText().toString().trim().isEmpty()) {
+                showInlineError(form.edtLastName, form.tvErrorLastName, "Họ không được để trống");
+            }
+        });
+        form.edtFirstName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && form.edtFirstName.getText().toString().trim().isEmpty()) {
+                showInlineError(form.edtFirstName, form.tvErrorFirstName, "Tên không được để trống");
+            }
+        });
+        form.edtBirthDate.setFocusable(true);
+        form.edtBirthDate.setFocusableInTouchMode(true);
+        form.edtBirthDate.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                validateSingleBirthDate(form);
+            }
+        });
+        form.edtDocumentNo.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                validateSingleDocumentNo(form);
+            }
+        });
+
+        setupTextWatcher(form.edtLastName, form.tvErrorLastName);
+        setupTextWatcher(form.edtFirstName, form.tvErrorFirstName);
+        setupTextWatcher(form.edtBirthDate, form.tvErrorBirthDate);
+        setupTextWatcher(form.edtDocumentNo, form.tvErrorDocumentNo);
+
         binding.containerForms.addView(view);
         passengerForms.add(form);
 
@@ -473,9 +544,10 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             if ("Bà".equalsIgnoreCase(data.gender) || "Bé gái".equalsIgnoreCase(data.gender)) {
                 ((RadioButton)form.rgGender.findViewById(R.id.rbMs)).setChecked(true);
             }
-            // Spinner restoration would need position mapping, for now let's focus on text
         }
     }
+
+
 
     private boolean validateFields() {
         Calendar today = Calendar.getInstance();
@@ -558,23 +630,113 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         }
 
         String phone = binding.edtPhone.getText().toString().trim();
-        if (phone.isEmpty() || phone.length() < 10 || phone.length() > 11) {
-            showInlineError(binding.edtPhone, binding.tvErrorPhone, "Số điện thoại phải từ 10 đến 11 chữ số");
+        if (phone.isEmpty() || phone.length() != 10) {
+            showInlineError(binding.edtPhone, binding.tvErrorPhone, "Số điện thoại phải đủ 10 chữ số");
             allValid = false;
         }
 
         if (!allValid) {
-            Toast.makeText(this, "Vui lòng kiểm tra lại thông tin bị lỗi", Toast.LENGTH_SHORT).show();
+            // Toast removed as requested
         }
         return allValid;
     }
 
     private void showInlineError(View input, TextView errorTv, String msg) {
-        errorTv.setText(msg);
-        errorTv.setVisibility(View.VISIBLE);
-        // Set red tint to the background border
-        if (input.getBackground() != null) {
-            input.getBackground().mutate().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_ATOP);
+        if (errorTv != null) {
+            errorTv.setText(msg);
+            errorTv.setVisibility(View.VISIBLE);
+        }
+        if (input != null) {
+            GradientDrawable gd = new GradientDrawable();
+            gd.setColor(Color.parseColor("#FAFCFF")); // original solid color from bg_auth_input
+            gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, getResources().getDisplayMetrics()));
+            gd.setStroke((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.5f, getResources().getDisplayMetrics()), 0xFFFF4D4D);
+            input.setBackground(gd);
+        }
+    }
+
+    private void clearInlineError(View input, TextView errorTv) {
+        if (errorTv != null) errorTv.setVisibility(View.GONE);
+        if (input != null) {
+            input.setBackgroundResource(R.drawable.bg_auth_input);
+        }
+    }
+
+    private void setupTextWatcher(EditText edt, TextView errorTv) {
+        edt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                clearInlineError(edt, errorTv);
+            }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        });
+    }
+
+    private void validateSingleBirthDate(PassengerForm f) {
+        String dobStr = f.edtBirthDate.getText().toString().trim();
+        if (dobStr.isEmpty()) {
+            showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Vui lòng chọn ngày sinh");
+            return;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        sdf.setLenient(false);
+        Calendar today = Calendar.getInstance();
+
+        try {
+            Date birthDate = sdf.parse(dobStr);
+            if (birthDate == null) throw new Exception();
+
+            Calendar birthCal = Calendar.getInstance();
+            birthCal.setTime(birthDate);
+            int age = today.get(Calendar.YEAR) - birthCal.get(Calendar.YEAR);
+            if (today.get(Calendar.DAY_OF_YEAR) < birthCal.get(Calendar.DAY_OF_YEAR)) age--;
+
+            if (f.type.equals("ADULT") && age < 12) {
+                showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Người lớn phải từ 12 tuổi trở lên");
+            } else if (f.type.equals("CHILD") && age >= 12) {
+                showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Trẻ em phải dưới 12 tuổi");
+            } else {
+                clearInlineError(f.edtBirthDate, f.tvErrorBirthDate);
+            }
+        } catch (Exception e) {
+            showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Định dạng ngày sai (dd/mm/yyyy)");
+        }
+    }
+
+    private void validateSingleDocumentNo(PassengerForm f) {
+        String docNo = f.edtDocumentNo.getText().toString().trim();
+        if (docNo.isEmpty()) {
+            showInlineError(f.edtDocumentNo, f.tvErrorDocumentNo, "Số giấy tờ không được để trống");
+            return;
+        }
+        String docType = f.spDocumentType.getSelectedItem().toString();
+        if (docType.equals("CCCD") && docNo.length() != 12) {
+            showInlineError(f.edtDocumentNo, f.tvErrorDocumentNo, "CCCD phải đủ 12 chữ số");
+        } else {
+            clearInlineError(f.edtDocumentNo, f.tvErrorDocumentNo);
+        }
+    }
+
+    private void validateSinglePhone() {
+        String phone = binding.edtPhone.getText().toString().trim();
+        if (phone.isEmpty()) {
+            showInlineError(binding.edtPhone, binding.tvErrorPhone, "Số điện thoại không được để trống");
+        } else if (phone.length() != 10) {
+            showInlineError(binding.edtPhone, binding.tvErrorPhone, "Số điện thoại phải đủ 10 chữ số");
+        } else {
+            clearInlineError(binding.edtPhone, binding.tvErrorPhone);
+        }
+    }
+
+    private void validateSingleEmail() {
+        String email = binding.edtEmail.getText().toString().trim();
+        if (email.isEmpty()) {
+            showInlineError(binding.edtEmail, binding.tvErrorEmail, "Email không được để trống");
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showInlineError(binding.edtEmail, binding.tvErrorEmail, "Email không hợp lệ (ví dụ: name@gmail.com)");
+        } else {
+            clearInlineError(binding.edtEmail, binding.tvErrorEmail);
         }
     }
 
@@ -602,8 +764,14 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         if (isRoundTrip && returnFlight != null) {
             binding.cardFlightReturn.setVisibility(View.VISIBLE);
             binding.returnServiceSection.setVisibility(View.VISIBLE);
-            updateFlightCardUI(returnFlight, binding.tvDepCodeReturn, binding.tvDepTimeReturn, binding.tvDepDateReturn, binding.tvDepAirportReturn, 
-                              binding.tvArrCodeReturn, binding.tvArrTimeReturn, binding.tvArrDateReturn, binding.tvArrAirportReturn, binding.tvDurationReturn);
+            
+            // Đảm bảo SGN luôn bên trái và DAD luôn bên phải cho lượt về:
+            // Truyền View cột Phải cho tham số Khởi hành (DAD) và View cột Trái cho tham số Đến (SGN)
+            updateFlightCardUI(returnFlight, 
+                              binding.tvArrCodeReturn, binding.tvArrTimeReturn, binding.tvArrDateReturn, binding.tvArrAirportReturn, 
+                              binding.tvDepCodeReturn, binding.tvDepTimeReturn, binding.tvDepDateReturn, binding.tvDepAirportReturn,
+                              binding.tvDurationReturn);
+
             if (binding.tvFlightNumberRet != null) binding.tvFlightNumberRet.setText(returnFlight.getFlightNumber());
             
             LinearLayout contIn = findViewById(R.id.containerServicesIn);
@@ -632,7 +800,18 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             if (isRoundTrip) totalAddons += rb10s.get(i) * 200000 + rb23s.get(i) * 450000;
         }
 
-        double roundTripDiscount = isRoundTrip ? ((baseFarePrice + returnBasePrice) * totalSeatPax) * 0.05 : 0;
+        double adultTotalOut = baseFarePrice;
+        double childTotalOut = 0.75 * (adultTotalOut - 450000) + 450000;
+        double farePartOut = (adultTotalOut - 450000) * adults + (childTotalOut - 450000) * children;
+
+        double farePartIn = 0;
+        double adultTotalIn = isRoundTrip ? returnBasePrice : 0;
+        double childTotalIn = isRoundTrip ? (0.75 * (adultTotalIn - 450000) + 450000) : 0;
+        if (isRoundTrip) {
+            farePartIn = (adultTotalIn - 450000) * adults + (childTotalIn - 450000) * children;
+        }
+
+        double roundTripDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
         if (isRoundTrip) {
             binding.layoutRoundTripDiscount.setVisibility(View.VISIBLE);
             binding.txtRoundTripDiscount.setText("- " + df.format(roundTripDiscount) + " VND");
@@ -640,9 +819,24 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             binding.layoutRoundTripDiscount.setVisibility(View.GONE);
         }
 
-        double grandTotal = (baseFarePrice * 1.1 + 450000) * totalSeatPax + totalAddons;
+        // Tính ưu đãi trẻ em (25% phần giá vé)
+        double childDiscountTotal = 0;
+        if (children > 0) {
+            double fareOnlyOut = (baseFarePrice - 450000) / 1.1;
+            childDiscountTotal += fareOnlyOut * 0.25 * children;
+            if (isRoundTrip) {
+                double fareOnlyIn = (returnBasePrice - 450000) / 1.1;
+                childDiscountTotal += fareOnlyIn * 0.25 * children;
+            }
+            findViewById(R.id.layoutChildDiscount).setVisibility(View.VISIBLE);
+            ((TextView)findViewById(R.id.txtChildDiscount)).setText("- " + df.format(childDiscountTotal) + " VND");
+        } else {
+            findViewById(R.id.layoutChildDiscount).setVisibility(View.GONE);
+        }
+
+        double grandTotal = (baseFarePrice * adults + childTotalOut * children) + totalAddons;
         if (isRoundTrip) {
-            grandTotal += (returnBasePrice * 1.1 + 450000) * totalSeatPax - roundTripDiscount;
+            grandTotal += (returnBasePrice * adults + (0.75 * (returnBasePrice - 450000) + 450000) * children) - roundTripDiscount;
         }
         
         // Áp dụng giảm giá Voucher
@@ -710,7 +904,8 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         TextView txtBagRet = v.findViewById(R.id.txtBaggagePriceReturn);
 
         if (totalSeatPax > 1) {
-            tvPax.setText("Hành khách " + (index + 1));
+            String pType = index >= adults ? " (Trẻ em)" : " (Người lớn)";
+            tvPax.setText("Hành khách " + (index + 1) + pType);
             tvPax.setVisibility(View.VISIBLE);
         } else {
             tvPax.setVisibility(View.GONE);
@@ -721,10 +916,13 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 
         DecimalFormat df = new DecimalFormat("#,###");
 
-        // LƯỢT ĐI
-        double vatOut = baseFarePrice * 0.1;
-        txtBase.setText(df.format(baseFarePrice) + " VND");
-        txtTax.setText(df.format(vatOut) + " VND");
+        // LƯỢT ĐI - Hiển thị giá chuẩn (Người lớn) để bên dưới trừ ưu đãi sau
+        double fareAndVat = baseFarePrice - 450000;
+        double baseForThisPax = fareAndVat / 1.1;
+        double vatForThisPax = baseForThisPax * 0.1;
+
+        txtBase.setText(df.format(baseForThisPax) + " VND");
+        txtTax.setText(df.format(vatForThisPax) + " VND");
         txtAir.setText("450,000 VND");
         txtSeat.setText("Miễn phí");
         double bagOut = b10s.get(index) * 200000 + b23s.get(index) * 450000;
@@ -733,9 +931,12 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         // LƯỢT VỀ
         if (isRoundTrip) {
             layoutReturn.setVisibility(View.VISIBLE);
-            double vatRet = returnBasePrice * 0.1;
-            txtBaseRet.setText(df.format(returnBasePrice) + " VND");
-            txtTaxRet.setText(df.format(vatRet) + " VND");
+            double fareAndVatRet = returnBasePrice - 450000;
+            double baseForThisPaxRet = fareAndVatRet / 1.1;
+            double vatForThisPaxRet = baseForThisPaxRet * 0.1;
+
+            txtBaseRet.setText(df.format(baseForThisPaxRet) + " VND");
+            txtTaxRet.setText(df.format(vatForThisPaxRet) + " VND");
             txtAirRet.setText("450,000 VND");
             txtSeatRet.setText("Miễn phí");
             double bagRet = rb10s.get(index) * 200000 + rb23s.get(index) * 450000;
@@ -849,9 +1050,21 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             totalAddons += b10s.get(i) * 200000 + b23s.get(i) * 450000;
             if (isRoundTrip) totalAddons += rb10s.get(i) * 200000 + rb23s.get(i) * 450000;
         }
-        double roundTripDiscount = isRoundTrip ? ((baseFarePrice + returnBasePrice) * totalPax) * 0.05 : 0;
-        double grandTotal = (baseFarePrice * 1.1 + 450000) * totalPax + totalAddons;
-        if (isRoundTrip) grandTotal += (returnBasePrice * 1.1 + 450000) * totalPax - roundTripDiscount;
+
+        double adultTotalOut = baseFarePrice;
+        double childTotalOut = 0.75 * (adultTotalOut - 450000) + 450000;
+        double farePartOut = (adultTotalOut - 450000) * adults + (childTotalOut - 450000) * children;
+
+        double farePartIn = 0;
+        double adultTotalIn = isRoundTrip ? returnBasePrice : 0;
+        double childTotalIn = isRoundTrip ? (0.75 * (adultTotalIn - 450000) + 450000) : 0;
+        if (isRoundTrip) {
+            farePartIn = (adultTotalIn - 450000) * adults + (childTotalIn - 450000) * children;
+        }
+
+        double roundTripDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
+        double grandTotal = (adultTotalOut * adults + childTotalOut * children) + totalAddons;
+        if (isRoundTrip) grandTotal += (adultTotalIn * adults + childTotalIn * children) - roundTripDiscount;
         
         // Trừ thêm tiền Voucher
         grandTotal -= voucherDiscountAmount;
@@ -891,6 +1104,96 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         }
 
         startActivity(intent);
+    }
+
+    private void showContactPicker(PassengerForm form) {
+        if (!sessionManager.isLoggedIn()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để sử dụng danh bạ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String token = "Bearer " + sessionManager.fetchAuthToken();
+        RetrofitClient.getInstance().getMyPassengers(token).enqueue(new Callback<List<com.skyline.app.network.PassengerDirectory>>() {
+            @Override
+            public void onResponse(Call<List<com.skyline.app.network.PassengerDirectory>> call, Response<List<com.skyline.app.network.PassengerDirectory>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    showContactListBottomSheet(form, response.body());
+                } else {
+                    Toast.makeText(BookingConfirmationActivity.this, "Danh bạ trống", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<com.skyline.app.network.PassengerDirectory>> call, Throwable t) {
+                Toast.makeText(BookingConfirmationActivity.this, "Lỗi tải danh bạ", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showContactListBottomSheet(PassengerForm form, List<com.skyline.app.network.PassengerDirectory> contacts) {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.layout_selector_country, null);
+        
+        TextView tvTitle = view.findViewById(R.id.tv_title);
+        tvTitle.setText("CHỌN TỪ DANH BẠ");
+        view.findViewById(R.id.search_card).setVisibility(View.GONE);
+        
+        android.widget.ListView listView = view.findViewById(R.id.list_items);
+        
+        List<String> displayList = new ArrayList<>();
+        for (com.skyline.app.network.PassengerDirectory contact : contacts) {
+            displayList.add(contact.getPassengerName() + "\n" + contact.getPassengerCccd());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, displayList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView tv = (TextView) super.getView(position, convertView, parent);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.skyline_blue_dark));
+                tv.setTextSize(14);
+                tv.setPadding(40, 40, 40, 40);
+                return tv;
+            }
+        };
+        
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener((parent, v, position, id) -> {
+            fillFormFromContact(form, contacts.get(position));
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+    private void fillFormFromContact(PassengerForm form, com.skyline.app.network.PassengerDirectory contact) {
+        String fullName = contact.getPassengerName();
+        if (fullName != null) {
+            String[] parts = fullName.trim().split(" ");
+            if (parts.length > 1) {
+                form.edtLastName.setText(parts[0].toUpperCase());
+                StringBuilder firstName = new StringBuilder();
+                for (int i = 1; i < parts.length; i++) {
+                    firstName.append(parts[i]).append(i == parts.length - 1 ? "" : " ");
+                }
+                form.edtFirstName.setText(firstName.toString().toUpperCase());
+            } else {
+                form.edtFirstName.setText(fullName.toUpperCase());
+                form.edtLastName.setText("");
+            }
+        }
+
+        form.edtBirthDate.setText(contact.getPassengerDob());
+        form.edtDocumentNo.setText(contact.getPassengerCccd());
+        
+        // Clear potential error states
+        clearInlineError(form.edtLastName, form.tvErrorLastName);
+        clearInlineError(form.edtFirstName, form.tvErrorFirstName);
+        clearInlineError(form.edtBirthDate, form.tvErrorBirthDate);
+        clearInlineError(form.edtDocumentNo, form.tvErrorDocumentNo);
+        
+        Toast.makeText(this, "Đã nhập thông tin từ danh bạ", Toast.LENGTH_SHORT).show();
     }
 
     private void showBirthDatePicker(PassengerForm form) {

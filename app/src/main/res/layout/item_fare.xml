@@ -21,7 +21,7 @@
             android:id="@+id/tvFareTitle"
             android:text="Phổ thông"
             android:textColor="@color/skyline_blue"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -40,7 +40,7 @@
             android:id="@+id/tvFarePrice"
             android:text="0 VND"
             android:textColor="@color/skyline_blue_dark"
-            android:textSize="32sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
             android:text="Lựa chọn"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:backgroundTint="@color/skyline_blue"
             app:cornerRadius="16dp" />

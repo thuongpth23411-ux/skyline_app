@@ -153,25 +153,22 @@ public class FareSelectionActivity extends AppCompatActivity {
         int blue = ContextCompat.getColor(this, R.color.skyline_blue);
         int teal = ContextCompat.getColor(this, R.color.skyline_teal);
 
-        // Giá mặc định nếu không lấy được từ API
-        double totalE = flight.getBasePrice();
-        double totalB = flight.getBasePrice() * 2.0;
+        // API trả về giá đã bao gồm thuế và phí
+        double baseE = flight.getBasePrice();
+        double baseB = flight.getBasePrice() * 2.0;
 
         List<Flight.PriceOption> options = flight.getPriceOptions();
         if (options != null) {
             for (Flight.PriceOption opt : options) {
-                if ("ECONOMY".equalsIgnoreCase(opt.getType())) totalE = opt.getPrice();
-                if ("BUSINESS".equalsIgnoreCase(opt.getType())) totalB = opt.getPrice();
+                if ("ECONOMY".equalsIgnoreCase(opt.getType())) baseE = opt.getPrice();
+                if ("BUSINESS".equalsIgnoreCase(opt.getType())) baseB = opt.getPrice();
             }
         }
 
-        DecimalFormat df = new DecimalFormat("#,###");
+        double totalE = baseE;
+        double totalB = baseB;
 
-        // Logic tính toán ngược: Tổng tiền = (Giá cơ bản * 1.1) + Thuế phí (450,000)
-        // => Giá cơ bản = (Tổng tiền - 450,000) / 1.1
-        double fixedFees = 450000;
-        double baseE = (totalE - fixedFees) / 1.10;
-        double baseB = (totalB - fixedFees) / 1.10;
+        DecimalFormat df = new DecimalFormat("#,###");
 
         View cardEconomy = findViewById(R.id.cardEconomy);
         if (cardEconomy != null) {
