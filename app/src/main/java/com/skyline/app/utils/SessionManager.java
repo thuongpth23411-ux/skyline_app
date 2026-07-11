@@ -63,14 +63,45 @@ public class SessionManager {
     }
 
     public void addLocalNotification(String title, String content) {
+        addLocalNotification(null, title, content, null, null);
+    }
+
+    public void addLocalNotification(String id, String title, String content, String type, String targetData) {
         String existing = prefs.getString("local_notifs", "");
         String time = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date());
-        String entry = title + "|" + content + "|" + time + ";";
+        
+        // Format: id|title|content|time|type|targetData;
+        String entry = (id != null ? id : "") + "|" + 
+                       title + "|" + 
+                       content + "|" + 
+                       time + "|" + 
+                       (type != null ? type : "") + "|" + 
+                       (targetData != null ? targetData : "") + ";";
+
         prefs.edit().putString("local_notifs", entry + existing).apply();
         
         // Tăng số lượng thông báo chưa đọc
         int unreadCount = prefs.getInt("unread_notif_count", 0);
         prefs.edit().putInt("unread_notif_count", unreadCount + 1).apply();
+        
+        // Đánh dấu đã nhận nếu có ID
+        if (id != null && !id.isEmpty()) {
+            markNotificationAsReceived(id);
+        }
+    }
+
+    public void markNotificationAsReceived(String id) {
+        String userId = getUserId();
+        if (userId == null) userId = "guest";
+        String key = "received_notif_" + userId + "_" + id;
+        prefs.edit().putBoolean(key, true).commit(); // Dùng commit để lưu ngay lập tức
+    }
+
+    public boolean isNotificationReceived(String id) {
+        String userId = getUserId();
+        if (userId == null) userId = "guest";
+        String key = "received_notif_" + userId + "_" + id;
+        return prefs.getBoolean(key, false);
     }
 
     public int getUnreadNotifCount() {
@@ -83,5 +114,10 @@ public class SessionManager {
 
     public String getLocalNotifications() {
         return prefs.getString("local_notifs", "");
+    }
+
+    public void clearNotifications() {
+        prefs.edit().remove("local_notifs").apply();
+        clearUnreadNotifCount();
     }
 }

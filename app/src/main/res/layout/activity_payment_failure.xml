@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="THANH TOÁN THẤT BẠI"
+            android:text="@string/payment_failure_title"
             android:textColor="@color/auth_error"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:gravity="center"
-            android:text="Rất tiếc, giao dịch của bạn không thể thực hiện. Vui lòng kiểm tra lại số dư tài khoản hoặc thử phương thức khác."
+            android:text="@string/payment_failure_desc"
             android:textColor="@color/skyline_text_secondary"
             android:textSize="14sp" />
 
@@ -45,7 +45,7 @@
             android:layout_height="56dp"
             android:layout_marginTop="48dp"
             android:backgroundTint="@color/skyline_blue_dark"
-            android:text="THỬ LẠI"
+            android:text="@string/retry"
             android:textStyle="bold"
             app:cornerRadius="12dp" />
 
@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="12dp"
-            android:text="ĐỔI PHƯƠNG THỨC THANH TOÁN"
+            android:text="@string/change_payment_method"
             android:textColor="@color/skyline_blue_dark"
             android:textStyle="bold" />
 
