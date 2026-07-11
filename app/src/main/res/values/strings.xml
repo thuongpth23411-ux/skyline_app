@@ -215,6 +215,17 @@
     <string name="payment_terms">Tôi hiểu và đồng ý với Điều lệ vận chuyển, Điều kiện điều khoản, Chính sách bảo mật và Điều kiện giá vé của Skyline.</string>
     <string name="pay_now">Thanh toán ngay</string>
     <string name="payment_footer_note">Trong trường hợp Quý khách đã thanh toán thành công nhưng chưa nhận được vé sau 1 tiếng, vui lòng liên hệ trung tâm trợ giúp 1900 1234 để được hỗ trợ.</string>
+    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG!</string>
+    <string name="transaction_id_label">Mã giao dịch: %s</string>
+    <string name="passenger_caps">HÀNH KHÁCH</string>
+    <string name="flight_caps">CHUYẾN BAY</string>
+    <string name="seat_caps">SỐ GHẾ</string>
+    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
+    <string name="payment_success_email_note">Vé điện tử đã được gửi vào địa chỉ Email của bạn.\nVui lòng kiểm tra hộp thư trước khi khởi hành.</string>
+    <string name="back_to_home">VỀ TRANG CHỦ</string>
+    <string name="otp_error_retry">Mã OTP không chính xác. Còn lại %d lần thử.</string>
+    <string name="retry_after_time">THỬ LẠI SAU (%s)</string>
+    <string name="retry_now">THỬ LẠI NGAY</string>
     <string name="card_expiry_hint">mm/yy</string>
     <string name="card_cvv_hint">cvv/cvc</string>
     <string name="card_number_hint">0000 0000 0000 0000</string>
