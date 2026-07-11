@@ -145,6 +145,14 @@ public class ProfileActivity extends AppCompatActivity {
         binding.btnMyVouchers.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, MyVouchersActivity.class));
         });
+
+        binding.btnBookFlight.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "BOOK");
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
     }
 
     private void toast(String message) {

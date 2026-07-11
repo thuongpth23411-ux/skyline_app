@@ -57,7 +57,7 @@ public class PromotionsActivity extends AppCompatActivity {
 
     private void setupSearch() {
         binding.btnSearch.setOnClickListener(v -> toggleSearch(true));
-        
+
         binding.btnActionSearch.setOnClickListener(v -> {
             String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
             performSearch(query);
@@ -126,7 +126,7 @@ public class PromotionsActivity extends AppCompatActivity {
                 binding.chipGroup.check(R.id.chip_all);
                 return;
             }
-            
+
             com.google.android.material.chip.Chip chip = findViewById(checkedId);
             if (chip != null) {
                 String category = chip.getText().toString();
@@ -158,16 +158,21 @@ public class PromotionsActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<Promotion>> call, @NonNull Response<List<Promotion>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     allPromotions = response.body();
+                    if (allPromotions.isEmpty()) {
+                        toast("Hiện chưa có chương trình khuyến mãi nào");
+                    }
                     // Load thông tin voucher đã lưu để tô màu icon Bookmark
                     loadSavedVouchers();
                 } else {
-                    toast("Không có dữ liệu khuyến mãi: " + response.code());
+                    toast("Lỗi tải dữ liệu: " + response.code());
+                    updateList(new ArrayList<>()); // Clear list on error
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Promotion>> call, @NonNull Throwable t) {
-                toast("Lỗi kết nối MongoDB: " + t.getMessage());
+                toast("Lỗi kết nối: " + t.getMessage());
+                updateList(new ArrayList<>());
             }
         });
     }
@@ -201,13 +206,13 @@ public class PromotionsActivity extends AppCompatActivity {
     private void filterPromotions(String category) {
         String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
         List<Promotion> filtered = new ArrayList<>();
-        
+
         String dbCategory = getDbCategory(category);
         
         for (Promotion p : allPromotions) {
             boolean matchesCategory = dbCategory.isEmpty() || (p.getCategory() != null && p.getCategory().equalsIgnoreCase(dbCategory));
             boolean matchesQuery = query.isEmpty() || p.getTitle().toLowerCase().contains(query) || p.getCode().toLowerCase().contains(query);
-            
+
             if (matchesCategory && matchesQuery) {
                 filtered.add(p);
             }
@@ -248,23 +253,13 @@ public class PromotionsActivity extends AppCompatActivity {
                         } else {
                             savedVoucherIds.add(promoId);
                         }
-                        adapter.notifyDataSetChanged();
+                        adapter.setItems(adapter.getItems(), savedVoucherIds);
                         toast(response.body().getMessage());
                     } else {
                         toast(response.body().getMessage());
                     }
                 } else {
-                    String errorMsg = "Lỗi xử lý";
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorJson = response.errorBody().string();
-                            JsonObject jsonObject = JsonParser.parseString(errorJson).getAsJsonObject();
-                            if (jsonObject.has("message")) {
-                                errorMsg = jsonObject.get("message").getAsString();
-                            }
-                        }
-                    } catch (Exception e) {}
-                    toast(errorMsg);
+                    toast("Lỗi xử lý");
                 }
             }
 
@@ -279,7 +274,7 @@ public class PromotionsActivity extends AppCompatActivity {
         android.app.Dialog dialog = new android.app.Dialog(this);
         View view = getLayoutInflater().inflate(R.layout.layout_promotion_detail, null);
         dialog.setContentView(view);
-        
+
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
             dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -290,34 +285,29 @@ public class PromotionsActivity extends AppCompatActivity {
         TextView tvCode = view.findViewById(R.id.tv_code);
         TextView tvExpiry = view.findViewById(R.id.tv_expiry);
         ImageView imgPromo = view.findViewById(R.id.img_promo);
-        
+
         tvTitle.setText(item.getTitle());
         
-        // Làm đẹp nội dung mô tả: tự động xuống dòng sau mỗi dấu chấm
-        String rawDesc = item.getDescription();
-        String formattedDesc = (rawDesc != null) ? rawDesc.replace("\\n", "\n").replace(". ", ".\n\n") : "";
+        // Handle newline characters in description if any
+        String formattedDesc = item.getDescription().replace("\\n", "\n");
         tvDesc.setText(formattedDesc);
-
+        
         tvCode.setText(item.getCode());
         tvExpiry.setText("Hạn dùng: " + item.getExpiryDate());
 
-        // Nạp ảnh thật vào popup chi tiết
+        // Load image using Glide
         String imageUrl = item.getImageUrl();
-        int placeholderRes = R.drawable.img_brand_banner;
-        String category = item.getCategory();
-        if (category.contains("MEMBER")) placeholderRes = R.drawable.img_experience_first;
-        else if (category.contains("EXCLUSIVE")) placeholderRes = R.drawable.bg_member_card_gradient;
-        else if (category.contains("NEW_USER")) placeholderRes = R.drawable.img_experience_economy;
-
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            if (imageUrl.startsWith("/")) imageUrl = "http://10.0.2.2:3000" + imageUrl;
+            if (imageUrl.startsWith("/")) {
+                imageUrl = "http://10.0.2.2:3000" + imageUrl;
+            }
             com.bumptech.glide.Glide.with(this)
                     .load(imageUrl)
-                    .placeholder(placeholderRes)
-                    .error(placeholderRes)
+                    .placeholder(R.drawable.img_brand_banner)
+                    .error(R.drawable.img_brand_banner)
                     .into(imgPromo);
         } else {
-            imgPromo.setImageResource(placeholderRes);
+            imgPromo.setImageResource(R.drawable.img_brand_banner);
         }
 
         view.findViewById(R.id.btn_copy).setOnClickListener(v -> {

@@ -10,46 +10,46 @@ public class Promotion {
     
     @SerializedName("promotionId")
     private String promotionId;
-    
+
     @SerializedName("promotionCode")
     private String promotionCode;
-    
+
     @SerializedName("promotionName")
     private String promotionName;
-    
+
     @SerializedName("description")
     private String description;
-    
+
     @SerializedName("promotionCategory")
     private String promotionCategory;
-    
+
     @SerializedName("imageUrl")
     private String imageUrl;
-    
+
     @SerializedName("discountType")
     private String discountType;
-    
+
     @SerializedName("discountValue")
     private double discountValue;
-    
+
     @SerializedName("maxDiscount")
     private double maxDiscount;
-    
+
     @SerializedName("minimumOrder")
     private double minimumOrder;
-    
+
     @SerializedName("startDate")
     private String startDate;
-    
+
     @SerializedName("endDate")
     private String endDate;
-    
+
     @SerializedName("quantity")
     private int quantity;
-    
+
     @SerializedName("applicableAirline")
     private String applicableAirline;
-    
+
     @SerializedName("status")
     private String status;
 
@@ -64,11 +64,12 @@ public class Promotion {
     public String getId() {
         if (idObj instanceof String) return (String) idObj;
         if (idObj instanceof Map) {
-            return (String) ((Map<?, ?>) idObj).get("$oid");
+            Object oid = ((Map<?, ?>) idObj).get("$oid");
+            return oid != null ? oid.toString() : "";
         }
-        return "";
+        return idObj != null ? idObj.toString() : "";
     }
-    
+
     public String getTitle() { return promotionName != null ? promotionName : ""; }
     public String getDescription() { return description != null ? description : ""; }
     public String getCategory() { return promotionCategory != null ? promotionCategory : ""; }

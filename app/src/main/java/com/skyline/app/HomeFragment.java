@@ -68,7 +68,10 @@ public class HomeFragment extends Fragment {
         promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/07/2026", R.drawable.img_promo_phuquoc));
         promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "01/08/2026", R.drawable.img_brand_banner));
 
-        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
+        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> {
+            // Khi nhấn vào item trong Pager (có chữ "Tìm hiểu thêm"), nhảy qua trang Khuyến mãi
+            startActivity(new Intent(requireContext(), PromotionsActivity.class));
+        }));
         createDots(binding.promoDots, promotions.size());
         selectDot(binding.promoDots, 0);
 
@@ -145,10 +148,12 @@ public class HomeFragment extends Fragment {
         });
 
         // Nhấn "Khám phá ngay" hoặc "Xem tất cả" mở trang Khuyến mãi
-        binding.btnExploreNow.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
-        binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
+        View.OnClickListener promoListener = v -> startActivity(new Intent(requireContext(), PromotionsActivity.class));
 
-        binding.destinationHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), BlogListActivity.class)));
+        binding.btnExploreNow.setOnClickListener(promoListener);
+        binding.promotionHeader.tvViewAll.setOnClickListener(promoListener);
+
+        binding.destinationHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả điểm đến"));
         binding.btnAboutUs.setOnClickListener(v -> startActivity(new Intent(requireContext(), AboutActivity.class)));
         binding.memberCard.btnRegister.setOnClickListener(v -> startActivity(new Intent(requireContext(), RegisterEmailActivity.class)));
         binding.memberCard.tvLogin.setOnClickListener(v -> startActivity(new Intent(requireContext(), LoginActivity.class)));
