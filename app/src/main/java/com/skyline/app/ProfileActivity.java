@@ -115,6 +115,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupMenuClicks() {
+        // Logo trong thẻ hội viên click quay về Home
+        binding.imgLogoCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
         binding.btnMenuTop.setOnClickListener(v -> {
             SettingsSideDialog dialog = new SettingsSideDialog();
             dialog.show(getSupportFragmentManager(), "SettingsSideDialog");

@@ -27,6 +27,12 @@ public class BaseAuthActivity extends AppCompatActivity {
         if (btnHome != null) {
             btnHome.setOnClickListener(v -> goHome());
         }
+        
+        // Thêm xử lý cho Logo
+        View imgLogo = findViewById(R.id.imgLogo);
+        if (imgLogo != null) {
+            imgLogo.setOnClickListener(v -> goHome());
+        }
     }
 
     protected void setupPasswordVisibility(EditText editText) {
