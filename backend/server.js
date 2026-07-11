@@ -34,8 +34,8 @@ mongoose.connect(process.env.MONGO_URI)
 
     // Seed Rank Benefits (Chỉ seed nếu trống)
     const RankBenefit = require("./models/RankBenefit");
-    const count = await RankBenefit.countDocuments();
-    if (count < 3) {
+    const countRank = await RankBenefit.countDocuments();
+    if (countRank < 3) {
         await RankBenefit.insertMany([
             { rank: "Đồng", title: "Tích điểm cơ bản", description: "Tích lũy điểm thưởng cho mỗi chuyến bay.", iconType: "points" },
             { rank: "Bạc", title: "Tích điểm 1.2x", description: "Nhận thêm 20% điểm thưởng.", iconType: "points" },
@@ -44,8 +44,43 @@ mongoose.connect(process.env.MONGO_URI)
         console.log("🚀 Rank Benefits Seeded");
     }
 
-    // KHÔNG TỰ ĐỘNG SEED PROMOTIONS NỮA ĐỂ TRÁNH MẤT DATA CỦA BẠN
-    console.log("ℹ️ Database seeding is now manual or conditional.");
+    // TỰ ĐỘNG SEED PROMOTIONS NẾU TRỐNG
+    const Promotion = require("./models/Promotion");
+    const countPromo = await Promotion.countDocuments();
+    if (countPromo === 0) {
+        await Promotion.insertMany([
+            {
+                promotionId: "PROMO001",
+                promotionCode: "SKYLINE20",
+                promotionName: "Chào hè rạng rỡ",
+                description: "Giảm 20% cho tất cả các chuyến bay nội địa",
+                promotionCategory: "EXCLUSIVE",
+                discountType: "PERCENT",
+                discountValue: 20,
+                maxDiscount: 200000,
+                minimumOrder: 500000,
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                quantity: 100,
+                status: "Active"
+            },
+            {
+                promotionId: "PROMO002",
+                promotionCode: "NEWUSER",
+                promotionName: "Chào bạn mới",
+                description: "Tặng 50k cho lần đầu đặt vé",
+                promotionCategory: "NEW_USER",
+                discountType: "FIXED",
+                discountValue: 50000,
+                minimumOrder: 0,
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                quantity: 1000,
+                status: "Active"
+            }
+        ]);
+        console.log("🚀 Promotions Seeded Automatically");
+    }
 })
 .catch((err) => {
     console.error("❌ MongoDB connection error:", err);

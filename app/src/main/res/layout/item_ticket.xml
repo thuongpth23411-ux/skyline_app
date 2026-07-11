@@ -26,7 +26,7 @@
 
             <!-- Left Stub (Date) -->
             <LinearLayout
-                android:layout_width="75dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -51,13 +51,6 @@
                     android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
-            <!-- Vertical Dotted Line Area -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_dotted_line_vertical"
-                android:layerType="software" />
 
             <!-- Body (Right) -->
             <LinearLayout
@@ -305,14 +298,14 @@
     <!-- Overlay Decoration: Vertical Dotted Line -->
     <View
         android:id="@+id/lineDivider"
-        android:layout_width="1.2dp"
+        android:layout_width="1.5dp"
         android:layout_height="0dp"
-        android:layout_marginStart="74.5dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="79.25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:background="@drawable/bg_dotted_line_vertical"
         android:layerType="software"
-        android:elevation="10dp"
+        android:elevation="1dp"
         app:layout_constraintTop_toTopOf="@id/mainCard"
         app:layout_constraintBottom_toBottomOf="@id/mainCard"
         app:layout_constraintStart_toStartOf="@id/mainCard" />
@@ -322,7 +315,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipChildren="true"
-        android:elevation="5dp"
+        android:elevation="2dp"
         app:layout_constraintTop_toTopOf="@id/mainCard"
         app:layout_constraintBottom_toBottomOf="@id/mainCard"
         app:layout_constraintStart_toStartOf="@id/mainCard"
@@ -333,7 +326,7 @@
             android:layout_height="30dp"
             android:layout_gravity="top|start"
             android:layout_marginTop="-15dp"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="65dp"
             android:background="@drawable/bg_ticket_notch" />
 
         <View
@@ -341,7 +334,7 @@
             android:layout_height="30dp"
             android:layout_gravity="bottom|start"
             android:layout_marginBottom="-15dp"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="65dp"
             android:background="@drawable/bg_ticket_notch" />
     </FrameLayout>
 
