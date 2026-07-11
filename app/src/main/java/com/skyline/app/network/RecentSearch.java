@@ -12,7 +12,6 @@ public class RecentSearch {
     public boolean isRoundTrip;
     public int adults;
     public int children;
-    public int infants;
     public long createdAt;
 
     public RecentSearch() {}

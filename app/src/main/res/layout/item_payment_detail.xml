@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvPaxTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hành khách 1"
+        android:textColor="@color/skyline_teal"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- LƯỢT ĐI -->
+    <TextView
+        android:id="@+id/tvLabelOutbound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LƯỢT ĐI"
+        android:textColor="@color/skyline_teal"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giá vé cơ bản" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+        <TextView android:id="@+id/txtBasePrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thuế GTGT (10%)" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+        <TextView android:id="@+id/txtTaxes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí sân bay &amp; hệ thống" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+        <TextView android:id="@+id/txtAirportFees" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="450.000 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/layoutSeatPrice" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí chọn ghế" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+        <TextView android:id="@+id/txtSeatPrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Miễn phí" android:textColor="@color/skyline_teal" android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/layoutBaggagePrice" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí hành lý bổ sung" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+        <TextView android:id="@+id/txtBaggagePrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+    </RelativeLayout>
+
+    <!-- LƯỢT VỀ -->
+    <LinearLayout
+        android:id="@+id/layoutReturn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Dấu ngang phân cách giữa 2 lượt -->
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LƯỢT VỀ"
+            android:textColor="@color/skyline_teal"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giá vé cơ bản" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+            <TextView android:id="@+id/txtBasePriceReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thuế GTGT (10%)" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+            <TextView android:id="@+id/txtTaxesReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí sân bay &amp; hệ thống" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+            <TextView android:id="@+id/txtAirportFeesReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="450.000 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:id="@+id/layoutSeatPriceReturn" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí chọn ghế" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+            <TextView android:id="@+id/txtSeatPriceReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Miễn phí" android:textColor="@color/skyline_teal" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:id="@+id/layoutBaggagePriceReturn" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí hành lý bổ sung" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
+            <TextView android:id="@+id/txtBaggagePriceReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View android:id="@+id/paxDivider" android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="12dp" />
+</LinearLayout>

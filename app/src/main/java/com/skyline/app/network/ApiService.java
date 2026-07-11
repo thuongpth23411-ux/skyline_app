@@ -84,5 +84,4 @@ public interface ApiService {
     Call<List<Blog>> getFeaturedBlogs();
 
     @GET("blogs/{identifier}")
-    Call<Blog> getBlogByIdentifier(@Path("identifier") String identifier);
-}
+    Call<Blog> getBlogByIdentifier(@Path("identifier") String identifier);}

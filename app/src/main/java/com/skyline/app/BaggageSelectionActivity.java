@@ -34,7 +34,7 @@ public class BaggageSelectionActivity extends AppCompatActivity {
 
     private static final int PRICE_10KG = 200000;
     private static final int PRICE_23KG = 450000;
-    private static final int MAX_TOTAL_BAGGAGE = 2;
+    private int maxTotalBaggage = 2;
     private String fareType = "";
 
     @Override
@@ -59,6 +59,9 @@ public class BaggageSelectionActivity extends AppCompatActivity {
         qty10 = intent.getIntExtra("initialB10", 0);
         qty23 = intent.getIntExtra("initialB23", 0);
         fareType = intent.getStringExtra("fareType");
+        
+        int paxCount = intent.getIntExtra("passengerCount", 1);
+        maxTotalBaggage = paxCount * 2; // Mỗi người tối đa 2 kiện bổ sung
     }
 
     private void initViews() {
@@ -88,7 +91,7 @@ public class BaggageSelectionActivity extends AppCompatActivity {
         });
 
         btnPlus10.setOnClickListener(v -> {
-            if (qty10 + qty23 < MAX_TOTAL_BAGGAGE) {
+            if (qty10 + qty23 < maxTotalBaggage) {
                 qty10++;
                 updateUI();
             } else {
@@ -104,7 +107,7 @@ public class BaggageSelectionActivity extends AppCompatActivity {
         });
 
         btnPlus23.setOnClickListener(v -> {
-            if (qty10 + qty23 < MAX_TOTAL_BAGGAGE) {
+            if (qty10 + qty23 < maxTotalBaggage) {
                 qty23++;
                 updateUI();
             } else {
@@ -158,8 +161,8 @@ public class BaggageSelectionActivity extends AppCompatActivity {
         int activeColor = ContextCompat.getColor(this, R.color.skyline_blue_dark);
         int disabledColor = Color.parseColor("#E0E3E8");
 
-        btnPlus10.setCardBackgroundColor(totalQty < MAX_TOTAL_BAGGAGE ? activeColor : disabledColor);
-        btnPlus23.setCardBackgroundColor(totalQty < MAX_TOTAL_BAGGAGE ? activeColor : disabledColor);
+        btnPlus10.setCardBackgroundColor(totalQty < maxTotalBaggage ? activeColor : disabledColor);
+        btnPlus23.setCardBackgroundColor(totalQty < maxTotalBaggage ? activeColor : disabledColor);
 
         int total = qty10 * PRICE_10KG + qty23 * PRICE_23KG;
         DecimalFormat df = new DecimalFormat("#,###");
@@ -167,7 +170,7 @@ public class BaggageSelectionActivity extends AppCompatActivity {
     }
 
     private void showMaxToast() {
-        Toast.makeText(this, "Mỗi hành khách chỉ được mua tối đa 2 gói hành lý bổ sung", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Bạn đã chọn tối đa số lượng hành lý cho đoàn", Toast.LENGTH_SHORT).show();
     }
 
     private void updateFlightInfo() {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvPassengerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THÔNG TIN HÀNH KHÁCH"
+            android:textColor="@color/skyline_teal"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="DANH XƯNG" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+        <RadioGroup android:id="@+id/rgGender" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
+            <RadioButton android:id="@+id/rbMr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ông" android:checked="true" android:textColor="@color/skyline_blue_dark" android:textSize="14sp" />
+            <RadioButton android:id="@+id/rbMs" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="24dp" android:text="Bà" android:textColor="@color/skyline_blue_dark" android:textSize="14sp" />
+        </RadioGroup>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HỌ" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <EditText android:id="@+id/edtLastName" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="NGUYEN" android:textColor="@color/skyline_blue_dark" android:inputType="textCapCharacters" android:textSize="14sp" />
+            </LinearLayout>
+            <View android:layout_width="12dp" android:layout_height="0dp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TÊN ĐỆM &amp; TÊN" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <EditText android:id="@+id/edtFirstName" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="VAN A" android:textColor="@color/skyline_blue_dark" android:inputType="textCapCharacters" android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="NGÀY SINH" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+        <EditText android:id="@+id/edtBirthDate" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="dd/mm/yyyy" android:textColor="@color/skyline_blue_dark" android:inputType="none" android:focusable="false" android:clickable="true" android:textSize="14sp" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="QUỐC TỊCH" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+        <Spinner android:id="@+id/spNationality" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" />
+
+        <LinearLayout android:id="@+id/layoutDocument" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="120dp" android:layout_height="wrap_content" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LOẠI GIẤY TỜ" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <Spinner android:id="@+id/spDocumentType" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" />
+            </LinearLayout>
+            <View android:layout_width="12dp" android:layout_height="0dp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SỐ CCCD/HỘ CHIẾU" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <EditText android:id="@+id/edtDocumentNo" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp" android:background="@drawable/bg_auth_input" android:paddingHorizontal="12dp" android:hint="Nhập số" android:textColor="@color/skyline_blue_dark" android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

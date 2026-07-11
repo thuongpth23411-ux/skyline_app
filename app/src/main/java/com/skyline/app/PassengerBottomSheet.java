@@ -12,17 +12,16 @@ import com.skyline.app.databinding.BottomSheetPassengerBinding;
 public class PassengerBottomSheet extends BottomSheetDialogFragment {
 
     private BottomSheetPassengerBinding binding;
-    private int adults = 1, children = 0, infants = 0;
+    private int adults = 1, children = 0;
     private OnPassengerSelectedListener listener;
 
     public interface OnPassengerSelectedListener {
-        void onSelected(int adults, int children, int infants);
+        void onSelected(int adults, int children);
     }
 
-    public PassengerBottomSheet(int adults, int children, int infants, OnPassengerSelectedListener listener) {
+    public PassengerBottomSheet(int adults, int children, OnPassengerSelectedListener listener) {
         this.adults = adults;
         this.children = children;
-        this.infants = infants;
         this.listener = listener;
     }
 
@@ -44,11 +43,8 @@ public class PassengerBottomSheet extends BottomSheetDialogFragment {
         binding.btnPlusChildren.setOnClickListener(v -> { children++; updateUI(); });
         binding.btnMinusChildren.setOnClickListener(v -> { if (children > 0) { children--; updateUI(); } });
 
-        binding.btnPlusInfants.setOnClickListener(v -> { infants++; updateUI(); });
-        binding.btnMinusInfants.setOnClickListener(v -> { if (infants > 0) { infants--; updateUI(); } });
-
         binding.btnDone.setOnClickListener(v -> {
-            listener.onSelected(adults, children, infants);
+            listener.onSelected(adults, children);
             dismiss();
         });
     }
@@ -56,6 +52,5 @@ public class PassengerBottomSheet extends BottomSheetDialogFragment {
     private void updateUI() {
         binding.tvAdultsCount.setText(String.valueOf(adults));
         binding.tvChildrenCount.setText(String.valueOf(children));
-        binding.tvInfantsCount.setText(String.valueOf(infants));
     }
 }
