@@ -4,6 +4,9 @@ const Ticket = require("../models/Ticket");
 const Flight = require("../models/Flight");
 const Airport = require("../models/Airport");
 const Airline = require("../models/Airline");
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const { sendTicketEmail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
@@ -19,8 +22,40 @@ const verifyToken = (req, res, next) => {
 
 router.post("/create", async (req, res) => {
     try {
-        const { userId, flights, passengerName, totalAmount, paymentMethod } = req.body;
+        const { userId, flights, passengerName, totalAmount, paymentMethod, email } = req.body;
         const bookingCode = "SKL" + Math.floor(100000 + Math.random() * 900000);
+
+        // 1. Kiểm tra trường hợp khách vãng lai
+        let targetUserId = userId;
+        let tempAccount = null;
+
+        if (!userId || userId.startsWith("guest_")) {
+            // Kiểm tra email đã tồn tại chưa
+            let user = await User.findOne({ email });
+
+            const randomPass = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(randomPass, 10);
+
+            if (user) {
+                // Nếu User đã tồn tại nhưng mua vãng lai, ta cập nhật lại mật khẩu mới cho họ dễ đăng nhập
+                user.password = hashedPassword;
+                await user.save();
+                targetUserId = user._id;
+                tempAccount = { email, password: randomPass, isExisting: true };
+            } else {
+                // Tạo tài khoản mới hoàn toàn
+                const newUser = new User({
+                    fullName: passengerName,
+                    email: email,
+                    password: hashedPassword,
+                    isVerified: true,
+                    rank: "Đồng"
+                });
+                const savedUser = await newUser.save();
+                targetUserId = savedUser._id;
+                tempAccount = { email, password: randomPass, isExisting: false };
+            }
+        }
 
         const createdTickets = [];
 
@@ -31,12 +66,12 @@ router.post("/create", async (req, res) => {
             const newTicket = new Ticket({
                 ticketId: ticketId,
                 bookingCode: bookingCode,
-                userId: userId,
+                userId: targetUserId,
                 flightId: flight.flightId,
                 seatId: flight.seatNumber || "N/A",
                 passengerName: passengerName,
                 passengerType: "Adult",
-                ticketType: flight.ticketType || "OneWay", // Nhận từ request
+                ticketType: flight.ticketType || "OneWay",
                 totalAmount: i === 0 ? totalAmount : 0,
                 paymentStatus: "Paid",
                 ticketStatus: "Booked",
@@ -44,7 +79,36 @@ router.post("/create", async (req, res) => {
             });
 
             await newTicket.save();
-            createdTickets.push(newTicket);
+
+            // Fetch flight details specifically for the email payload
+            const flightData = await Flight.findOne({ flightId: flight.flightId }).lean();
+            const ticketForEmail = newTicket.toObject();
+
+            if (flightData) {
+                const depAirport = await Airport.findOne({ airportId: flightData.fromAirportId }).lean();
+                const arrAirport = await Airport.findOne({ airportId: flightData.toAirportId }).lean();
+                ticketForEmail.flightDetails = {
+                    flightNumber: flightData.flightNumber,
+                    departureCode: depAirport ? depAirport.airportId : "---", // airportId usually is the code (HAN, SGN)
+                    arrivalCode: arrAirport ? arrAirport.airportId : "---",
+                    departureAirport: depAirport ? depAirport.airportName : "Sân bay đi",
+                    arrivalAirport: arrAirport ? arrAirport.airportName : "Sân bay đến",
+                    time: flightData.departureAt
+                };
+            }
+
+            createdTickets.push(ticketForEmail);
+        }
+
+        // 2. Gửi Email thông báo
+        const targetEmail = email || (tempAccount ? tempAccount.email : null);
+        if (targetEmail) {
+            await sendTicketEmail(targetEmail, {
+                bookingCode,
+                passengerName,
+                tickets: createdTickets,
+                tempAccount
+            });
         }
 
         res.json({ success: true, bookingCode, tickets: createdTickets });

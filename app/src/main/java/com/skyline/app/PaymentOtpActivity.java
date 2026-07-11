@@ -35,11 +35,22 @@ public class PaymentOtpActivity extends AppCompatActivity {
         binding = ActivityPaymentOtpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        String customMsg = getIntent().getStringExtra("otp_message");
+        if (customMsg != null) {
+            binding.tvMessage.setText(customMsg);
+        }
+
         binding.btnBack.setOnClickListener(v -> finish());
         
         binding.btnVerify.setOnClickListener(v -> {
             String otp = binding.etOtp.getText().toString();
-            if ("123456".equals(otp)) {
+            String serverOtp = getIntent().getStringExtra("server_otp");
+            
+            // If serverOtp is present (from new real OTP flow), verify against it.
+            // Otherwise fallback to simulation code 123456
+            boolean isValid = (serverOtp != null) ? serverOtp.equals(otp) : "123456".equals(otp);
+
+            if (isValid) {
                 saveBookingToDatabase();
             } else {
                 retryCount--;
@@ -88,6 +99,7 @@ public class PaymentOtpActivity extends AppCompatActivity {
         Map<String, Object> bookingData = new HashMap<>();
         bookingData.put("userId", userId != null ? userId : "guest_" + System.currentTimeMillis());
         bookingData.put("passengerName", name);
+        bookingData.put("email", intent.getStringExtra("passenger_email")); // Thêm email để backend gửi mail
         bookingData.put("totalAmount", total);
         bookingData.put("paymentMethod", intent.getStringExtra("payment_method"));
         

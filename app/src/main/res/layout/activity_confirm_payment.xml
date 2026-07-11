@@ -234,6 +234,7 @@
                                 android:textStyle="bold" />
 
                             <EditText
+                                android:id="@+id/etCardNumber"
                                 android:layout_width="match_parent"
                                 android:layout_height="48dp"
                                 android:layout_marginTop="6dp"
@@ -241,6 +242,7 @@
                                 android:paddingHorizontal="12dp"
                                 android:hint="@string/card_number_hint"
                                 android:inputType="number"
+                                android:maxLength="19"
                                 android:textSize="14sp" />
 
                             <LinearLayout
@@ -298,6 +300,7 @@
                                         android:textStyle="bold" />
 
                                     <EditText
+                                        android:id="@+id/etCvv"
                                         android:layout_width="match_parent"
                                         android:layout_height="48dp"
                                         android:layout_marginTop="6dp"
@@ -305,6 +308,7 @@
                                         android:paddingHorizontal="12dp"
                                         android:hint="@string/card_cvv_hint"
                                         android:inputType="numberPassword"
+                                        android:maxLength="3"
                                         android:textSize="14sp" />
                                 </LinearLayout>
                             </LinearLayout>
@@ -319,6 +323,7 @@
                                 android:textStyle="bold" />
 
                             <EditText
+                                android:id="@+id/etCardHolder"
                                 android:layout_width="match_parent"
                                 android:layout_height="48dp"
                                 android:layout_marginTop="6dp"
@@ -326,6 +331,7 @@
                                 android:paddingHorizontal="12dp"
                                 android:hint="@string/card_holder_hint"
                                 android:inputType="textCapCharacters"
+                                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ "
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>

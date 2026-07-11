@@ -47,6 +47,23 @@ router.post("/send-otp-reg", async (req, res) => {
     }
 });
 
+// Send OTP for Payment Verification
+router.post("/send-payment-otp", async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ success: false, message: "Thiếu email" });
+
+        const otp = generateOTP();
+        // Just send it to email
+        await sendOTP(email, otp);
+        // We put the OTP in message field so the app can "know" it for simulation
+        res.json({ success: true, message: otp });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false });
+    }
+});
+
 // 2. Verify OTP
 router.post("/verify-otp", async (req, res) => {
     try {

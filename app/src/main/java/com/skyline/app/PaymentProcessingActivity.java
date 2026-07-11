@@ -66,6 +66,7 @@ public class PaymentProcessingActivity extends AppCompatActivity {
         Map<String, Object> bookingData = new HashMap<>();
         bookingData.put("userId", userId != null ? userId : "guest_" + System.currentTimeMillis());
         bookingData.put("passengerName", name);
+        bookingData.put("email", intent.getStringExtra("passenger_email")); // Gửi email để nhận vé/tạo tài khoản
         bookingData.put("totalAmount", total);
         bookingData.put("paymentMethod", method);
         

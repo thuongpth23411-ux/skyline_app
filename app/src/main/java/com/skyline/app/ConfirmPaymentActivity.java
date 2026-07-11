@@ -110,8 +110,39 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
         binding.btnPay.setOnClickListener(v -> processPayment());
         
+        setupCardNumberFormatting();
+        
+        binding.etCardHolder.setFilters(new android.text.InputFilter[] {new android.text.InputFilter.AllCaps()});
+        
         // Không chọn mặc định phương thức nào
         clearPaymentSelections();
+    }
+
+    private void setupCardNumberFormatting() {
+        binding.etCardNumber.addTextChangedListener(new android.text.TextWatcher() {
+            private boolean isFormatting;
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                if (isFormatting) return;
+                isFormatting = true;
+                
+                // Remove all non-digits
+                String digits = s.toString().replaceAll("\\D", "");
+                StringBuilder formatted = new StringBuilder();
+                for (int i = 0; i < digits.length(); i++) {
+                    if (i > 0 && i % 4 == 0) formatted.append(" ");
+                    formatted.append(digits.charAt(i));
+                }
+                
+                binding.etCardNumber.setText(formatted.toString());
+                binding.etCardNumber.setSelection(formatted.length());
+                isFormatting = false;
+            }
+        });
     }
 
     private void clearPaymentSelections() {
@@ -203,9 +234,19 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     }
 
     private void showExpiryPicker() {
-        MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+        // Set constraints to only allow future dates
+        long today = com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds();
+        com.google.android.material.datepicker.CalendarConstraints constraints = 
+                new com.google.android.material.datepicker.CalendarConstraints.Builder()
+                .setStart(today)
+                .setValidator(com.google.android.material.datepicker.DateValidatorPointForward.from(today))
+                .build();
+
+        com.google.android.material.datepicker.MaterialDatePicker<Long> picker = 
+                com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
                 .setTitleText("CHỌN NGÀY HẾT HẠN")
                 .setTheme(R.style.CustomDatePickerTheme)
+                .setCalendarConstraints(constraints)
                 .build();
 
         picker.addOnPositiveButtonClickListener(selection -> {
@@ -213,7 +254,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             cal.setTimeInMillis(selection);
             int month = cal.get(Calendar.MONTH) + 1;
             int year = cal.get(Calendar.YEAR);
-            String formattedMonth = month < 10 ? "0" + month : String.valueOf(month);
+            String formattedMonth = String.format(java.util.Locale.getDefault(), "%02d", month);
             String formattedYear = String.valueOf(year).substring(2);
             binding.etExpiry.setText(formattedMonth + "/" + formattedYear);
         });
@@ -226,6 +267,34 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             return;
         }
 
+        // Validate Card Details if selected
+        if ("card".equals(selectedMethodName)) {
+            String cardNumber = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
+            String expiry = binding.etExpiry.getText().toString().trim();
+            String cvv = binding.etCvv.getText().toString().trim();
+            String holder = binding.etCardHolder.getText().toString().trim();
+
+            if (cardNumber.length() < 16) {
+                binding.etCardNumber.setError("Số thẻ phải đủ 16 chữ số");
+                binding.etCardNumber.requestFocus();
+                return;
+            }
+            if (expiry.isEmpty()) {
+                binding.etExpiry.setError("Vui lòng chọn ngày hết hạn");
+                return;
+            }
+            if (cvv.length() < 3) {
+                binding.etCvv.setError("Mã CVV phải đủ 3 chữ số");
+                binding.etCvv.requestFocus();
+                return;
+            }
+            if (holder.isEmpty()) {
+                binding.etCardHolder.setError("Vui lòng nhập tên chủ thẻ");
+                binding.etCardHolder.requestFocus();
+                return;
+            }
+        }
+
         binding.btnPay.setEnabled(false);
         binding.btnPay.setText("ĐANG CHUYỂN HƯỚNG...");
 
@@ -234,6 +303,10 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             intent = new Intent(this, CardPaymentActivity.class);
         } else if ("vietqr".equals(selectedMethodName)) {
             intent = new Intent(this, VietQRPaymentActivity.class);
+        } else if ("vnpay".equals(selectedMethodName)) {
+            intent = new Intent(this, VNPayPaymentActivity.class);
+        } else if ("momo".equals(selectedMethodName)) {
+            intent = new Intent(this, MomoPaymentActivity.class);
         } else {
             intent = new Intent(this, PaymentProcessingActivity.class);
         }
@@ -244,6 +317,14 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         intent.putExtra("passenger_name", passengerName);
         intent.putExtra("passenger_email", passengerEmail);
         intent.putExtra("selected_seat", selectedSeat);
+        
+        if ("card".equals(selectedMethodName)) {
+            String cardNo = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
+            if (cardNo.length() >= 4) {
+                intent.putExtra("card_masked", "**** **** **** " + cardNo.substring(cardNo.length() - 4));
+            }
+        }
+
         intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
         intent.putExtra("return_flight_json", getIntent().getStringExtra("return_flight_json"));
         intent.putExtra("return_selected_seat", getIntent().getStringExtra("return_selected_seat"));

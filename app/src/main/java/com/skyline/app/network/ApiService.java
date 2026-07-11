@@ -20,6 +20,9 @@ public interface ApiService {
     @POST("auth/verify-otp")
     Call<BaseResponse> verifyOtp(@Body VerifyOtpRequest request);
 
+    @POST("auth/send-payment-otp")
+    Call<BaseResponse> sendPaymentOtp(@Body Map<String, String> body);
+
     @POST("auth/register-finalize")
     Call<AuthResponse> registerFinalize(@Body RegisterRequest request);
 

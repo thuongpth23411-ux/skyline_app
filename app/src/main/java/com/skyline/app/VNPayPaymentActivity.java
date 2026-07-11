@@ -3,14 +3,13 @@ package com.skyline.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.skyline.app.databinding.ActivityVietqrPaymentBinding;
+import com.skyline.app.databinding.ActivityVnpayPaymentBinding;
 import com.skyline.app.network.BaseResponse;
 import com.skyline.app.network.RetrofitClient;
 
@@ -23,37 +22,38 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VietQRPaymentActivity extends AppCompatActivity {
+public class VNPayPaymentActivity extends AppCompatActivity {
 
-    private ActivityVietqrPaymentBinding binding;
+    private ActivityVnpayPaymentBinding binding;
     private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityVietqrPaymentBinding.inflate(getLayoutInflater());
+        binding = ActivityVnpayPaymentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         double amount = getIntent().getDoubleExtra("totalAmount", 0);
         DecimalFormat df = new DecimalFormat("#,###");
-        binding.tvAmount.setText(df.format(amount) + " VND");
-        
-        String orderId = "SKYLINE" + (System.currentTimeMillis() % 1000000);
-        binding.tvDescription.setText(orderId);
+        binding.tvAmount.setText(String.format("%s VND", df.format(amount)));
 
-        // Load random/real QR using public VietQR-like API or just random data
-        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + orderId;
+        String txnRef = "VNP" + (System.currentTimeMillis() % 1000000);
+        binding.tvTxnRef.setText(txnRef);
+
+        // Load random VNPAY-QR using public API
+        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + txnRef;
         Glide.with(this).load(qrUrl).into(binding.ivQR);
 
         binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnConfirmPaid.setOnClickListener(v -> sendOtpAndNavigate());
+        
+        binding.btnContinue.setOnClickListener(v -> sendOtpAndNavigate());
 
         startTimer();
     }
 
     private void sendOtpAndNavigate() {
-        binding.btnConfirmPaid.setEnabled(false);
-        binding.btnConfirmPaid.setText("ĐANG KIỂM TRA...");
+        binding.btnContinue.setEnabled(false);
+        binding.btnContinue.setText("ĐANG XỬ LÝ...");
 
         String email = getIntent().getStringExtra("passenger_email");
         Map<String, String> body = new HashMap<>();
@@ -63,25 +63,26 @@ public class VietQRPaymentActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Intent intent = new Intent(VietQRPaymentActivity.this, PaymentOtpActivity.class);
+                    Intent intent = new Intent(VNPayPaymentActivity.this, PaymentOtpActivity.class);
                     if (getIntent().getExtras() != null) {
                         intent.putExtras(getIntent().getExtras());
                     }
-                    intent.putExtra("otp_message", "Mã xác thực giao dịch VietQR đã được gửi đến email: " + email);
+                    intent.putExtra("otp_message", "Mã xác thực giao dịch VNPAY đã được gửi đến email: " + email);
                     intent.putExtra("server_otp", response.body().getMessage());
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(VietQRPaymentActivity.this, "Không thể xác thực. Thử lại sau.", Toast.LENGTH_SHORT).show();
-                    binding.btnConfirmPaid.setEnabled(true);
-                    binding.btnConfirmPaid.setText("XÁC NHẬN ĐÃ CHUYỂN");
+                    Toast.makeText(VNPayPaymentActivity.this, "Không thể gửi OTP. Thử lại sau.", Toast.LENGTH_SHORT).show();
+                    binding.btnContinue.setEnabled(true);
+                    binding.btnContinue.setText("XÁC NHẬN ĐÃ QUÉT MÃ THÀNH CÔNG");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
-                Toast.makeText(VietQRPaymentActivity.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                binding.btnConfirmPaid.setEnabled(true);
+                Toast.makeText(VNPayPaymentActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                binding.btnContinue.setEnabled(true);
+                binding.btnContinue.setText("XÁC NHẬN ĐÃ QUÉT MÃ THÀNH CÔNG");
             }
         });
     }
@@ -97,7 +98,7 @@ public class VietQRPaymentActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                binding.tvTimer.setText("Đã hết thời gian thanh toán");
+                binding.tvTimer.setText("Mã QR đã hết hạn");
                 navigateToFailure("Đã quá thời gian thực hiện giao dịch (15 phút).");
             }
         }.start();

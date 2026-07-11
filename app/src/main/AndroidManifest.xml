@@ -42,6 +42,8 @@
         <activity
             android:name=".ConfirmPaymentActivity"
             android:exported="false" />
+        <activity android:name=".VNPayPaymentActivity" android:exported="false" />
+        <activity android:name=".MomoPaymentActivity" android:exported="false" />
         <activity android:name=".PaymentProcessingActivity" android:exported="false" />
         <activity android:name=".VietQRPaymentActivity" android:exported="false" />
         <activity android:name=".CardPaymentActivity" android:exported="false" />
