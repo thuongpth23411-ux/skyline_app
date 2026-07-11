@@ -84,11 +84,15 @@ mongoose.connect(process.env.MONGO_URI)
         ]);
         console.log("🚀 Promotions Seeded Automatically");
     }
-    console.log("🚀 Server is ready. Route /api/passenger-directory is ACTIVE.");
-})
-.catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-});
+    // KHẮC PHỤC LỖI DUPLICATE KEY: Bỏ index unique cho bookingCode vì 1 code dùng cho nhiều vé (khứ hồi)
+    try {
+        await mongoose.connection.collection("tickets").dropIndex("bookingCode_1");
+        console.log("🗑️ Dropped unique index on bookingCode");
+    } catch (e) {
+        // Index might not exist or already dropped
+    }
+
+    // Seed Rank Benefits (Chỉ seed nếu trống)
 
 app.get("/", (req, res) => {
     res.send("Skyline API is running...");
