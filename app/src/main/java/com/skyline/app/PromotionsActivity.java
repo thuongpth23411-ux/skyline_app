@@ -57,7 +57,7 @@ public class PromotionsActivity extends AppCompatActivity {
 
     private void setupSearch() {
         binding.btnSearch.setOnClickListener(v -> toggleSearch(true));
-
+        
         binding.btnActionSearch.setOnClickListener(v -> {
             String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
             performSearch(query);
@@ -126,7 +126,7 @@ public class PromotionsActivity extends AppCompatActivity {
                 binding.chipGroup.check(R.id.chip_all);
                 return;
             }
-
+            
             com.google.android.material.chip.Chip chip = findViewById(checkedId);
             if (chip != null) {
                 String category = chip.getText().toString();
@@ -157,23 +157,38 @@ public class PromotionsActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<List<Promotion>> call, @NonNull Response<List<Promotion>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    allPromotions = response.body();
-                    if (allPromotions.isEmpty()) {
-                        toast("Hiện chưa có chương trình khuyến mãi nào");
+                    List<Promotion> rawPromotions = response.body();
+                    
+                    // Sắp xếp: Ưu tiên "Thứ 6 Mở App" lên đầu
+                    List<Promotion> sorted = new ArrayList<>();
+                    Promotion priorityItem = null;
+                    for (Promotion p : rawPromotions) {
+                        if (p.getTitle() != null && p.getTitle().contains("Thứ 6 Mở App")) {
+                            priorityItem = p;
+                            break;
+                        }
                     }
+                    if (priorityItem != null) {
+                        sorted.add(priorityItem);
+                    }
+                    for (Promotion p : rawPromotions) {
+                        if (p != priorityItem) {
+                            sorted.add(p);
+                        }
+                    }
+                    
+                    allPromotions = sorted;
                     // Load thông tin voucher đã lưu để tô màu icon Bookmark
                     loadSavedVouchers();
                     checkOpenSpecificPromo();
                 } else {
-                    toast("Lỗi tải dữ liệu: " + response.code());
-                    updateList(new ArrayList<>()); // Clear list on error
+                    toast("Không có dữ liệu khuyến mãi: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Promotion>> call, @NonNull Throwable t) {
-                toast("Lỗi kết nối: " + t.getMessage());
-                updateList(new ArrayList<>());
+                toast("Lỗi kết nối MongoDB: " + t.getMessage());
             }
         });
     }
@@ -207,13 +222,13 @@ public class PromotionsActivity extends AppCompatActivity {
     private void filterPromotions(String category) {
         String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
         List<Promotion> filtered = new ArrayList<>();
-
+        
         String dbCategory = getDbCategory(category);
         
         for (Promotion p : allPromotions) {
             boolean matchesCategory = dbCategory.isEmpty() || (p.getCategory() != null && p.getCategory().equalsIgnoreCase(dbCategory));
             boolean matchesQuery = query.isEmpty() || p.getTitle().toLowerCase().contains(query) || p.getCode().toLowerCase().contains(query);
-
+            
             if (matchesCategory && matchesQuery) {
                 filtered.add(p);
             }
@@ -231,6 +246,19 @@ public class PromotionsActivity extends AppCompatActivity {
 
     private void updateList(List<Promotion> list) {
         adapter.setItems(list, savedVoucherIds);
+        
+        // Kiểm tra xem có yêu cầu mở popup cụ thể không
+        String targetPromoName = getIntent().getStringExtra("OPEN_PROMO_NAME");
+        if (targetPromoName != null && !targetPromoName.isEmpty()) {
+            for (Promotion p : list) {
+                if (p.getTitle() != null && p.getTitle().contains(targetPromoName)) {
+                    showPromotionDetail(p);
+                    // Sau khi mở xong thì xóa intent extra để không bị mở lại khi quay lại activity
+                    getIntent().removeExtra("OPEN_PROMO_NAME");
+                    break;
+                }
+            }
+        }
     }
 
     private void toggleSaveVoucher(Promotion item) {
@@ -254,13 +282,23 @@ public class PromotionsActivity extends AppCompatActivity {
                         } else {
                             savedVoucherIds.add(promoId);
                         }
-                        adapter.setItems(adapter.getItems(), savedVoucherIds);
+                        adapter.notifyDataSetChanged();
                         toast(response.body().getMessage());
                     } else {
                         toast(response.body().getMessage());
                     }
                 } else {
-                    toast("Lỗi xử lý");
+                    String errorMsg = "Lỗi xử lý";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorJson = response.errorBody().string();
+                            JsonObject jsonObject = JsonParser.parseString(errorJson).getAsJsonObject();
+                            if (jsonObject.has("message")) {
+                                errorMsg = jsonObject.get("message").getAsString();
+                            }
+                        }
+                    } catch (Exception e) {}
+                    toast(errorMsg);
                 }
             }
 
@@ -275,7 +313,7 @@ public class PromotionsActivity extends AppCompatActivity {
         android.app.Dialog dialog = new android.app.Dialog(this);
         View view = getLayoutInflater().inflate(R.layout.layout_promotion_detail, null);
         dialog.setContentView(view);
-
+        
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
             dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -286,29 +324,34 @@ public class PromotionsActivity extends AppCompatActivity {
         TextView tvCode = view.findViewById(R.id.tv_code);
         TextView tvExpiry = view.findViewById(R.id.tv_expiry);
         ImageView imgPromo = view.findViewById(R.id.img_promo);
-
+        
         tvTitle.setText(item.getTitle());
         
-        // Handle newline characters in description if any
-        String formattedDesc = item.getDescription().replace("\\n", "\n");
+        // Làm đẹp nội dung mô tả: tự động xuống dòng sau mỗi dấu chấm
+        String rawDesc = item.getDescription();
+        String formattedDesc = (rawDesc != null) ? rawDesc.replace("\\n", "\n").replace(". ", ".\n\n") : "";
         tvDesc.setText(formattedDesc);
-        
+
         tvCode.setText(item.getCode());
         tvExpiry.setText("Hạn dùng: " + item.getExpiryDate());
 
-        // Load image using Glide
+        // Nạp ảnh thật vào popup chi tiết
         String imageUrl = item.getImageUrl();
+        int placeholderRes = R.drawable.img_brand_banner;
+        String category = item.getCategory();
+        if (category.contains("MEMBER")) placeholderRes = R.drawable.img_experience_first;
+        else if (category.contains("EXCLUSIVE")) placeholderRes = R.drawable.bg_member_card_gradient;
+        else if (category.contains("NEW_USER")) placeholderRes = R.drawable.img_experience_economy;
+
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            if (imageUrl.startsWith("/")) {
-                imageUrl = "http://10.0.2.2:3000" + imageUrl;
-            }
+            if (imageUrl.startsWith("/")) imageUrl = "http://10.0.2.2:3000" + imageUrl;
             com.bumptech.glide.Glide.with(this)
                     .load(imageUrl)
-                    .placeholder(R.drawable.img_brand_banner)
-                    .error(R.drawable.img_brand_banner)
+                    .placeholder(placeholderRes)
+                    .error(placeholderRes)
                     .into(imgPromo);
         } else {
-            imgPromo.setImageResource(R.drawable.img_brand_banner);
+            imgPromo.setImageResource(placeholderRes);
         }
 
         view.findViewById(R.id.btn_copy).setOnClickListener(v -> {

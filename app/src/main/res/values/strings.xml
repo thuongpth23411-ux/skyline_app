@@ -14,7 +14,7 @@
     <string name="register">Đăng ký</string>
     <string name="already_account">Bạn đã có tài khoản?</string>
     <string name="login_now">Đăng nhập ngay</string>
-    <string name="experience_skyline">Trải nghiệm cùng Skyline Airways</string>
+    <string name="experience_skyline">Trải nghiệm cùng Skyline</string>
     <string name="explore_now">Khám phá ngay</string>
     <string name="notification">Thông báo</string>
     <string name="learn_more">Tìm hiểu thêm</string>
@@ -40,7 +40,7 @@
     <string name="upcoming_flights">Chuyến bay sắp tới</string>
     <string name="completed_flights">Chuyến bay hoàn thành</string>
     <string name="no_flights_yet">Chưa có chuyến bay nào</string>
-    <string name="fly_with_skyline">Bay cùng Skyline Airways ngay hôm nay</string>
+    <string name="fly_with_skyline">Bay cùng Skyline ngay hôm nay</string>
     <string name="book_now">Đặt vé ngay</string>
 
     <!-- Splash Strings -->
@@ -63,7 +63,7 @@
 
     <!-- Permission Strings -->
     <string name="perm_title">Cho phép chúng tôi đồng hành cùng Quý khách</string>
-    <string name="perm_desc">Quý khách vui lòng cho phép Skyline Airways gửi thông báo để không bỏ lỡ các cập nhật quan trọng về chuyến bay, tình trạng đặt chỗ và các ưu đãi cá nhân hóa dành riêng cho Quý khách.</string>
+    <string name="perm_desc">Quý khách vui lòng cho phép Skyline gửi thông báo để không bỏ lỡ các cập nhật quan trọng về chuyến bay, tình trạng đặt chỗ và các ưu đãi cá nhân hóa dành riêng cho Quý khách.</string>
     <string name="perm_notif_title">Cho phép thông báo</string>
     <string name="perm_notif_desc">Gợi ý hành trình, đề xuất các ưu đãi cá nhân hóa</string>
     <string name="perm_data_title">Quyền cho phép theo dõi việc sử dụng dữ liệu.</string>
@@ -223,17 +223,6 @@
     <string name="mastercard">Mastercard</string>
     <string name="jcb">JCB</string>
     <string name="amex">American Express</string>
-    <string name="retry_after_time">Thử lại sau %s</string>
-    <string name="retry_now">Thử lại ngay</string>
-
-    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG</string>
-    <string name="transaction_id_label">Mã giao dịch: %s</string>
-    <string name="passenger_caps">HÀNH KHÁCH</string>
-    <string name="flight_caps">CHUYẾN BAY</string>
-    <string name="seat_caps">CHỖ NGỒI</string>
-    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
-    <string name="payment_success_email_note">Vé điện tử và hóa đơn đã được gửi đến email của bạn.\nVui lòng kiểm tra hộp thư (bao gồm cả thư rác).</string>
-    <string name="back_to_home">Về trang chủ</string>
 
     <!-- Price Detail Dialog -->
     <string name="price_detail_title">Chi tiết giá</string>
@@ -249,7 +238,7 @@
     <string name="security_screening_fee">Phí soi chiếu an ninh hành khách và\nhành lý, Việt Nam</string>
     <string name="price_screening_fee_value">40.000 VND</string>
     <string name="white">Trắng</string>
-    <string name="vat_fee">Thuế GTGT, Việt Nam</string>
+    <string name="vat_fee">Thuế giá trị gia tăng, Việt Nam</string>
     <string name="price_vat_value">385.000 VND</string>
     <string name="system_surcharge">Phụ thu quản trị hệ thống</string>
     <string name="price_surcharge_value">400.000 VND</string>
@@ -350,6 +339,25 @@
 
     <!-- Support Extra -->
     <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="clear_all_notifs">Xóa tất cả</string>
+
+    <!-- Payment Failure Strings -->
+    <string name="payment_failure_title">THANH TOÁN THẤT BẠI</string>
+    <string name="payment_failure_desc">Rất tiếc, giao dịch của bạn không thể thực hiện. Vui lòng kiểm tra lại số dư tài khoản hoặc thử phương thức khác.</string>
+    <string name="retry">THỬ LẠI</string>
+    <string name="change_payment_method">ĐỔI PHƯƠNG THỨC THANH TOÁN</string>
+    <string name="retry_after_time">Thử lại sau %s</string>
+    <string name="retry_now">Thử lại ngay</string>
+
+    <!-- Payment Success Strings -->
+    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG</string>
+    <string name="transaction_id_label">Mã giao dịch: &#8212;</string>
+    <string name="passenger_caps">HÀNH KHÁCH</string>
+    <string name="flight_caps">CHUYẾN BAY</string>
+    <string name="seat_caps">CHỖ NGỒI</string>
+    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
+    <string name="payment_success_email_note">Thông tin vé và hóa đơn điện tử đã được gửi về email của bạn. Vui lòng kiểm tra hộp thư.</string>
+    <string name="back_to_home">Về trang chủ</string>
 
     <!-- Override Material Date Picker strings -->
     <string name="mtrl_picker_out_of_range" xmlns:tools="http://schemas.android.com/tools" tools:override="true">Vui lòng chọn thời gian hợp lệ!</string>

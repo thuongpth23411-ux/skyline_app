@@ -85,22 +85,7 @@ public class FlightResultsActivity extends AppCompatActivity {
         updateSortUI();
         loadAllAirlines();
 
-        try {
-            Date selectedDate = apiDateFormat.parse(selectedDateStr);
-            Calendar todayCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            todayCal.set(Calendar.HOUR_OF_DAY, 0);
-            todayCal.set(Calendar.MINUTE, 0);
-            todayCal.set(Calendar.SECOND, 0);
-            todayCal.set(Calendar.MILLISECOND, 0);
-            
-            if (selectedDate != null && selectedDate.getTime() <= todayCal.getTimeInMillis()) {
-                showNoResults();
-            } else {
-                searchFlights(fromCode, toCode, selectedDateStr);
-            }
-        } catch (Exception e) {
-            searchFlights(fromCode, toCode, selectedDateStr);
-        }
+        searchFlights(fromCode, toCode, selectedDateStr);
     }
 
     private void loadAllAirlines() {
@@ -175,10 +160,10 @@ public class FlightResultsActivity extends AppCompatActivity {
 
             boolean isMatch = false;
             switch (flightFilter.timeSlotIndex) {
-                case 0: isMatch = (hour >= 0 && hour < 6); break;
-                case 1: isMatch = (hour >= 6 && hour < 12); break;
-                case 2: isMatch = (hour >= 12 && hour < 18); break;
-                case 3: isMatch = (hour >= 18 && hour <= 23); break;
+                case 0: isMatch = (hour >= 0 && hour < 6); break;   // Nửa đêm
+                case 1: isMatch = (hour >= 6 && hour < 12); break;  // Sáng
+                case 2: isMatch = (hour >= 12 && hour < 18); break; // Chiều
+                case 3: isMatch = (hour >= 18 && hour <= 23); break; // Tối
             }
             if (!isMatch) return false;
         }
@@ -220,18 +205,18 @@ public class FlightResultsActivity extends AppCompatActivity {
     private void setupDateSelector() {
         dateItems.clear();
 
-        Calendar todayCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        todayCal.set(Calendar.HOUR_OF_DAY, 0);
-        todayCal.set(Calendar.MINUTE, 0);
-        todayCal.set(Calendar.SECOND, 0);
-        todayCal.set(Calendar.MILLISECOND, 0);
-        long todayMillis = todayCal.getTimeInMillis();
+        Calendar localCal = Calendar.getInstance();
+        localCal.add(Calendar.DAY_OF_MONTH, 1);
+        int year = localCal.get(Calendar.YEAR);
+        int month = localCal.get(Calendar.MONTH);
+        int day = localCal.get(Calendar.DAY_OF_MONTH);
 
-        Calendar cal = (Calendar) todayCal.clone();
-        cal.add(Calendar.DAY_OF_MONTH, -7);
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(year, month, day, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
         int initialPos = -1;
-        for (int i = 0; i < 98; i++) {
+        for (int i = 0; i < 90; i++) {
             Date d = cal.getTime();
             String dStr = apiDateFormat.format(d);
 
@@ -243,19 +228,13 @@ public class FlightResultsActivity extends AppCompatActivity {
         }
 
         if (initialPos == -1) {
-            initialPos = 7;
-            selectedDateStr = apiDateFormat.format(dateItems.get(7).date);
+            initialPos = 0;
         }
 
         dateAdapter = new DateSelectorAdapter(dateItems, (date, pos) -> {
             centerItem(pos, true);
             selectedDateStr = apiDateFormat.format(date);
-            
-            if (date.getTime() <= todayMillis) {
-                showNoResults();
-            } else {
-                searchFlights(fromCode, toCode, selectedDateStr);
-            }
+            searchFlights(fromCode, toCode, selectedDateStr);
         });
         dateLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         binding.rvDateSelector.setLayoutManager(dateLayoutManager);
@@ -282,17 +261,11 @@ public class FlightResultsActivity extends AppCompatActivity {
                     if (centerView != null) {
                         int pos = dateLayoutManager.getPosition(centerView);
                         if (pos != RecyclerView.NO_POSITION && pos < dateItems.size()) {
-                            Date date = dateItems.get(pos).date;
-                            String newDate = apiDateFormat.format(date);
+                            String newDate = apiDateFormat.format(dateItems.get(pos).date);
                             if (!newDate.equals(selectedDateStr)) {
                                 selectedDateStr = newDate;
                                 dateAdapter.updateSelection(pos);
-                                
-                                if (date.getTime() <= todayMillis) {
-                                    showNoResults();
-                                } else {
-                                    searchFlights(fromCode, toCode, selectedDateStr);
-                                }
+                                searchFlights(fromCode, toCode, selectedDateStr);
                             }
                         }
                     }
@@ -303,15 +276,6 @@ public class FlightResultsActivity extends AppCompatActivity {
         fetchAllPrices();
     }
 
-    private void showNoResults() {
-        originalFlights.clear();
-        currentFlights.clear();
-        flightAdapter.notifyDataSetChanged();
-        binding.progressBar.setVisibility(View.GONE);
-        binding.rvFlights.setVisibility(View.GONE);
-        binding.layoutNoResults.setVisibility(View.VISIBLE);
-    }
-
     private void centerItem(int pos, boolean anim) {
         dateAdapter.updateSelection(pos);
         if (anim) binding.rvDateSelector.smoothScrollToPosition(pos);
@@ -319,23 +283,10 @@ public class FlightResultsActivity extends AppCompatActivity {
     }
 
     private void fetchAllPrices() {
-        Calendar todayCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        todayCal.set(Calendar.HOUR_OF_DAY, 0);
-        todayCal.set(Calendar.MINUTE, 0);
-        todayCal.set(Calendar.SECOND, 0);
-        todayCal.set(Calendar.MILLISECOND, 0);
-        long todayMillis = todayCal.getTimeInMillis();
-
         for (int i = 0; i < dateItems.size(); i++) {
             final int pos = i;
-            Date itemDate = dateItems.get(pos).date;
-            
-            if (itemDate.getTime() <= todayMillis) {
-                continue;
-            }
-
-            String dateStr = apiDateFormat.format(itemDate);
-            RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(fromCode, toCode, dateStr)).enqueue(new Callback<List<Flight>>() {
+            String date = apiDateFormat.format(dateItems.get(pos).date);
+            RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(fromCode, toCode, date)).enqueue(new Callback<List<Flight>>() {
                 @Override public void onResponse(Call<List<Flight>> call, Response<List<Flight>> response) {
                     if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                         long min = Long.MAX_VALUE;

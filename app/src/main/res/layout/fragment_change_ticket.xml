@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F9F9F9">
 
-    <!-- Top Bar -->
+    <!-- Top Bar (Back to White Style) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
@@ -43,7 +44,7 @@
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:backgroundTint="#424242"
+            android:backgroundTint="#262626"
             android:text="@string/policy"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -53,12 +54,23 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Date Selector -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDateSelector"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        tools:listitem="@layout/item_date_selector" />
+
     <View
         android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#F3F4F6"
-        app:layout_constraintTop_toBottomOf="@id/layoutHeader" />
+        app:layout_constraintTop_toBottomOf="@id/rvDateSelector" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -73,36 +85,14 @@
             android:orientation="vertical"
             android:paddingBottom="24dp">
 
-            <!-- Date Selector -->
-            <HorizontalScrollView
-                android:id="@+id/scrollDates"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="16dp"
-                android:scrollbars="none">
-                <LinearLayout
-                    android:id="@+id/layoutDates"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <include layout="@layout/item_date_selector" />
-                    <include layout="@layout/item_date_selector" />
-                    <include layout="@layout/item_date_selector" />
-                    <include layout="@layout/item_date_selector" />
-                    <include layout="@layout/item_date_selector" />
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <!-- Filters -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp">
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilter"
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -116,6 +106,7 @@
                     app:strokeColor="#E5E7EB"
                     app:strokeWidth="1dp" />
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSort"
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -132,22 +123,42 @@
                     app:strokeWidth="1dp" />
             </LinearLayout>
 
-            <!-- Flight List -->
-            <LinearLayout
+            <!-- Flight List Area -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp">
-                <include layout="@layout/item_change_flight" />
-                <include layout="@layout/item_change_flight" />
-                <include layout="@layout/item_change_flight" />
-            </LinearLayout>
+                android:layout_marginTop="16dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFlights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="40dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvNoFlights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:gravity="center"
+                    android:text="Không có chuyến bay nào trong ngày này"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:visibility="gone" />
+            </FrameLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Fixed Footer Summary -->
+    <!-- Footer Summary -->
     <LinearLayout
         android:id="@+id/layoutFooterFixed"
         android:layout_width="match_parent"
@@ -162,11 +173,11 @@
 
         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí đổi vé" android:textColor="@color/skyline_text_secondary" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="600.000 VNĐ" android:textColor="@color/black" android:textStyle="bold" />
+            <TextView android:id="@+id/tvChangeFee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="600.000 VNĐ" android:textColor="@color/black" android:textStyle="bold" />
         </RelativeLayout>
         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/price_difference_label" android:textColor="@color/skyline_text_secondary" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="+ 0 VNĐ" android:textColor="@color/black" android:textStyle="bold" />
+            <TextView android:id="@+id/tvPriceDiffTotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="+ 0 VNĐ" android:textColor="@color/black" android:textStyle="bold" />
         </RelativeLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:background="#F3F4F6" />
         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp">

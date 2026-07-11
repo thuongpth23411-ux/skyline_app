@@ -85,14 +85,21 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         binding.bottomNavigation.navProfile.setSelected(true);
 
-        binding.bottomNavigation.navHome.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
+        View.OnClickListener goHomeListener = v -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
-        });
+        };
+
+        binding.bottomNavigation.navHome.setOnClickListener(goHomeListener);
+        binding.bottomNavigation.tvNavHomeText.setOnClickListener(goHomeListener);
+
         binding.bottomNavigation.navBook.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
             intent.putExtra("TARGET_FRAGMENT", "BOOK");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
@@ -100,6 +107,7 @@ public class ProfileActivity extends AppCompatActivity {
         binding.bottomNavigation.navFlights.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
             intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
@@ -144,14 +152,6 @@ public class ProfileActivity extends AppCompatActivity {
         // Nhấn vào mục Voucher trong Profile để xem Voucher của tôi
         binding.btnMyVouchers.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, MyVouchersActivity.class));
-        });
-
-        binding.btnBookFlight.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
-            intent.putExtra("TARGET_FRAGMENT", "BOOK");
-            startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
         });
     }
 

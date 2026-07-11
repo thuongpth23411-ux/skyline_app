@@ -46,7 +46,6 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvSubtitleHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="CHỌN HẠNG VÉ"
@@ -129,35 +128,25 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:paddingHorizontal="4dp">
-
-                    <TextView
-                        android:id="@+id/tvFlightNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="VN123"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/imgPlane"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_marginTop="4dp"
-                        android:rotation="90"
-                        android:src="@drawable/ic_plane"
-                        app:tint="@color/white" />
+                    android:paddingHorizontal="8dp">
 
                     <TextView
                         android:id="@+id/tvDuration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="1g 10p"
                         android:textColor="#CCFFFFFF"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:id="@+id/imgPlane"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginTop="8dp"
+                        android:rotation="90"
+                        android:src="@drawable/ic_plane"
+                        app:tint="@color/white" />
                 </LinearLayout>
 
                 <LinearLayout
