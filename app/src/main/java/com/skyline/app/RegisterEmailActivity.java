@@ -27,6 +27,10 @@ public class RegisterEmailActivity extends BaseAuthActivity {
                 showErrorDialog("Vui lòng nhập email");
                 return;
             }
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                showErrorDialog("Email không hợp lệ. Vui lòng kiểm tra lại.");
+                return;
+            }
 
             v.setEnabled(false);
             RetrofitClient.getInstance().sendOtpReg(new ForgotPasswordRequest(email)).enqueue(new Callback<BaseResponse>() {

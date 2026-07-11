@@ -75,7 +75,14 @@ public class NotificationHelper {
 
         btnAction.setOnClickListener(v -> {
             dialog.dismiss();
-            handleNotificationClick(activity, type, targetData);
+            
+            // Mở màn hình chi tiết thông báo
+            Intent intent = new Intent(activity, com.skyline.app.NotificationDetailActivity.class);
+            com.skyline.model.Notification notif = new com.skyline.model.Notification(id, title, content, 
+                new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date()), 
+                type.name(), targetData);
+            intent.putExtra("notification", notif);
+            activity.startActivity(intent);
         });
 
         btnClose.setOnClickListener(v -> dialog.dismiss());
@@ -87,7 +94,7 @@ public class NotificationHelper {
         });
     }
 
-    private static void handleNotificationClick(Activity activity, NotifType type, String targetData) {
+    public static void handleNotificationClick(Activity activity, NotifType type, String targetData) {
         Intent intent;
         switch (type) {
             case PROMOTION:

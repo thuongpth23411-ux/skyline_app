@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import android.widget.Toast;
 import com.skyline.app.databinding.ActivityNotificationBinding;
 import com.skyline.model.Notification;
 import java.util.ArrayList;
@@ -22,9 +23,16 @@ public class NotificationActivity extends AppCompatActivity {
         sessionManager.clearUnreadNotifCount();
 
         binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnClearAll.setOnClickListener(v -> showClearAllDialog());
+        binding.btnClearAll.setText("Đánh dấu đã đọc");
+        binding.btnClearAll.setOnClickListener(v -> markAllAsRead());
 
         setupList();
+    }
+
+    private void markAllAsRead() {
+        com.skyline.app.utils.SessionManager sm = new com.skyline.app.utils.SessionManager(this);
+        sm.clearUnreadNotifCount();
+        Toast.makeText(this, "Đã đánh dấu tất cả là đã đọc", Toast.LENGTH_SHORT).show();
     }
 
     private void showClearAllDialog() {

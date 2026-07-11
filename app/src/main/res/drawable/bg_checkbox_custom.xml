@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Khi được check: hiện icon check xanh -->
+    <item android:drawable="@drawable/ic_check_auth" android:state_checked="true" />
+    <!-- Khi không được check: hiện ô vuông trống -->
+    <item android:drawable="@drawable/bg_checkbox_unselected" />
+</selector>
