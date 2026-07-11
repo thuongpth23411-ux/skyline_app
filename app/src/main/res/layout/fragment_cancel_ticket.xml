@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:padding="12dp"
             android:src="@drawable/ic_arrow_left_auth"
             android:contentDescription="@null"
@@ -117,7 +117,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Ticket Summary (White Background) -->
+            <!-- Ticket Summary -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -140,15 +140,10 @@
                             <TextView
                                 android:id="@+id/tvBookingId" android:layout_width="wrap_content" android:layout_height="wrap_content"
                                 android:paddingHorizontal="10dp" android:paddingVertical="4dp"
-                                android:text="Mã đặt chỗ: SK9921X" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
+                                android:text="Mã đặt chỗ: ---" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
                         </com.google.android.material.card.MaterialCardView>
-                        <TextView
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true" android:layout_centerVertical="true"
-                            android:text="Phổ thông" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="12sp" />
                     </RelativeLayout>
 
-                    <!-- Route -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -157,34 +152,31 @@
                         android:orientation="horizontal">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                             <TextView android:id="@+id/tvFromCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HAN" android:textColor="@color/black" android:textSize="20sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvFromCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hà Nội" android:textColor="@color/skyline_text_secondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvFromCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/skyline_text_secondary" android:textSize="13sp" />
                         </LinearLayout>
                         <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_plane" app:tint="#D1D5DB" android:contentDescription="@null" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="end" android:orientation="vertical">
                             <TextView android:id="@+id/tvToCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SGN" android:textColor="@color/black" android:textSize="20sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvToCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TP. Hồ Chí Minh" android:textColor="@color/skyline_text_secondary" android:textSize="13sp" />
+                            <TextView android:id="@+id/tvToCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/skyline_text_secondary" android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="#F3F4F6" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngày đi" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12 Th05, 2024" android:textColor="@color/black" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/black" android:textStyle="bold" />
                         </LinearLayout>
-                        <View android:layout_width="12dp" android:layout_height="0dp" />
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="end" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giờ bay" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:30" android:textColor="@color/black" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/black" android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Refund Detail (White Background) -->
+            <!-- Refund Detail -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -202,23 +194,32 @@
                     <TextView
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="@string/refund_detail_title" android:textColor="@color/black" android:textStyle="bold" android:textSize="16sp" />
+
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/original_price" android:textColor="@color/skyline_text_secondary" />
-                        <TextView android:id="@+id/tvOriginalPrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="2,450,000 VND" android:textColor="@color/black" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvOriginalPrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/black" android:textStyle="bold" />
                     </RelativeLayout>
+
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cancel_fee" android:textColor="#DC2626" />
-                        <TextView android:id="@+id/tvCancelFee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="- 600,000 VND" android:textColor="#DC2626" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvCancelFee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="- 0 VND" android:textColor="#DC2626" android:textStyle="bold" />
                     </RelativeLayout>
+
+                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chi phí khấu trừ" android:textColor="#DC2626" />
+                        <TextView android:id="@+id/tvDeduction" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="- 0 VND" android:textColor="#DC2626" android:textStyle="bold" />
+                    </RelativeLayout>
+
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="#F3F4F6" />
+
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/refund_amount" android:textColor="@color/black" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvRefundAmount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="1,850,000 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="16sp" />
+                        <TextView android:id="@+id/tvRefundAmount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="18sp" />
                     </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Action Buttons INSIDE ScrollView -->
+            <!-- Action Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -228,8 +229,8 @@
                     android:id="@+id/btnConfirmCancel"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
-                    android:layout_weight="1.2"
-                    android:backgroundTint="@color/black"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/skyline_blue_dark"
                     android:text="@string/confirm_cancel"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -241,12 +242,12 @@
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1"
                     android:text="@string/go_back"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
+                    android:textColor="@color/skyline_blue_dark"
                     app:cornerRadius="28dp"
-                    app:strokeColor="#D1D5DB" />
+                    app:strokeColor="@color/skyline_blue_dark" />
             </LinearLayout>
 
         </LinearLayout>

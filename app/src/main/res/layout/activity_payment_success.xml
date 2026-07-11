@@ -24,11 +24,12 @@
         android:textColor="#1A1A1A" />
 
     <TextView
+        android:id="@+id/tvSuccessMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
-        android:text="Cảm ơn bạn đã sử dụng dịch vụ của Skyline. Vé máy bay của bạn đã được xác nhận."
+        android:text="Cảm ơn bạn đã sử dụng dịch vụ của Skyline. Vé máy bay và hóa đơn đã được gửi đến email của bạn."
         android:textColor="#666666" />
 
     <Button

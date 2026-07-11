@@ -2,6 +2,8 @@ package com.skyline.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import com.skyline.app.network.Flight;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class ConfirmPaymentActivity extends AppCompatActivity {
@@ -26,6 +29,9 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     private Flight flight;
     private String selectedMethodName = "";
     private double baseFare = 0, taxes = 0, seatPrice = 0, addonPrice = 0;
+    private boolean isExchange = false;
+    private double exchangeFee = 0;
+    private double priceDiff = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,10 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         selectedSeat = intent.getStringExtra("selected_seat");
         fareType = intent.getStringExtra("fare_type");
         
-        // Try to get detailed prices for the dialog
+        isExchange = intent.getBooleanExtra("is_exchange", false);
+        exchangeFee = intent.getDoubleExtra("exchange_fee", 0);
+        priceDiff = intent.getDoubleExtra("price_diff", 0);
+
         baseFare = intent.getDoubleExtra("baseFare", totalAmount * 0.8);
         taxes = intent.getDoubleExtra("taxes", totalAmount * 0.1);
         seatPrice = intent.getDoubleExtra("seatPrice", 0);
@@ -62,18 +71,19 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
     private void initViews() {
         binding.btnBack.setOnClickListener(v -> finish());
+        
+        // Underline Price Detail text
+        binding.tvPriceDetail.setPaintFlags(binding.tvPriceDetail.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
         binding.tvPriceDetail.setOnClickListener(v -> showPriceDetails());
 
-        // Setup Card Type Spinner
         String[] cardTypes = {"Visa", "Mastercard", "JCB", "American Express"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cardTypes);
         binding.spinnerCardType.setAdapter(adapter);
 
-        // Payment Method Selection
-        binding.cardPaymentMethod.setOnClickListener(v -> selectPaymentMethod("card"));
-        binding.vnpayMethod.setOnClickListener(v -> selectPaymentMethod("vnpay"));
-        binding.vietqrMethod.setOnClickListener(v -> selectPaymentMethod("vietqr"));
-        binding.momoMethod.setOnClickListener(v -> selectPaymentMethod("momo"));
+        binding.cardHeader.setOnClickListener(v -> selectPaymentMethod("card"));
+        binding.vnpayHeader.setOnClickListener(v -> selectPaymentMethod("vnpay"));
+        binding.vietqrHeader.setOnClickListener(v -> selectPaymentMethod("vietqr"));
+        binding.momoHeader.setOnClickListener(v -> selectPaymentMethod("momo"));
 
         binding.etExpiry.setOnClickListener(v -> showExpiryPicker());
 
@@ -85,38 +95,62 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding.btnPay.setOnClickListener(v -> processPayment());
 
         setupCardNumberFormatting();
+        setupCardHolderFormatting();
 
-        binding.etCardHolder.setFilters(new android.text.InputFilter[] {new android.text.InputFilter.AllCaps()});
+        // Ensure email is passed correctly
+        if (passengerEmail == null || passengerEmail.isEmpty()) {
+            passengerEmail = "vynnt23411@st.uel.edu.vn"; // Fallback
+        }
 
-        // Không chọn mặc định phương thức nào
         clearPaymentSelections();
     }
 
     private void setupCardNumberFormatting() {
-        binding.etCardNumber.addTextChangedListener(new android.text.TextWatcher() {
+        binding.etCardNumber.addTextChangedListener(new TextWatcher() {
             private boolean isFormatting;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
-            public void afterTextChanged(android.text.Editable s) {
+            public void afterTextChanged(Editable s) {
                 if (isFormatting) return;
                 isFormatting = true;
-
-                // Remove all non-digits
                 String digits = s.toString().replaceAll("\\D", "");
                 StringBuilder formatted = new StringBuilder();
-                for (int i = 0; i < digits.length(); i++) {
+                for (int i = 0; i < digits.length() && i < 16; i++) {
                     if (i > 0 && i % 4 == 0) formatted.append(" ");
                     formatted.append(digits.charAt(i));
                 }
-
                 binding.etCardNumber.setText(formatted.toString());
                 binding.etCardNumber.setSelection(formatted.length());
                 isFormatting = false;
             }
         });
+    }
+
+    private void setupCardHolderFormatting() {
+        binding.etCardHolder.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String input = s.toString();
+                String upperNoAccents = removeAccents(input).toUpperCase();
+                if (!input.equals(upperNoAccents)) {
+                    binding.etCardHolder.setText(upperNoAccents);
+                    binding.etCardHolder.setSelection(upperNoAccents.length());
+                }
+            }
+        });
+    }
+
+    private String removeAccents(String str) {
+        String nfdNormalizedString = java.text.Normalizer.normalize(str, java.text.Normalizer.Form.NFD);
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(nfdNormalizedString).replaceAll("").replace('đ', 'd').replace('Đ', 'D');
     }
 
     private void clearPaymentSelections() {
@@ -130,9 +164,8 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding.tvVietQRRedirect.setVisibility(View.GONE);
         binding.tvMomoRedirect.setVisibility(View.GONE);
 
-        // Reset strokes - Viền xám nhạt mặc định
         int defaultStrokeColor = android.graphics.Color.parseColor("#E5E7EB");
-        int defaultStrokeWidth = (int) (1.0 * getResources().getDisplayMetrics().density);
+        int defaultStrokeWidth = (int) (0.8 * getResources().getDisplayMetrics().density);
 
         binding.cardPaymentMethod.setStrokeColor(defaultStrokeColor);
         binding.cardPaymentMethod.setStrokeWidth(defaultStrokeWidth);
@@ -158,9 +191,9 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding.tvVietQRRedirect.setVisibility("vietqr".equals(method) ? View.VISIBLE : View.GONE);
         binding.tvMomoRedirect.setVisibility("momo".equals(method) ? View.VISIBLE : View.GONE);
 
-        // Highlight selected - Viền đen
+        // Visual selection indicator
         int strokeColor = android.graphics.Color.BLACK;
-        int strokeWidth = (int) (1.5 * getResources().getDisplayMetrics().density);
+        int strokeWidth = (int) (1.2 * getResources().getDisplayMetrics().density);
 
         if ("card".equals(method)) {
             binding.cardPaymentMethod.setStrokeColor(strokeColor);
@@ -177,6 +210,75 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         }
     }
 
+    private void processPayment() {
+        if (selectedMethodName.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if ("card".equals(selectedMethodName)) {
+            String cardNumber = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
+            String expiry = binding.etExpiry.getText().toString().trim();
+            String cvv = binding.etCvv.getText().toString().trim();
+            String holder = binding.etCardHolder.getText().toString().trim();
+
+            if (cardNumber.length() != 16) {
+                binding.etCardNumber.setError("Số thẻ phải đúng 16 chữ số");
+                binding.etCardNumber.requestFocus();
+                return;
+            }
+            if (expiry.isEmpty()) {
+                binding.etExpiry.setError("Vui lòng chọn ngày hết hạn");
+                return;
+            }
+            if (cvv.length() != 3) {
+                binding.etCvv.setError("Mã CVV phải đúng 3 chữ số");
+                binding.etCvv.requestFocus();
+                return;
+            }
+            if (holder.isEmpty()) {
+                binding.etCardHolder.setError("Vui lòng nhập tên chủ thẻ");
+                binding.etCardHolder.requestFocus();
+                return;
+            }
+        }
+
+        binding.btnPay.setEnabled(false);
+        binding.btnPay.setText("ĐANG XỬ LÝ GIAO DỊCH...");
+
+        Intent intent;
+        if ("card".equals(selectedMethodName)) {
+            intent = new Intent(this, CardPaymentActivity.class);
+        } else if ("vietqr".equals(selectedMethodName)) {
+            intent = new Intent(this, VietQRPaymentActivity.class);
+        } else if ("vnpay".equals(selectedMethodName)) {
+            intent = new Intent(this, VNPayPaymentActivity.class);
+        } else if ("momo".equals(selectedMethodName)) {
+            intent = new Intent(this, MomoPaymentActivity.class);
+        } else {
+            intent = new Intent(this, PaymentProcessingActivity.class);
+        }
+
+        intent.putExtra("payment_method", selectedMethodName);
+        intent.putExtra("totalAmount", totalAmount);
+        intent.putExtra("passenger_name", passengerName);
+        intent.putExtra("passenger_email", passengerEmail);
+        intent.putExtra("selected_seat", selectedSeat);
+
+        if ("card".equals(selectedMethodName)) {
+            String cardNo = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
+            if (cardNo.length() >= 4) {
+                intent.putExtra("card_masked", "**** **** **** " + cardNo.substring(cardNo.length() - 4));
+            }
+        }
+
+        intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
+        intent.putExtra("return_flight_json", getIntent().getStringExtra("return_flight_json"));
+        intent.putExtra("return_selected_seat", getIntent().getStringExtra("return_selected_seat"));
+
+        startActivity(intent);
+    }
+
     private void showPriceDetails() {
         com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme);
         View view = getLayoutInflater().inflate(R.layout.dialog_price_detail, null);
@@ -184,18 +286,35 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         
         DecimalFormat df = new DecimalFormat("#,###");
 
+        TextView tvTitle = view.findViewById(R.id.tvTitle);
+        TextView tvAdultLabel = view.findViewById(R.id.tvAdultLabel);
         TextView tvAdultPriceTotal = view.findViewById(R.id.tvAdultPriceTotal);
         TextView tvPricePerPerson = view.findViewById(R.id.tvPricePerPerson);
+        TextView tvBaseLabel = view.findViewById(R.id.tvBaseLabel);
         TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
         TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
         TextView tvSeatFeeValue = view.findViewById(R.id.tvSeatFeeValue);
         TextView tvAddonFeeValue = view.findViewById(R.id.tvAddonFeeValue);
         TextView tvGrandTotal = view.findViewById(R.id.tvGrandTotal);
 
-        if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(baseFare) + " VND");
-        if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(baseFare) + " VND/Người");
-        if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(baseFare) + " VND");
-        if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(taxes) + " VND");
+        if (isExchange) {
+            if (tvTitle != null) tvTitle.setText("Chi tiết chi phí đổi vé");
+            if (tvAdultLabel != null) tvAdultLabel.setText("Phí đổi vé cố định");
+            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(exchangeFee) + " VND");
+            if (tvPricePerPerson != null) tvPricePerPerson.setText("Hạng vé: " + (fareType != null ? fareType : "Eco"));
+            if (tvBaseLabel != null) tvBaseLabel.setText("Chênh lệch giá vé");
+            if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(priceDiff) + " VND");
+            
+            // Hide taxes/fees section for exchange as requested
+            View taxLayout = view.findViewById(R.id.layoutTaxFees);
+            if (taxLayout != null) taxLayout.setVisibility(View.GONE);
+        } else {
+            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(baseFare) + " VND");
+            if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(baseFare) + " VND/Người");
+            if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(baseFare) + " VND");
+            if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(taxes) + " VND");
+        }
+
         if (tvSeatFeeValue != null) tvSeatFeeValue.setText(seatPrice > 0 ? df.format(seatPrice) + " VND" : "Miễn phí");
         if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(addonPrice) + " VND");
         if (tvGrandTotal != null) tvGrandTotal.setText(df.format(totalAmount) + " VND");
@@ -227,81 +346,10 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             cal.setTimeInMillis(selection);
             int month = cal.get(Calendar.MONTH) + 1;
             int year = cal.get(Calendar.YEAR);
-            String formattedMonth = String.format(java.util.Locale.getDefault(), "%02d", month);
+            String formattedMonth = String.format(Locale.getDefault(), "%02d", month);
             String formattedYear = String.valueOf(year).substring(2);
             binding.etExpiry.setText(formattedMonth + "/" + formattedYear);
         });
         picker.show(getSupportFragmentManager(), "ExpiryPicker");
-    }
-
-    private void processPayment() {
-        if (selectedMethodName.isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Validate Card Details if selected
-        if ("card".equals(selectedMethodName)) {
-            String cardNumber = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
-            String expiry = binding.etExpiry.getText().toString().trim();
-            String cvv = binding.etCvv.getText().toString().trim();
-            String holder = binding.etCardHolder.getText().toString().trim();
-
-            if (cardNumber.length() < 16) {
-                binding.etCardNumber.setError("Số thẻ phải đủ 16 chữ số");
-                binding.etCardNumber.requestFocus();
-                return;
-            }
-            if (expiry.isEmpty()) {
-                binding.etExpiry.setError("Vui lòng chọn ngày hết hạn");
-                return;
-            }
-            if (cvv.length() < 3) {
-                binding.etCvv.setError("Mã CVV phải đủ 3 chữ số");
-                binding.etCvv.requestFocus();
-                return;
-            }
-            if (holder.isEmpty()) {
-                binding.etCardHolder.setError("Vui lòng nhập tên chủ thẻ");
-                binding.etCardHolder.requestFocus();
-                return;
-            }
-        }
-
-        binding.btnPay.setEnabled(false);
-        binding.btnPay.setText("ĐANG XỬ LÝ GIAO DỊCH...");
-
-        Intent intent;
-        if ("card".equals(selectedMethodName)) {
-            intent = new Intent(this, CardPaymentActivity.class);
-        } else if ("vietqr".equals(selectedMethodName)) {
-            intent = new Intent(this, VietQRPaymentActivity.class);
-        } else if ("vnpay".equals(selectedMethodName)) {
-            intent = new Intent(this, VNPayPaymentActivity.class);
-        } else if ("momo".equals(selectedMethodName)) {
-            intent = new Intent(this, MomoPaymentActivity.class);
-        } else {
-            intent = new Intent(this, PaymentProcessingActivity.class);
-        }
-
-        // Truyền dữ liệu sang màn hình thanh toán
-        intent.putExtra("payment_method", selectedMethodName);
-        intent.putExtra("totalAmount", totalAmount);
-        intent.putExtra("passenger_name", passengerName);
-        intent.putExtra("passenger_email", passengerEmail);
-        intent.putExtra("selected_seat", selectedSeat);
-
-        if ("card".equals(selectedMethodName)) {
-            String cardNo = binding.etCardNumber.getText().toString().replaceAll("\\s", "");
-            if (cardNo.length() >= 4) {
-                intent.putExtra("card_masked", "**** **** **** " + cardNo.substring(cardNo.length() - 4));
-            }
-        }
-
-        intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
-        intent.putExtra("return_flight_json", getIntent().getStringExtra("return_flight_json"));
-        intent.putExtra("return_selected_seat", getIntent().getStringExtra("return_selected_seat"));
-
-        startActivity(intent);
     }
 }

@@ -1,6 +1,8 @@
 package com.skyline.model;
 
-public class Ticket {
+import java.io.Serializable;
+
+public class Ticket implements Serializable {
     private final String day;
     private final String monthYear;
     private final String flightClass;
@@ -14,6 +16,7 @@ public class Ticket {
     private final String ticketType;
     private final double totalAmount;
     private final String passengerName;
+    private String fullDate; // yyyy-MM-dd
 
     public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat, double totalAmount, String passengerName, String ticketType) {
         this.day = day;
@@ -44,4 +47,7 @@ public class Ticket {
     public double getTotalAmount() { return totalAmount; }
     public String getPassengerName() { return passengerName; }
     public String getTicketType() { return ticketType; }
+    
+    public String getFullDate() { return fullDate; }
+    public void setFullDate(String fullDate) { this.fullDate = fullDate; }
 }

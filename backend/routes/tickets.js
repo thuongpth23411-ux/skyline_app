@@ -144,4 +144,50 @@ router.get("/my-tickets", verifyToken, async (req, res) => {
     }
 });
 
+router.post("/share", async (req, res) => {
+    try {
+        const { email, bookingCode } = req.body;
+
+        // Find tickets associated with this bookingCode
+        const tickets = await Ticket.find({ bookingCode }).lean();
+        if (!tickets || tickets.length === 0) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy thông tin vé" });
+        }
+
+        const passengerName = tickets[0].passengerName;
+        const ticketList = [];
+
+        for (const ticket of tickets) {
+            const flightData = await Flight.findOne({ flightId: ticket.flightId }).lean();
+            const ticketObj = { ...ticket };
+
+            if (flightData) {
+                const depAirport = await Airport.findOne({ airportId: flightData.fromAirportId }).lean();
+                const arrAirport = await Airport.findOne({ airportId: flightData.toAirportId }).lean();
+                ticketObj.flightDetails = {
+                    flightNumber: flightData.flightNumber,
+                    departureCode: depAirport ? depAirport.airportId : "---",
+                    arrivalCode: arrAirport ? arrAirport.airportId : "---",
+                    departureAirport: depAirport ? depAirport.airportName : "Sân bay đi",
+                    arrivalAirport: arrAirport ? arrAirport.airportName : "Sân bay đến",
+                    time: flightData.departureAt
+                };
+            }
+            ticketList.push(ticketObj);
+        }
+
+        await sendTicketEmail(email, {
+            bookingCode,
+            passengerName,
+            tickets: ticketList,
+            isShare: true
+        });
+
+        res.json({ success: true, message: "Email đã được gửi thành công" });
+    } catch (error) {
+        console.error("❌ Error sharing ticket:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 module.exports = router;

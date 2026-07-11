@@ -62,6 +62,9 @@ public interface ApiService {
     @POST("tickets/create")
     Call<BaseResponse> createBooking(@Body Map<String, Object> bookingData);
 
+    @POST("tickets/share")
+    Call<BaseResponse> shareTicket(@Body Map<String, String> body);
+
     @GET("flights/{flightId}/seats")
     Call<List<FlightSeat>> getFlightSeats(@Path("flightId") String flightId);
 

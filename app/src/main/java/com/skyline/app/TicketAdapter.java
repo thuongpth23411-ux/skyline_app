@@ -10,8 +10,8 @@ import java.util.List;
 
 public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketViewHolder> {
 
-    private final List<Ticket> tickets;
-    private final OnTicketActionListener listener;
+    private List<Ticket> tickets;
+    private OnTicketActionListener listener;
 
     public interface OnTicketActionListener {
         void onDetailClick(Ticket ticket);
@@ -27,33 +27,27 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
     @NonNull
     @Override
     public TicketViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemTicketBinding binding = ItemTicketBinding.inflate(
-            LayoutInflater.from(parent.getContext()),
-            parent,
-            false
-        );
+        ItemTicketBinding binding = ItemTicketBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new TicketViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TicketViewHolder holder, int position) {
         Ticket ticket = tickets.get(position);
-        ItemTicketBinding binding = holder.binding;
+        holder.binding.tvDay.setText(ticket.getDay());
+        holder.binding.tvMonthYear.setText(ticket.getMonthYear());
+        holder.binding.tvClass.setText(ticket.getFlightClass());
+        holder.binding.tvFlightNo.setText(ticket.getFlightNo());
+        holder.binding.tvOriginCode.setText(ticket.getOriginCode());
+        holder.binding.tvOriginCity.setText(ticket.getOriginCity());
+        holder.binding.tvDestCode.setText(ticket.getDestCode());
+        holder.binding.tvDestCity.setText(ticket.getDestCity());
+        holder.binding.tvTime.setText(ticket.getTime());
+        holder.binding.tvSeat.setText(ticket.getSeat());
 
-        binding.tvDay.setText(ticket.getDay());
-        binding.tvMonthYear.setText(ticket.getMonthYear());
-        binding.tvClass.setText(ticket.getFlightClass());
-        binding.tvFlightNo.setText(ticket.getFlightNo());
-        binding.tvOriginCode.setText(ticket.getOriginCode());
-        binding.tvOriginCity.setText(ticket.getOriginCity());
-        binding.tvDestCode.setText(ticket.getDestCode());
-        binding.tvDestCity.setText(ticket.getDestCity());
-        binding.tvTime.setText(ticket.getTime());
-        binding.tvSeat.setText(ticket.getSeat());
-
-        binding.btnDetail.setOnClickListener(v -> listener.onDetailClick(ticket));
-        binding.btnChange.setOnClickListener(v -> listener.onChangeClick(ticket));
-        binding.btnCancel.setOnClickListener(v -> listener.onCancelClick(ticket));
+        holder.binding.btnDetail.setOnClickListener(v -> listener.onDetailClick(ticket));
+        holder.binding.btnCancel.setOnClickListener(v -> listener.onCancelClick(ticket));
+        holder.binding.btnChange.setOnClickListener(v -> listener.onChangeClick(ticket));
     }
 
     @Override
@@ -62,7 +56,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
     }
 
     public static class TicketViewHolder extends RecyclerView.ViewHolder {
-        final ItemTicketBinding binding;
+        ItemTicketBinding binding;
 
         public TicketViewHolder(ItemTicketBinding binding) {
             super(binding.getRoot());

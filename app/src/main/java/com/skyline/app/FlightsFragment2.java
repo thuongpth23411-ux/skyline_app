@@ -58,7 +58,6 @@ public class FlightsFragment2 extends Fragment {
             }
         });
         
-        // Nút check-in / quản lý đặt chỗ
         binding.btnCheck.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
         });
@@ -79,10 +78,8 @@ public class FlightsFragment2 extends Fragment {
                 
                 if (response.isSuccessful() && response.body() != null) {
                     allTickets = response.body();
-                    Log.d("FlightsFragment2", "Fetched " + allTickets.size() + " tickets");
                     updateRecyclerView();
                 } else {
-                    Log.e("FlightsFragment2", "Error: " + response.code());
                     Toast.makeText(requireContext(), "Không thể tải danh sách vé", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -90,7 +87,6 @@ public class FlightsFragment2 extends Fragment {
             @Override
             public void onFailure(Call<List<TicketResponse>> call, Throwable t) {
                 if (!isAdded()) return;
-                Log.e("FlightsFragment2", "Failure: " + t.getMessage());
                 Toast.makeText(requireContext(), "Lỗi kết nối máy chủ", Toast.LENGTH_SHORT).show();
             }
         });
@@ -102,19 +98,16 @@ public class FlightsFragment2 extends Fragment {
         SimpleDateFormat monthYearFormat = new SimpleDateFormat("'THÁNG' MM\nyyyy", Locale.getDefault());
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
+        SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         for (TicketResponse res : allTickets) {
-            // Lọc theo mẫu mới: "Booked" hoặc "Paid" là vé sắp tới
             String status = res.getStatus() != null ? res.getStatus() : "Booked";
             
             if (isUpcomingTab && "Completed".equalsIgnoreCase(status)) continue;
             if (!isUpcomingTab && !"Completed".equalsIgnoreCase(status)) continue;
 
             try {
-                if (res.getFlight() == null) {
-                    Log.e("FlightsFragment2", "Flight data is missing for ticket: " + res.getBookingCode());
-                    continue;
-                }
+                if (res.getFlight() == null) continue;
                 
                 Date depDate = null;
                 if (res.getFlight().getDepartureAt() != null) {
@@ -132,7 +125,6 @@ public class FlightsFragment2 extends Fragment {
                 String toCode = (res.getFlight().getArrivalAirport() != null) ? res.getFlight().getArrivalAirport().getCode() : "???";
                 String toCity = (res.getFlight().getArrivalAirport() != null) ? res.getFlight().getArrivalAirport().getCity() : "Sân bay đến";
 
-                // Lấy mã số ghế từ seatId (Ví dụ: ..._21D -> 21D)
                 String seatNum = res.getSeatId();
                 if (seatNum != null && seatNum.contains("_")) {
                     seatNum = seatNum.substring(seatNum.lastIndexOf("_") + 1);
@@ -145,7 +137,7 @@ public class FlightsFragment2 extends Fragment {
                     displayTicketType = "Lượt đi";
                 }
 
-                displayTickets.add(new Ticket(
+                Ticket ticket = new Ticket(
                     day, monthYear,
                     "Phổ thông",
                     res.getBookingCode(),
@@ -154,10 +146,10 @@ public class FlightsFragment2 extends Fragment {
                     res.getTotalAmount(),
                     res.getPassengerName() != null ? res.getPassengerName() : "Hành khách",
                     displayTicketType
-                ));
-            } catch (Exception e) {
-                Log.e("FlightsFragment2", "Parse error for ticket: " + e.getMessage());
-            }
+                );
+                ticket.setFullDate(apiDateFormat.format(depDate));
+                displayTickets.add(ticket);
+            } catch (Exception ignored) {}
         }
 
         if (displayTickets.isEmpty()) {
@@ -188,9 +180,7 @@ public class FlightsFragment2 extends Fragment {
     }
 
     private void openDetail(Ticket ticket) {
-        TicketDetailFragment fragment = TicketDetailFragment.newInstance(
-            ticket.getFlightNo(), ticket.getOriginCode(), ticket.getDestCode(), ticket.getTime(), ticket.getSeat()
-        );
+        TicketDetailFragment fragment = TicketDetailFragment.newInstance(ticket);
         getParentFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
@@ -204,6 +194,12 @@ public class FlightsFragment2 extends Fragment {
             ticket.getDay() + " " + ticket.getMonthYear().replace("\n", " "),
             ticket.getTime()
         );
+        // Truyền thêm class để tính phí
+        Bundle args = fragment.getArguments();
+        if (args != null) {
+            args.putString("flightClass", ticket.getFlightClass());
+        }
+        
         getParentFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
@@ -211,8 +207,9 @@ public class FlightsFragment2 extends Fragment {
     }
 
     private void openChange(Ticket ticket) {
+        ChangeTicketFragment fragment = ChangeTicketFragment.newInstance(ticket);
         getParentFragmentManager().beginTransaction()
-            .replace(R.id.fragmentContainer, new ChangeTicketFragment())
+            .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit();
     }

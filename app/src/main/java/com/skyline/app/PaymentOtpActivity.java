@@ -149,7 +149,9 @@ public class PaymentOtpActivity extends AppCompatActivity {
 
     private void navigateToSuccess() {
         Intent intent = new Intent(this, PaymentSuccessActivity.class);
-        intent.putExtras(getIntent().getExtras());
+        if (getIntent().getExtras() != null) {
+            intent.putExtras(getIntent().getExtras());
+        }
         startActivity(intent);
         finish();
     }

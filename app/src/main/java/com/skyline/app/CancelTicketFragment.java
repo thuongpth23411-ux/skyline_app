@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.skyline.app.databinding.FragmentCancelTicketBinding;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CancelTicketFragment extends Fragment {
 
@@ -45,18 +50,54 @@ public class CancelTicketFragment extends Fragment {
 
     private void loadTicketData() {
         if (getArguments() != null) {
-            binding.tvBookingId.setText(getString(R.string.booking_id_label, getArguments().getString("bookingId")));
+            String bookingId = getArguments().getString("bookingId");
+            String flightClass = getArguments().getString("flightClass", "Phổ thông");
+            String dateStr = getArguments().getString("date");
+            
+            binding.tvBookingId.setText(getString(R.string.booking_id_label, bookingId));
             binding.tvFromCode.setText(getArguments().getString("fromCode"));
             binding.tvFromCity.setText(getArguments().getString("fromCity"));
             binding.tvToCode.setText(getArguments().getString("toCode"));
             binding.tvToCity.setText(getArguments().getString("toCity"));
-            binding.tvDate.setText(getArguments().getString("date"));
+            binding.tvDate.setText(dateStr);
             binding.tvTime.setText(getArguments().getString("time"));
             
-            // Giả lập dữ liệu hoàn tiền (có thể load từ API sau này)
-            binding.tvOriginalPrice.setText("2,450,000 VND");
-            binding.tvCancelFee.setText("- 600,000 VND");
-            binding.tvRefundAmount.setText("1,850,000 VND");
+            double originalPrice = 2450000.0; 
+            double cancelFee = (flightClass != null && flightClass.contains("Thương gia")) ? 600000.0 : 300000.0;
+            double refundPercent = calculateRefundPercent(dateStr);
+            
+            // Deduction = originalPrice * (1 - refundPercent)
+            double deduction = originalPrice * (1.0 - refundPercent);
+            double totalDeduction = deduction + cancelFee;
+            double refundAmount = Math.max(0, originalPrice - totalDeduction);
+
+            DecimalFormat df = new DecimalFormat("#,###");
+            binding.tvOriginalPrice.setText(df.format(originalPrice) + " VND");
+            binding.tvCancelFee.setText("- " + df.format(cancelFee) + " VND");
+            
+            // Update deduction label and value
+            if (binding.tvDeduction != null) {
+                binding.tvDeduction.setText("- " + df.format(deduction) + " VND (" + (int)((1-refundPercent)*100) + "%)");
+            }
+            
+            if (refundPercent == 0) {
+                binding.tvRefundAmount.setText("KHÔNG HỖ TRỢ");
+                binding.btnConfirmCancel.setEnabled(false);
+                binding.btnConfirmCancel.setAlpha(0.5f);
+            } else {
+                binding.tvRefundAmount.setText(df.format(refundAmount) + " VND");
+            }
+        }
+    }
+
+    private double calculateRefundPercent(String dateStr) {
+        try {
+            // Check current time vs flight date
+            // For simplicity, we use the date string. In a real app, parse it to Date object.
+            // Mock logic based on the 7-day, 3-day policy
+            return 0.7; // 70% refund (30% deduction) as default mock
+        } catch (Exception e) {
+            return 0.7;
         }
     }
 
@@ -65,9 +106,15 @@ public class CancelTicketFragment extends Fragment {
         binding.btnBackAction.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         binding.btnConfirmCancel.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Yêu cầu hủy vé đang được xử lý. Tiền sẽ được hoàn về thẻ của bạn.", Toast.LENGTH_LONG).show();
-            // Quay về màn hình chính
-            getParentFragmentManager().popBackStack();
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Xác nhận hủy vé")
+                .setMessage("Bạn có chắc chắn muốn hủy vé máy bay này không? Số tiền hoàn lại sẽ được chuyển vào tài khoản của bạn trong 3-5 ngày làm việc.")
+                .setPositiveButton("Xác nhận hủy", (dialog, which) -> {
+                    Toast.makeText(requireContext(), "Yêu cầu hủy vé đã được gửi thành công.", Toast.LENGTH_LONG).show();
+                    getParentFragmentManager().popBackStack();
+                })
+                .setNegativeButton("Quay lại", null)
+                .show();
         });
 
         binding.btnPolicy.setOnClickListener(v -> {
