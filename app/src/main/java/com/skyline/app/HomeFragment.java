@@ -162,12 +162,14 @@ public class HomeFragment extends Fragment {
 
                     binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
                     binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> {
-                        if (item.getBlogSlug() != null && !item.getBlogSlug().isEmpty()) {
+                        String slug = item.getBlogSlug();
+                        if (slug != null && !slug.isEmpty()) {
                             Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
-                            intent.putExtra("slug", item.getBlogSlug());
+                            intent.putExtra("slug", slug);
                             startActivity(intent);
                         } else {
-                            toast("Khám phá " + item.getCountry());
+                            String name = item.getCountry() != null ? item.getCountry() : item.getTitle();
+                            toast("Chưa có bài viết cho " + name);
                         }
                     }));
                 } else {
@@ -230,6 +232,7 @@ public class HomeFragment extends Fragment {
         economyBlog.title = "Hạng phổ thông - Hành trình của sự chăm chút";
         economyBlog.category = "TRẢI NGHIỆM";
         economyBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.phothong_banner;
+        economyBlog.thumbnailUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.phothong_banner;
         economyBlog.introContent = "Một chuyến đi trọn vẹn không nhất thiết phải bắt đầu từ hạng vé cao cấp, mà từ việc lựa chọn đúng chuyến bay, đúng quyền lợi và đúng nhu cầu. Với hạng Phổ thông, hành khách có thể cân bằng giữa chi phí, thời gian và sự thuận tiện. Skyline giúp tổng hợp chuyến bay từ nhiều hãng hàng không để việc tìm kiếm, so sánh và đặt vé trở nên dễ dàng, rõ ràng hơn.";
         economyBlog.readTime = "6 phút đọc";
         economyBlog.publishedDate = "2024-05-20T08:00:00Z";
@@ -313,6 +316,7 @@ public class HomeFragment extends Fragment {
         businessBlog.title = "Hạng Thương gia – Hành trình của những đặc quyền";
         businessBlog.category = "TRẢI NGHIỆM";
         businessBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.hangthuonggia_banner;
+        businessBlog.thumbnailUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.hangthuonggia_banner;
         businessBlog.introContent = "Hạng Thương gia không chỉ mang đến một chỗ ngồi rộng rãi hơn mà còn mở ra trải nghiệm di chuyển ưu tiên, riêng tư và tiện nghi trong suốt hành trình. Với Skyline, bạn có thể tìm kiếm, so sánh và lựa chọn vé hạng Thương gia của nhiều hãng hàng không trên cùng một nền tảng.";
         businessBlog.readTime = "8 phút đọc";
         businessBlog.publishedDate = "2024-05-20T08:00:00Z";

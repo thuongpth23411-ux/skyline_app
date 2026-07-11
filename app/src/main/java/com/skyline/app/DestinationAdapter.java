@@ -48,10 +48,12 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         }
 
         public void bind(Destination item) {
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            String imageUrl = item.getFullImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(binding.imgDestination.getContext())
-                    .load(item.getImageUrl())
+                    .load(imageUrl)
                     .placeholder(R.drawable.bg_square_placeholder)
+                    .error(R.drawable.bg_square_placeholder)
                     .into(binding.imgDestination);
             } else {
                 binding.imgDestination.setImageResource(item.getImageRes());

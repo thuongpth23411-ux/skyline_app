@@ -73,6 +73,10 @@ public class Promotion {
     public String getDescription() { return description != null ? description : ""; }
     public String getCategory() { return promotionCategory != null ? promotionCategory : ""; }
     public String getImageUrl() { return imageUrl; }
+
+    public String getFullImageUrl() {
+        return RetrofitClient.formatUrl(imageUrl);
+    }
     
     public String getExpiryDate() { 
         if (endDate == null || endDate.isEmpty()) return "Vô thời hạn";

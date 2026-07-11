@@ -10,9 +10,10 @@ public class RetrofitClient {
     private static ApiService instance;
     private static GroqService groqInstance;
 
-    private static String getBaseUrl() {
-        // 127.0.0.1 (localhost) hoạt động tốt cho cả Emulator và Máy thật (nếu dùng adb reverse)
-        return "http://127.0.0.1:3000/api/";
+    public static String getBaseUrl() {
+        // Sử dụng 10.0.2.2 để máy ảo Android có thể truy cập vào localhost của máy tính host
+        return "http://10.0.2.2:3000/api/";
+//        return "http://127.0.0.1:3000/api/";
     }
 
     public static ApiService getInstance() {
@@ -28,6 +29,17 @@ public class RetrofitClient {
                     .create(GroqService.class);
         }
         return groqInstance;
+    }
+
+    public static String formatUrl(String path) {
+        if (path == null || path.isEmpty()) return null;
+        if (path.startsWith("http") || path.startsWith("android.resource")) return path;
+
+        String baseUrl = getBaseUrl().replace("/api/", "");
+        if (path.startsWith("/")) {
+            return baseUrl + path;
+        }
+        return baseUrl + "/" + path;
     }
 
     private static Retrofit createRetrofit(String baseUrl) {

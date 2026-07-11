@@ -52,7 +52,7 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.ViewHolder> {
         holder.binding.tvDate.setText(formatDate(blog.publishedDate));
 
         Glide.with(holder.itemView.getContext())
-                .load(blog.thumbnailUrl)
+                .load(blog.getFullThumbnailUrl())
                 .placeholder(R.drawable.img_destination_danang)
                 .into(holder.binding.ivThumbnail);
 

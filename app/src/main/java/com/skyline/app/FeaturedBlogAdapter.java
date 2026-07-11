@@ -44,7 +44,7 @@ public class FeaturedBlogAdapter extends RecyclerView.Adapter<FeaturedBlogAdapte
         holder.binding.tvReadTime.setText(blog.readTime);
 
         Glide.with(holder.itemView.getContext())
-                .load(blog.thumbnailUrl)
+                .load(blog.getFullThumbnailUrl())
                 .placeholder(R.drawable.img_destination_danang)
                 .into(holder.binding.ivThumbnail);
 

@@ -79,14 +79,14 @@ public class BlogDetailActivity extends AppCompatActivity {
     }
 
     private void setupUI() {
-        Glide.with(this).load(blog.coverImageUrl).placeholder(R.drawable.img_destination_danang).into(binding.ivCover);
+        Glide.with(this).load(blog.getFullCoverImageUrl()).placeholder(R.drawable.img_destination_danang).into(binding.ivCover);
         binding.tvTitle.setText(blog.title);
         binding.tvAuthorName.setText(blog.author != null ? blog.author.name : "Skyline Team");
         binding.tvMeta.setText(String.format("%s • %s", formatDate(blog.publishedDate), blog.readTime));
         binding.tvSummary.setText(blog.introContent != null ? blog.introContent : blog.shortDescription);
 
         if (blog.author != null && blog.author.avatarUrl != null) {
-            Glide.with(this).load(blog.author.avatarUrl).placeholder(R.drawable.ic_profile).into(binding.ivAuthorAvatar);
+            Glide.with(this).load(blog.author.getFullAvatarUrl()).placeholder(R.drawable.ic_profile).into(binding.ivAuthorAvatar);
         }
 
         setupQuickInfo();
@@ -202,7 +202,7 @@ public class BlogDetailActivity extends AppCompatActivity {
                     if ("food_grid".equals(section.type)) {
                         ItemBlogSectionFoodBinding foodBinding = ItemBlogSectionFoodBinding.inflate(getLayoutInflater(), grid, false);
                         foodBinding.tvTitle.setText(item.title);
-                        Glide.with(this).load(item.imageUrl).placeholder(R.drawable.bg_square_placeholder).into(foodBinding.ivImage);
+                        Glide.with(this).load(RetrofitClient.formatUrl(item.imageUrl)).placeholder(R.drawable.bg_square_placeholder).into(foodBinding.ivImage);
                         itemView = foodBinding.getRoot();
                     } else {
                         ItemBlogSectionReasonBinding reasonBinding = ItemBlogSectionReasonBinding.inflate(getLayoutInflater(), grid, false);
@@ -250,7 +250,7 @@ public class BlogDetailActivity extends AppCompatActivity {
                         placeBinding.tvTitle.setText(item.title);
                         placeBinding.tvSubtitle.setText(item.subtitle);
                         placeBinding.tvDescription.setText(item.description);
-                        Glide.with(this).load(item.imageUrl).placeholder(R.drawable.bg_square_placeholder).into(placeBinding.ivImage);
+                        Glide.with(this).load(RetrofitClient.formatUrl(item.imageUrl)).placeholder(R.drawable.bg_square_placeholder).into(placeBinding.ivImage);
                         binding.sectionsContainer.addView(placeBinding.getRoot());
                     } else if ("itinerary".equals(section.type)) {
                         View itView = getLayoutInflater().inflate(R.layout.item_blog_section_itinerary, binding.sectionsContainer, false);
@@ -269,7 +269,7 @@ public class BlogDetailActivity extends AppCompatActivity {
                         tvDesc.setText(item.description);
                         if (item.imageUrl != null && !item.imageUrl.isEmpty()) {
                             ivImage.setVisibility(View.VISIBLE);
-                            Glide.with(this).load(item.imageUrl).placeholder(R.drawable.bg_square_placeholder).into(ivImage);
+                            Glide.with(this).load(RetrofitClient.formatUrl(item.imageUrl)).placeholder(R.drawable.bg_square_placeholder).into(ivImage);
                         } else {
                             ivImage.setVisibility(View.GONE);
                         }
