@@ -34,6 +34,10 @@ public class FullPromotionAdapter extends RecyclerView.Adapter<FullPromotionAdap
         notifyDataSetChanged();
     }
 
+    public List<Promotion> getItems() {
+        return items;
+    }
+
     @NonNull
     @Override
     public FullPromotionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -104,7 +108,7 @@ public class FullPromotionAdapter extends RecyclerView.Adapter<FullPromotionAdap
                 if (imageUrl.startsWith("/")) {
                     imageUrl = "http://10.0.2.2:3000" + imageUrl;
                 }
-                
+
                 com.bumptech.glide.Glide.with(binding.imgPromo.getContext())
                         .load(imageUrl)
                         .placeholder(placeholderRes)
