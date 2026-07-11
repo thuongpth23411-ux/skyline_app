@@ -66,13 +66,49 @@ public class SessionManager {
     }
 
     public void addLocalNotification(String title, String content) {
+        addLocalNotification(null, title, content, "SYSTEM", null);
+    }
+
+    public void addLocalNotification(String id, String title, String content, String type, String data) {
         String existing = prefs.getString("local_notifs", "");
         String time = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date());
-        String entry = title + "|" + content + "|" + time + ";";
-        prefs.edit().putString("local_notifs", entry + existing).apply();
+        // Format: id|title|content|time|type|targetData;
+        String entry = (id != null ? id : "") + "|" + title + "|" + content + "|" + time + "|" + (type != null ? type : "") + "|" + (data != null ? data : "") + ";";
+        
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("local_notifs", entry + existing);
+        
+        // Tăng đếm thông báo chưa đọc
+        int currentCount = getUnreadNotifCount();
+        editor.putInt("unread_notif_count", currentCount + 1);
+        
+        editor.apply();
     }
 
     public String getLocalNotifications() {
         return prefs.getString("local_notifs", "");
+    }
+
+    public int getUnreadNotifCount() {
+        return prefs.getInt("unread_notif_count", 0);
+    }
+
+    public void clearUnreadNotifCount() {
+        prefs.edit().putInt("unread_notif_count", 0).apply();
+    }
+
+    public void clearNotifications() {
+        prefs.edit().putString("local_notifs", "").apply();
+    }
+
+    public boolean isNotificationReceived(String id) {
+        Set<String> received = prefs.getStringSet("received_notif_ids", new HashSet<>());
+        return received.contains(id);
+    }
+
+    public void markNotificationAsReceived(String id) {
+        Set<String> received = new HashSet<>(prefs.getStringSet("received_notif_ids", new HashSet<>()));
+        received.add(id);
+        prefs.edit().putStringSet("received_notif_ids", received).apply();
     }
 }
