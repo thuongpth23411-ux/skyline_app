@@ -138,6 +138,13 @@ public class FlightsFragment2 extends Fragment {
                     seatNum = seatNum.substring(seatNum.lastIndexOf("_") + 1);
                 }
 
+                String displayTicketType = "Một chiều";
+                if ("Return".equalsIgnoreCase(res.getTicketType())) {
+                    displayTicketType = "Lượt về";
+                } else if ("Departure".equalsIgnoreCase(res.getTicketType())) {
+                    displayTicketType = "Lượt đi";
+                }
+
                 displayTickets.add(new Ticket(
                     day, monthYear,
                     "Phổ thông",
@@ -146,7 +153,7 @@ public class FlightsFragment2 extends Fragment {
                     time, seatNum != null ? seatNum : "--",
                     res.getTotalAmount(),
                     res.getPassengerName() != null ? res.getPassengerName() : "Hành khách",
-                    "Một chiều"
+                    displayTicketType
                 ));
             } catch (Exception e) {
                 Log.e("FlightsFragment2", "Parse error for ticket: " + e.getMessage());
