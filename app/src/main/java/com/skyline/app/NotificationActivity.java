@@ -18,6 +18,9 @@ public class NotificationActivity extends AppCompatActivity {
         binding = ActivityNotificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        com.skyline.app.utils.SessionManager sessionManager = new com.skyline.app.utils.SessionManager(this);
+        sessionManager.clearUnreadNotifCount();
+
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnClearAll.setOnClickListener(v -> showClearAllDialog());
 
