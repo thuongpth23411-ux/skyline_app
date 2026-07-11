@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardVoucher"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="1dp"
+    app:strokeColor="#F0F0F0"
+    app:strokeWidth="1dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+
+        <!-- Left Section (Skyline Teal) -->
+        <RelativeLayout
+            android:id="@+id/layoutLeft"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@color/skyline_teal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_gift"
+                    app:tint="@color/white"
+                    android:contentDescription="@null" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SKYLINE"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- Use existing app dotted line -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/bg_dotted_line_vertical"
+                android:alpha="0.3" />
+        </RelativeLayout>
+
+        <!-- Right Section (Content) -->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvVoucherTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Giảm 15% Giảm tối đa 300kđ"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:paddingEnd="24dp" />
+
+                <TextView
+                    android:id="@+id/tvVoucherMinOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Đơn tối thiểu 0đ"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvVoucherExpiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="HSD: 16.07.2026"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/rbSelect"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:button="@null"
+                android:background="@drawable/terms_checkbox_selector"
+                android:backgroundTint="@null"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <!-- Lựa chọn tốt nhất badge -->
+            <TextView
+                android:id="@+id/tvBestChoice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/bg_chip_blue"
+                android:backgroundTint="@color/skyline_blue_dark"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
+                android:text="Ưu đãi nhất"
+                android:textColor="@color/white"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:text="Điều kiện"
+                android:textColor="@color/skyline_blue"
+                android:textSize="10sp"
+                android:padding="4dp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

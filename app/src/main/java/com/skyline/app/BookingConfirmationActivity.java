@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -62,9 +63,14 @@ public class BookingConfirmationActivity extends AppCompatActivity {
     private boolean isRoundTrip = false;
     private String fareType, returnFareType;
     private SessionManager sessionManager;
+    private User currentUser;
 
     private List<String> selectedSeats, returnSelectedSeats;
     private List<Integer> b10s, b23s, rb10s, rb23s;
+
+    private List<com.skyline.app.network.Promotion> allPromotions;
+    private com.skyline.app.network.Promotion appliedPromotion;
+    private double voucherDiscountAmount = 0;
 
     private final List<PassengerForm> passengerForms = new ArrayList<>();
 
@@ -74,7 +80,15 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         EditText edtLastName, edtFirstName, edtBirthDate, edtDocumentNo;
         RadioGroup rgGender;
         Spinner spNationality, spDocumentType;
+        TextView tvErrorLastName, tvErrorFirstName, tvErrorBirthDate, tvErrorDocumentNo;
     }
+
+    // Static storage to persist data across navigation (Draft)
+    private static class PassengerData {
+        String lastName, firstName, dob, docNo, gender, nationality, docType;
+    }
+    private static final List<PassengerData> passengerDrafts = new ArrayList<>();
+    private static String draftEmail = "", draftPhone = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +102,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         initViews();
         updateUI();
         loadUserData();
+        fetchPromotions();
         assignRandomSeatsIfNeeded();
         startPlaneAnimation();
     }
@@ -133,6 +148,263 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         binding.btnConfirmBooking.setOnClickListener(v -> {
             if (validateFields()) processBooking();
         });
+
+        // Set click listener on both card and inner layout for reliability
+        View.OnClickListener voucherClick = v -> showVoucherBottomSheet();
+        binding.cardVoucherRow.setOnClickListener(voucherClick);
+        if (binding.layoutVoucherClick != null) {
+            binding.layoutVoucherClick.setOnClickListener(voucherClick);
+        }
+
+        // Restore contact draft
+        if (!draftEmail.isEmpty()) binding.edtEmail.setText(draftEmail);
+        if (!draftPhone.isEmpty()) binding.edtPhone.setText(draftPhone);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveDraftData();
+    }
+
+    private void saveDraftData() {
+        passengerDrafts.clear();
+        for (PassengerForm f : passengerForms) {
+            PassengerData data = new PassengerData();
+            data.lastName = f.edtLastName.getText().toString().trim();
+            data.firstName = f.edtFirstName.getText().toString().trim();
+            data.dob = f.edtBirthDate.getText().toString().trim();
+            data.docNo = f.edtDocumentNo.getText().toString().trim();
+            data.gender = ((RadioButton)f.rgGender.findViewById(f.rgGender.getCheckedRadioButtonId())).getText().toString();
+            passengerDrafts.add(data);
+        }
+        draftEmail = binding.edtEmail.getText().toString().trim();
+        draftPhone = binding.edtPhone.getText().toString().trim();
+    }
+
+    private void showVoucherBottomSheet() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.layout_voucher_bottom_sheet, null);
+        
+        EditText edtCode = view.findViewById(R.id.edtPromoCode);
+        TextView tvStatus = view.findViewById(R.id.tvPromoStatus);
+        com.google.android.material.button.MaterialButton btnApplySmall = view.findViewById(R.id.btnApplyPromo);
+        com.google.android.material.button.MaterialButton btnApplyBig = view.findViewById(R.id.btnDone);
+        androidx.recyclerview.widget.RecyclerView rvVouchers = view.findViewById(R.id.rvVouchers);
+
+        // State for selection within bottom sheet
+        final com.skyline.app.network.Promotion[] tempSelected = { appliedPromotion };
+        final double[] tempDiscount = { voucherDiscountAmount };
+
+        int totalPax = adults + children;
+        final double subTotal = (baseFarePrice * 1.1 + 450000) * totalPax + (isRoundTrip ? (returnBasePrice * 1.1 + 450000) * totalPax : 0);
+
+        if (allPromotions != null && !allPromotions.isEmpty()) {
+            VoucherAdapter adapter = new VoucherAdapter(allPromotions, 
+                tempSelected[0] != null ? tempSelected[0].getCode() : null, 
+                subTotal,
+                currentUser != null ? currentUser.getRank() : "NONE",
+                new VoucherAdapter.OnVoucherSelectedListener() {
+                    @Override
+                    public void onSelected(com.skyline.app.network.Promotion promotion) {
+                        tempSelected[0] = promotion;
+                        tempDiscount[0] = calculatePotentialDiscount(promotion, subTotal);
+                        edtCode.setText(promotion.getCode());
+                        tvStatus.setText("Đã chọn: " + promotion.getTitle());
+                        tvStatus.setTextColor(ContextCompat.getColor(BookingConfirmationActivity.this, R.color.skyline_teal));
+                        tvStatus.setVisibility(View.VISIBLE);
+                        btnApplySmall.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(BookingConfirmationActivity.this, R.color.skyline_teal)));
+                    }
+
+                    @Override
+                    public void onConditionClick(com.skyline.app.network.Promotion promotion) {
+                        showVoucherDetailPopup(promotion);
+                    }
+                });
+            rvVouchers.setAdapter(adapter);
+        }
+
+        if (tempSelected[0] != null) {
+            edtCode.setText(tempSelected[0].getCode());
+            btnApplySmall.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, R.color.skyline_teal)));
+            tvStatus.setText("Đã chọn mã: " + tempSelected[0].getTitle());
+            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.skyline_teal));
+            tvStatus.setVisibility(View.VISIBLE);
+        }
+
+        edtCode.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                boolean hasText = s.length() > 0;
+                btnApplySmall.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    hasText ? ContextCompat.getColor(BookingConfirmationActivity.this, R.color.skyline_teal) : android.graphics.Color.parseColor("#A0AEC0")
+                ));
+            }
+        });
+
+        btnApplySmall.setOnClickListener(v -> {
+            String code = edtCode.getText().toString().trim();
+            if (code.isEmpty()) return;
+            
+            applyPromoLogic(code, tvStatus, btnApplySmall, subTotal, tempSelected, tempDiscount, (VoucherAdapter)rvVouchers.getAdapter());
+        });
+
+        btnApplyBig.setOnClickListener(v -> {
+            appliedPromotion = tempSelected[0];
+            voucherDiscountAmount = tempDiscount[0];
+            
+            if (appliedPromotion != null) {
+                binding.tvSelectedVoucherTag.setText("-" + new DecimalFormat("#,###").format(voucherDiscountAmount) + " VND");
+                binding.tvSelectedVoucherTag.setTextColor(ContextCompat.getColor(this, R.color.skyline_teal));
+            } else {
+                binding.tvSelectedVoucherTag.setText("Chọn voucher");
+                binding.tvSelectedVoucherTag.setTextColor(ContextCompat.getColor(this, R.color.skyline_text_secondary));
+            }
+            
+            updateUI();
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.setOnShowListener(dialogInterface -> {
+            View bottomSheet = ((BottomSheetDialog) dialogInterface).findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                com.google.android.material.bottomsheet.BottomSheetBehavior.from(bottomSheet)
+                    .setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+        dialog.show();
+    }
+
+    private void applyPromoLogic(String code, TextView tvStatus, View btnApply, double subTotal, com.skyline.app.network.Promotion[] tempSelected, double[] tempDiscount, VoucherAdapter adapter) {
+        if (allPromotions == null || allPromotions.isEmpty()) {
+            tvStatus.setText("Không có mã khuyến mãi khả dụng");
+            tvStatus.setTextColor(Color.RED);
+            tvStatus.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        com.skyline.app.network.Promotion found = null;
+        for (com.skyline.app.network.Promotion p : allPromotions) {
+            if (p.getCode().equalsIgnoreCase(code)) {
+                found = p;
+                break;
+            }
+        }
+
+        if (found == null) {
+            tvStatus.setText("Mã khuyến mãi không hợp lệ");
+            tvStatus.setTextColor(Color.RED);
+            tvStatus.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (!"Active".equalsIgnoreCase(found.getStatus())) {
+            tvStatus.setText("Voucher hiện không khả dụng");
+            tvStatus.setTextColor(Color.RED);
+            tvStatus.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (subTotal < found.getMinimumOrder()) {
+            tvStatus.setText("Đơn hàng chưa đạt mức tối thiểu " + new DecimalFormat("#,###").format(found.getMinimumOrder()) + "đ");
+            tvStatus.setTextColor(Color.RED);
+            tvStatus.setVisibility(View.VISIBLE);
+            return;
+        }
+        
+        if ("MEMBER".equalsIgnoreCase(found.getCategory()) && (currentUser == null)) {
+            tvStatus.setText("Voucher dành riêng cho hội viên");
+            tvStatus.setTextColor(Color.RED);
+            tvStatus.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        tempSelected[0] = found;
+        tempDiscount[0] = calculatePotentialDiscount(found, subTotal);
+
+        tvStatus.setText("Áp dụng thành công: " + found.getTitle());
+        tvStatus.setTextColor(ContextCompat.getColor(this, R.color.skyline_teal));
+        tvStatus.setVisibility(View.VISIBLE);
+        
+        btnApply.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, R.color.skyline_teal)));
+        
+        if (adapter != null) {
+            adapter.updateSelection(found.getCode());
+        }
+    }
+
+    private double calculatePotentialDiscount(com.skyline.app.network.Promotion v, double currentSubTotal) {
+        if (currentSubTotal < v.getMinimumOrder()) return 0;
+        double discount;
+        if ("FIXED".equalsIgnoreCase(v.getDiscountType())) {
+            discount = v.getDiscountValue();
+        } else {
+            discount = currentSubTotal * (v.getDiscountValue() / 100.0);
+            if (v.getMaxDiscount() > 0 && discount > v.getMaxDiscount()) {
+                discount = v.getMaxDiscount();
+            }
+        }
+        return discount;
+    }
+
+    private boolean isVoucherEligible(com.skyline.app.network.Promotion p, double subTotal) {
+        if (!"Active".equalsIgnoreCase(p.getStatus())) return false;
+        if (p.getQuantity() <= 0) return false;
+        if (subTotal < p.getMinimumOrder()) return false;
+        if ("MEMBER".equalsIgnoreCase(p.getCategory()) && (currentUser == null)) return false;
+        return true;
+    }
+
+    private void fetchPromotions() {
+        RetrofitClient.getInstance().getPromotions().enqueue(new Callback<List<com.skyline.app.network.Promotion>>() {
+            @Override
+            public void onResponse(Call<List<com.skyline.app.network.Promotion>> call, Response<List<com.skyline.app.network.Promotion>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allPromotions = response.body();
+                    autoApplyBestVoucher();
+                }
+            }
+            @Override public void onFailure(Call<List<com.skyline.app.network.Promotion>> call, Throwable t) {}
+        });
+    }
+
+    private void autoApplyBestVoucher() {
+        if (allPromotions == null || allPromotions.isEmpty()) return;
+
+        int totalPax = adults + children;
+        double subTotal = (baseFarePrice * 1.1 + 450000) * totalPax;
+        if (isRoundTrip) subTotal += (returnBasePrice * 1.1 + 450000) * totalPax;
+
+        com.skyline.app.network.Promotion best = null;
+        double maxDiscount = 0;
+
+        for (com.skyline.app.network.Promotion p : allPromotions) {
+            // Kiểm tra điều kiện cơ bản
+            if (!"Active".equalsIgnoreCase(p.getStatus())) continue;
+            if (p.getQuantity() <= 0) continue;
+            if (subTotal < p.getMinimumOrder()) continue;
+            if ("MEMBER".equalsIgnoreCase(p.getCategory()) && (currentUser == null)) continue;
+
+            double discount = calculatePotentialDiscount(p, subTotal);
+            if (discount > maxDiscount) {
+                maxDiscount = discount;
+                best = p;
+            }
+        }
+
+        if (best != null) {
+            appliedPromotion = best;
+            voucherDiscountAmount = maxDiscount;
+            
+            // Cập nhật tag hiển thị
+            binding.tvSelectedVoucherTag.setText("-" + new DecimalFormat("#,###").format(voucherDiscountAmount) + " VND");
+            binding.tvSelectedVoucherTag.setTextColor(ContextCompat.getColor(this, R.color.skyline_teal));
+            
+            updateUI();
+        }
     }
 
     private void setupPassengerForms() {
@@ -157,6 +429,11 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         form.rgGender = view.findViewById(R.id.rgGender);
         form.spNationality = view.findViewById(R.id.spNationality);
         form.spDocumentType = view.findViewById(R.id.spDocumentType);
+        
+        form.tvErrorLastName = view.findViewById(R.id.tvErrorLastName);
+        form.tvErrorFirstName = view.findViewById(R.id.tvErrorFirstName);
+        form.tvErrorBirthDate = view.findViewById(R.id.tvErrorBirthDate);
+        form.tvErrorDocumentNo = view.findViewById(R.id.tvErrorDocumentNo);
 
         TextView tvTitle = view.findViewById(R.id.tvPassengerTitle);
         String typeName = type.equals("ADULT") ? "NGƯỜI LỚN" : "TRẺ EM";
@@ -178,14 +455,32 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         setupSpinner(form.spNationality, new String[]{"Việt Nam", "Thái Lan", "Singapore", "Nhật Bản", "Hàn Quốc"});
         setupSpinner(form.spDocumentType, new String[]{"CCCD", "Hộ chiếu"});
 
-        form.edtBirthDate.setOnClickListener(v -> showBirthDatePicker(form));
+        form.edtBirthDate.setFocusable(true);
+        form.edtBirthDate.setClickable(true);
+        form.edtBirthDate.setFocusableInTouchMode(true);
+        view.findViewById(R.id.ivCalendar).setOnClickListener(v -> showBirthDatePicker(form));
         binding.containerForms.addView(view);
         passengerForms.add(form);
+
+        // Restore draft data if index matches
+        int formIdx = passengerForms.size() - 1;
+        if (formIdx < passengerDrafts.size()) {
+            PassengerData data = passengerDrafts.get(formIdx);
+            form.edtLastName.setText(data.lastName);
+            form.edtFirstName.setText(data.firstName);
+            form.edtBirthDate.setText(data.dob);
+            form.edtDocumentNo.setText(data.docNo);
+            if ("Bà".equalsIgnoreCase(data.gender) || "Bé gái".equalsIgnoreCase(data.gender)) {
+                ((RadioButton)form.rgGender.findViewById(R.id.rbMs)).setChecked(true);
+            }
+            // Spinner restoration would need position mapping, for now let's focus on text
+        }
     }
 
     private boolean validateFields() {
         Calendar today = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        boolean allValid = true;
 
         for (int i = 0; i < passengerForms.size(); i++) {
             PassengerForm f = passengerForms.get(i);
@@ -194,58 +489,93 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             String dobStr = f.edtBirthDate.getText().toString().trim();
             String docNo = f.edtDocumentNo.getText().toString().trim();
 
-            if (lastName.isEmpty() || firstName.isEmpty() || dobStr.isEmpty()) {
-                Toast.makeText(this, "Vui lòng điền đủ thông tin Hành khách " + (i+1), Toast.LENGTH_SHORT).show();
-                return false;
+            // Reset errors
+            f.tvErrorLastName.setVisibility(View.GONE);
+            f.tvErrorFirstName.setVisibility(View.GONE);
+            f.tvErrorBirthDate.setVisibility(View.GONE);
+            f.tvErrorDocumentNo.setVisibility(View.GONE);
+            f.edtLastName.setBackgroundResource(R.drawable.bg_auth_input);
+            f.edtFirstName.setBackgroundResource(R.drawable.bg_auth_input);
+            f.edtBirthDate.setBackgroundResource(R.drawable.bg_auth_input);
+            f.edtDocumentNo.setBackgroundResource(R.drawable.bg_auth_input);
+
+            if (lastName.isEmpty()) {
+                showInlineError(f.edtLastName, f.tvErrorLastName, "Họ không được để trống");
+                allValid = false;
+            }
+            if (firstName.isEmpty()) {
+                showInlineError(f.edtFirstName, f.tvErrorFirstName, "Tên không được để trống");
+                allValid = false;
+            }
+            if (dobStr.isEmpty()) {
+                showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Vui lòng chọn ngày sinh");
+                allValid = false;
             }
 
             if (docNo.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập số giấy tờ cho Hành khách " + (i+1), Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            String docType = f.spDocumentType.getSelectedItem().toString();
-            if (docType.equals("CCCD") && docNo.length() != 12) {
-                Toast.makeText(this, "Số CCCD của Hành khách " + (i+1) + " phải đủ 12 chữ số", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            // Kiểm tra độ tuổi (Phòng hờ trường hợp người dùng nhập tay nếu không dùng picker)
-            try {
-                Date birthDate = sdf.parse(dobStr);
-                Calendar birthCal = Calendar.getInstance();
-                if (birthDate != null) {
-                    birthCal.setTime(birthDate);
-                    int age = today.get(Calendar.YEAR) - birthCal.get(Calendar.YEAR);
-                    if (today.get(Calendar.DAY_OF_YEAR) < birthCal.get(Calendar.DAY_OF_YEAR)) age--;
-
-                    if (f.type.equals("ADULT") && age < 12) {
-                        Toast.makeText(this, "Hành khách " + (i+1) + " phải từ 12 tuổi trở lên", Toast.LENGTH_LONG).show();
-                        return false;
-                    }
-                    if (f.type.equals("CHILD") && age >= 12) {
-                        Toast.makeText(this, "Hành khách " + (i+1) + " phải dưới 12 tuổi", Toast.LENGTH_LONG).show();
-                        return false;
-                    }
+                showInlineError(f.edtDocumentNo, f.tvErrorDocumentNo, "Số giấy tờ không được để trống");
+                allValid = false;
+            } else {
+                String docType = f.spDocumentType.getSelectedItem().toString();
+                if (docType.equals("CCCD") && docNo.length() != 12) {
+                    showInlineError(f.edtDocumentNo, f.tvErrorDocumentNo, "CCCD phải đủ 12 chữ số");
+                    allValid = false;
                 }
-            } catch (Exception e) {
-                return false;
+            }
+
+            if (!dobStr.isEmpty()) {
+                try {
+                    Date birthDate = sdf.parse(dobStr);
+                    Calendar birthCal = Calendar.getInstance();
+                    if (birthDate != null) {
+                        birthCal.setTime(birthDate);
+                        int age = today.get(Calendar.YEAR) - birthCal.get(Calendar.YEAR);
+                        if (today.get(Calendar.DAY_OF_YEAR) < birthCal.get(Calendar.DAY_OF_YEAR)) age--;
+
+                        if (f.type.equals("ADULT") && age < 12) {
+                            showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Người lớn phải từ 12 tuổi trở lên");
+                            allValid = false;
+                        }
+                        if (f.type.equals("CHILD") && age >= 12) {
+                            showInlineError(f.edtBirthDate, f.tvErrorBirthDate, "Trẻ em phải dưới 12 tuổi");
+                            allValid = false;
+                        }
+                    }
+                } catch (Exception ignored) {}
             }
         }
 
+        // Contact Info Validation
+        binding.tvErrorEmail.setVisibility(View.GONE);
+        binding.tvErrorPhone.setVisibility(View.GONE);
+        binding.edtEmail.setBackgroundResource(R.drawable.bg_auth_input);
+        binding.edtPhone.setBackgroundResource(R.drawable.bg_auth_input);
+
         String email = binding.edtEmail.getText().toString().trim();
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Vui lòng nhập đúng định dạng email liên hệ (ví dụ: name@gmail.com)", Toast.LENGTH_SHORT).show();
-            return false;
+            showInlineError(binding.edtEmail, binding.tvErrorEmail, "Email không hợp lệ (ví dụ: name@gmail.com)");
+            allValid = false;
         }
 
         String phone = binding.edtPhone.getText().toString().trim();
         if (phone.isEmpty() || phone.length() < 10 || phone.length() > 11) {
-            Toast.makeText(this, "Số điện thoại liên hệ phải từ 10 đến 11 chữ số", Toast.LENGTH_SHORT).show();
-            return false;
+            showInlineError(binding.edtPhone, binding.tvErrorPhone, "Số điện thoại phải từ 10 đến 11 chữ số");
+            allValid = false;
         }
 
-        return true;
+        if (!allValid) {
+            Toast.makeText(this, "Vui lòng kiểm tra lại thông tin bị lỗi", Toast.LENGTH_SHORT).show();
+        }
+        return allValid;
+    }
+
+    private void showInlineError(View input, TextView errorTv, String msg) {
+        errorTv.setText(msg);
+        errorTv.setVisibility(View.VISIBLE);
+        // Set red tint to the background border
+        if (input.getBackground() != null) {
+            input.getBackground().mutate().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_ATOP);
+        }
     }
 
     private void updateUI() {
@@ -315,6 +645,15 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             grandTotal += (returnBasePrice * 1.1 + 450000) * totalSeatPax - roundTripDiscount;
         }
         
+        // Áp dụng giảm giá Voucher
+        if (voucherDiscountAmount > 0) {
+            binding.layoutVoucherDiscount.setVisibility(View.VISIBLE);
+            binding.txtVoucherDiscount.setText("- " + df.format(voucherDiscountAmount) + " VND");
+            grandTotal -= voucherDiscountAmount;
+        } else {
+            binding.layoutVoucherDiscount.setVisibility(View.GONE);
+        }
+
         binding.txtGrandTotal.setText(df.format(grandTotal) + " VND");
     }
 
@@ -470,7 +809,8 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    User user = response.body();
+                    currentUser = response.body();
+                    User user = currentUser;
                     PassengerForm main = passengerForms.get(0);
                     String fullName = user.getName();
                     if (fullName != null) {
@@ -512,6 +852,9 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         double roundTripDiscount = isRoundTrip ? ((baseFarePrice + returnBasePrice) * totalPax) * 0.05 : 0;
         double grandTotal = (baseFarePrice * 1.1 + 450000) * totalPax + totalAddons;
         if (isRoundTrip) grandTotal += (returnBasePrice * 1.1 + 450000) * totalPax - roundTripDiscount;
+        
+        // Trừ thêm tiền Voucher
+        grandTotal -= voucherDiscountAmount;
 
         intent.putExtra("totalAmount", grandTotal);
         intent.putExtra("passenger_email", binding.edtEmail.getText().toString().trim());
@@ -732,6 +1075,55 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             }
         });
 
+        dialog.show();
+    }
+
+    private void showVoucherDetailPopup(com.skyline.app.network.Promotion item) {
+        android.app.Dialog dialog = new android.app.Dialog(this);
+        View view = getLayoutInflater().inflate(R.layout.layout_promotion_detail, null);
+        dialog.setContentView(view);
+        
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextView tvTitle = view.findViewById(R.id.tv_title);
+        TextView tvDesc = view.findViewById(R.id.tv_desc);
+        TextView tvCode = view.findViewById(R.id.tv_code);
+        TextView tvExpiry = view.findViewById(R.id.tv_expiry);
+        ImageView imgPromo = view.findViewById(R.id.img_promo);
+        
+        tvTitle.setText(item.getTitle());
+        
+        String rawDesc = item.getDescription();
+        String formattedDesc = (rawDesc != null) ? rawDesc.replace("\\n", "\n").replace(". ", ".\n\n") : "";
+        tvDesc.setText(formattedDesc);
+
+        tvCode.setText(item.getCode());
+        tvExpiry.setText("Hạn dùng: " + item.getExpiryDate());
+
+        String imageUrl = item.getImageUrl();
+        int placeholderRes = R.drawable.img_brand_banner;
+        if (item.getCategory().contains("MEMBER")) placeholderRes = R.drawable.img_experience_first;
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            com.bumptech.glide.Glide.with(this)
+                    .load(item.getFullImageUrl())
+                    .placeholder(placeholderRes)
+                    .into(imgPromo);
+        } else {
+            imgPromo.setImageResource(placeholderRes);
+        }
+
+        view.findViewById(R.id.btn_copy).setOnClickListener(v -> {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Voucher Code", item.getCode());
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(this, "Đã sao chép mã ưu đãi", Toast.LENGTH_SHORT).show();
+        });
+
+        view.findViewById(R.id.btn_close).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
