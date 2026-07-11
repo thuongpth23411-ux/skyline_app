@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.skyline.app.databinding.ItemDestinationBinding;
 import com.skyline.model.Destination;
+import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.DestinationViewHolder> {
@@ -47,7 +48,14 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         }
 
         public void bind(Destination item) {
-            binding.imgDestination.setImageResource(item.getImageRes());
+            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                Glide.with(binding.imgDestination.getContext())
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.bg_square_placeholder)
+                    .into(binding.imgDestination);
+            } else {
+                binding.imgDestination.setImageResource(item.getImageRes());
+            }
             binding.tvCountry.setText(item.getCountry());
             binding.tvDestinationTitle.setText(item.getTitle());
             binding.getRoot().setOnClickListener(v -> listener.onItemClick(item));

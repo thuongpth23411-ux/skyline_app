@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- HEADER -->
+            <!-- HEADER (Đồng bộ tuyệt đối Hình 2) -->
             <LinearLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
@@ -70,9 +70,7 @@
                     <View android:layout_width="32dp" android:layout_height="32dp" />
                 </LinearLayout>
 
-                <!-- THÔNG TIN LƯỢT ĐI -->
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardFlightOutbound"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -107,9 +105,8 @@
                             android:gravity="center"
                             android:orientation="vertical"
                             android:paddingHorizontal="8dp">
-                            <TextView android:id="@+id/tvFlightNumberOut" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="#B3FFFFFF" android:textSize="10sp" android:textStyle="bold" />
-                            <ImageView android:id="@+id/imgPlane" android:layout_width="28dp" android:layout_height="28dp" android:layout_marginTop="8dp" android:rotation="90" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
-                            <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="1g 10p" android:textColor="#CCFFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1g 10p" android:textColor="#CCFFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                            <ImageView android:id="@+id/imgPlane" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:rotation="90" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -121,62 +118,6 @@
                             <TextView android:id="@+id/tvArrTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" android:text="00:20" />
                             <TextView android:id="@+id/tvArrDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="17 Th07" android:textColor="#CCFFFFFF" android:textSize="12sp" />
                             <TextView android:id="@+id/tvArrAirport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="TÂN SƠN NHẤT" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" android:gravity="end" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- THÔNG TIN LƯỢT VỀ -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardFlightReturn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/skyline_blue_dark"
-                    app:strokeColor="#22FFFFFF"
-                    app:strokeWidth="1dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:baselineAligned="false">
-
-                        <LinearLayout
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView android:id="@+id/tvDepCodeReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvDepTimeReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvDepDateReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" />
-                            <TextView android:id="@+id/tvDepAirportReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:paddingHorizontal="8dp">
-                            <TextView android:id="@+id/tvFlightNumberRet" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="#B3FFFFFF" android:textSize="10sp" android:textStyle="bold" />
-                            <ImageView android:id="@+id/imgPlaneReturn" android:layout_width="28dp" android:layout_height="28dp" android:layout_marginTop="8dp" android:rotation="270" android:src="@drawable/ic_plane" app:tint="@color/white" android:contentDescription="@null" />
-                            <TextView android:id="@+id/tvDurationReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="end"
-                            android:orientation="vertical">
-                            <TextView android:id="@+id/tvArrCodeReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvArrTimeReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvArrDateReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" />
-                            <TextView android:id="@+id/tvArrAirportReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:textColor="#80FFFFFF" android:textSize="10sp" android:textStyle="bold" android:gravity="end" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -201,7 +142,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- THÔNG TIN HÀNH KHÁCH -->
+                <!-- Passenger Info -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -263,7 +204,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- THÔNG TIN LIÊN HỆ -->
+                <!-- Contact Info -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -289,9 +230,8 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- DỊCH VỤ ĐÃ CHỌN -->
+                <!-- Selected Services -->
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSelectedServices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -306,47 +246,27 @@
                         android:padding="20dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DỊCH VỤ ĐÃ CHỌN" android:textColor="@color/skyline_teal" android:textSize="15sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
 
-                        <TextView android:id="@+id/tvLabelOutbound" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LƯỢT ĐI" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HẠNG VÉ" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
                             <TextView android:id="@+id/tvSelectedFare" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Phổ thông" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
                         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" />
+
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GHẾ NGỒI" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
                             <TextView android:id="@+id/tvSelectedSeat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Chưa chọn" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
                         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" />
+
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HÀNH LÝ BỔ SUNG" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
                             <TextView android:id="@+id/tvSelectedBaggage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Không mua thêm" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
-
-                        <!-- LƯỢT VỀ -->
-                        <LinearLayout android:id="@+id/returnServiceSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
-                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LƯỢT VỀ" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HẠNG VÉ" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
-                                <TextView android:id="@+id/tvSelectedFareReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Phổ thông" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
-                            </LinearLayout>
-                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" />
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GHẾ NGỒI" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
-                                <TextView android:id="@+id/tvSelectedSeatReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Chưa chọn" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
-                            </LinearLayout>
-                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" />
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HÀNH LÝ BỔ SUNG" android:textColor="@color/skyline_text_secondary" android:textSize="10sp" android:textStyle="bold" />
-                                <TextView android:id="@+id/tvSelectedBaggageReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Không mua thêm" android:textColor="@color/skyline_blue_dark" android:textSize="15sp" android:textStyle="bold" />
-                            </LinearLayout>
-                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- CHI TIẾT THANH TOÁN TÁCH BẠCH -->
+                <!-- Payment Detail -->
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardPaymentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="22dp"
@@ -359,46 +279,16 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="20dp">
-
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CHI TIẾT THANH TOÁN" android:textColor="@color/skyline_teal" android:textSize="15sp" android:textStyle="bold" />
-
-                        <!-- LƯỢT ĐI -->
-                        <TextView android:id="@+id/tvLabelPaymentOutbound" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="LƯỢT ĐI" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
+                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GIÁ VÉ CƠ BẢN" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/txtBasePrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                        </RelativeLayout>
                         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giá vé cơ bản" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                            <TextView android:id="@+id/txtBasePriceOut" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="THUẾ VÀ PHÍ" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/txtTaxes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="450.000 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
                         </RelativeLayout>
-                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thuế GTGT (10%)" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                            <TextView android:id="@+id/txtVATOut" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
-                        </RelativeLayout>
-                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí sân bay &amp; hệ thống" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="450.000 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
-                        </RelativeLayout>
-
-                        <!-- LƯỢT VỀ -->
-                        <LinearLayout android:id="@+id/layoutPaymentReturn" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
-                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
-                            <TextView android:id="@+id/tvLabelPaymentReturn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LƯỢT VỀ" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
-                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giá vé cơ bản" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                                <TextView android:id="@+id/txtBasePriceIn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
-                            </RelativeLayout>
-                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thuế GTGT (10%)" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                                <TextView android:id="@+id/txtVATIn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
-                            </RelativeLayout>
-                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí sân bay &amp; hệ thống" android:textColor="@color/skyline_blue_dark" android:textSize="13sp" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="450.000 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
-                            </RelativeLayout>
-                        </LinearLayout>
-
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
-
-                        <!-- DỊCH VỤ BỔ SUNG GỘP CHUNG -->
-                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PHÍ CHỌN GHẾ" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
                             <TextView android:id="@+id/txtSeatPrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Miễn phí" android:textColor="#1FA84A" android:textStyle="bold" />
                         </RelativeLayout>
@@ -406,13 +296,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PHÍ HÀNH LÝ BỔ SUNG" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" android:textStyle="bold" />
                             <TextView android:id="@+id/txtBaggagePrice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0 VND" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />
                         </RelativeLayout>
-
-                        <!-- ƯU ĐÃI KHỨ HỒI (Đưa xuống mục dưới) -->
-                        <RelativeLayout android:id="@+id/layoutRoundTripDiscount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:visibility="gone">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ƯU ĐÃI ĐẶT VÉ KHỨ HỒI (5%)" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/txtRoundTripDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
-                        </RelativeLayout>
-
                         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="16dp" />
                         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TỔNG CỘNG" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />

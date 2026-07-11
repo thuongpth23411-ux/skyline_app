@@ -139,12 +139,17 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <View
+                <TextView
                     android:id="@+id/tvCategory"
-                    android:layout_width="40dp"
-                    android:layout_height="4dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/bg_chip_blue" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_blue"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="ĐIỂM ĐẾN"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvTitle"
@@ -152,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="Đà Nẵng – Thành phố đáng sống nhất Việt Nam"
-                    android:textColor="@color/skyline_blue_dark"
+                    android:textColor="@color/black"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 
@@ -182,7 +187,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Thu Hằng"
-                            android:textColor="@color/skyline_blue_dark"
+                            android:textColor="@color/black"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -203,7 +208,7 @@
                     android:layout_marginTop="24dp"
                     android:lineSpacingExtra="6dp"
                     android:text="Khám phá Đà Nẵng – thành phố biển hiện đại, thân thiện và đáng sống bậc nhất Việt Nam. Nơi đây nổi bật với biển xanh, đô thị hiện đại và nền ẩm thực phong phú."
-                    android:textColor="@color/skyline_text"
+                    android:textColor="#374151"
                     android:textSize="15sp"
                     android:textStyle="italic" />
 
