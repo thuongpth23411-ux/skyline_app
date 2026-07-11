@@ -98,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:gravity="center"
-                        android:text="Vui lòng kiểm tra email của bạn để lấy mã xác thực giao dịch trực tuyến (OTP)."
+                        android:text="Hệ thống đang yêu cầu xác thực giao dịch từ ngân hàng phát hành thẻ của bạn."
                         android:textColor="@color/skyline_text_secondary"
                         android:textSize="13sp"
                         android:lineSpacingExtra="4dp" />
@@ -111,16 +111,16 @@
 
                     <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content">
                         <TableRow android:layout_marginBottom="12dp">
-                            <TextView android:text="Đơn vị:" android:textSize="13sp" android:textColor="#64748B" />
-                            <TextView android:text="SKYLINE" android:textSize="13sp" android:textStyle="bold" android:layout_marginStart="15dp" />
+                            <TextView android:text="Đơn vị thụ hưởng:" android:textSize="12sp" android:textColor="#64748B" />
+                            <TextView android:text="SKYLINE" android:textSize="12sp" android:textStyle="bold" android:layout_marginStart="15dp" />
                         </TableRow>
                         <TableRow android:layout_marginBottom="12dp">
-                            <TextView android:text="Số tiền:" android:textSize="13sp" android:textColor="#64748B" />
-                            <TextView android:id="@+id/tvAmount" android:text="2,450,000 VND" android:textSize="13sp" android:textStyle="bold" android:layout_marginStart="15dp" />
+                            <TextView android:text="Số tiền:" android:textSize="12sp" android:textColor="#64748B" />
+                            <TextView android:id="@+id/tvAmount" android:text="2,450,000 VND" android:textSize="12sp" android:textStyle="bold" android:layout_marginStart="15dp" />
                         </TableRow>
                         <TableRow>
-                            <TextView android:text="Số thẻ:" android:textSize="13sp" android:textColor="#64748B" />
-                            <TextView android:id="@+id/tvCardMasked" android:text="**** **** **** 1234" android:textSize="13sp" android:layout_marginStart="15dp" />
+                            <TextView android:text="Số thẻ:" android:textSize="12sp" android:textColor="#64748B" />
+                            <TextView android:id="@+id/tvCardMasked" android:text="**** **** **** 1234" android:textSize="12sp" android:layout_marginStart="15dp" />
                         </TableRow>
                     </TableLayout>
 
@@ -130,7 +130,7 @@
                         android:layout_height="56dp"
                         android:layout_marginTop="32dp"
                         android:backgroundTint="@color/skyline_blue_dark"
-                        android:text="GỬI MÃ OTP VỀ EMAIL"
+                        android:text="XÁC THỰC QUA EMAIL"
                         android:textStyle="bold"
                         app:cornerRadius="8dp" />
 

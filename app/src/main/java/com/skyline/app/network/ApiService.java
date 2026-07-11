@@ -38,12 +38,6 @@ public interface ApiService {
     @GET("auth/rank-benefits")
     Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
 
-    @GET("auth/promotions")
-    Call<List<Promotion>> getAuthPromotions();
-
-    @GET("blogs")
-    Call<List<com.skyline.model.Destination>> getDestinationBlogs();
-
     @GET("promotions")
     Call<List<Promotion>> getPromotions();
 
@@ -64,9 +58,6 @@ public interface ApiService {
 
     @GET("tickets/my-tickets")
     Call<List<TicketResponse>> getMyTickets(@Header("Authorization") String token);
-
-    @POST("tickets/send-email")
-    Call<BaseResponse> sendTicketEmail(@Header("Authorization") String token, @Body Map<String, Object> body);
 
     @POST("tickets/create")
     Call<BaseResponse> createBooking(@Body Map<String, Object> bookingData);

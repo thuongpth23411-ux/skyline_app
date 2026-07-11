@@ -50,13 +50,6 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
         binding.tvDestCity.setText(ticket.getDestCity());
         binding.tvTime.setText(ticket.getTime());
         binding.tvSeat.setText(ticket.getSeat());
-        
-        if (ticket.getTicketType() != null) {
-            binding.tvTicketType.setText(ticket.getTicketType().toUpperCase());
-            binding.tvTicketType.setVisibility(android.view.View.VISIBLE);
-        } else {
-            binding.tvTicketType.setVisibility(android.view.View.GONE);
-        }
 
         binding.btnDetail.setOnClickListener(v -> listener.onDetailClick(ticket));
         binding.btnChange.setOnClickListener(v -> listener.onChangeClick(ticket));

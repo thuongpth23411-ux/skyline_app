@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#F9F9F9">
 
-    <!-- Top Bar (Back to White Style) -->
+    <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:backgroundTint="#262626"
+            android:backgroundTint="#424242"
             android:text="@string/policy"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -73,7 +73,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingTop="20dp"
-            android:paddingBottom="120dp">
+            android:paddingBottom="140dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -117,12 +117,12 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Ticket Summary (White Box Style) -->
+            <!-- Ticket Summary (White Background) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 app:strokeColor="#F3F4F6"
@@ -133,19 +133,28 @@
                     android:orientation="vertical"
                     android:padding="20dp">
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/tvBookingId" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Mã đặt chỗ: SK9921X" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            app:cardBackgroundColor="@color/white" app:cardCornerRadius="12dp" app:cardElevation="0dp"
+                            app:strokeColor="#F3F4F6" app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/tvBookingId" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:paddingHorizontal="10dp" android:paddingVertical="4dp"
+                                android:text="Mã đặt chỗ: SK9921X" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
+                        </com.google.android.material.card.MaterialCardView>
                         <TextView
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="Phổ thông" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" android:textSize="12sp" />
+                            android:layout_alignParentEnd="true" android:layout_centerVertical="true"
+                            android:text="Phổ thông" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="12sp" />
                     </RelativeLayout>
 
                     <!-- Route -->
                     <LinearLayout
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                             <TextView android:id="@+id/tvFromCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HAN" android:textColor="@color/black" android:textSize="20sp" android:textStyle="bold" />
                             <TextView android:id="@+id/tvFromCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hà Nội" android:textColor="@color/skyline_text_secondary" android:textSize="13sp" />
@@ -159,28 +168,28 @@
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="#F3F4F6" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical">
-                        <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_calendar" app:tint="@color/skyline_text_secondary" android:contentDescription="@null" />
-                        <TextView
-                            android:id="@+id/tvDate"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="12 Th05, 2024" android:textColor="@color/black" android:textStyle="bold" android:textSize="13sp" />
-                        <View android:layout_width="1dp" android:layout_height="12dp" android:layout_marginHorizontal="12dp" android:background="#D1D5DB" />
-                        <TextView
-                            android:id="@+id/tvTime"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="08:30" android:textColor="@color/black" android:textStyle="bold" android:textSize="13sp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngày đi" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12 Th05, 2024" android:textColor="@color/black" android:textStyle="bold" />
+                        </LinearLayout>
+                        <View android:layout_width="12dp" android:layout_height="0dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                            android:background="@drawable/bg_auth_input" android:backgroundTint="@color/white" android:padding="10dp" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giờ bay" android:textColor="@color/skyline_text_secondary" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:30" android:textColor="@color/black" android:textStyle="bold" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Refund Detail Box -->
+            <!-- Refund Detail (White Background) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 app:strokeColor="#F3F4F6"
@@ -199,17 +208,17 @@
                     </RelativeLayout>
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cancel_fee" android:textColor="#DC2626" />
-                        <TextView android:id="@+id/tvCancelFee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="- 300,000 VND" android:textColor="#DC2626" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvCancelFee" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="- 600,000 VND" android:textColor="#DC2626" android:textStyle="bold" />
                     </RelativeLayout>
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="#F3F4F6" />
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/refund_amount" android:textColor="@color/black" android:textStyle="bold" />
-                        <TextView android:id="@+id/tvRefundAmount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="2,150,000 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="18sp" />
+                        <TextView android:id="@+id/tvRefundAmount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="1,850,000 VND" android:textColor="@color/skyline_blue" android:textStyle="bold" android:textSize="16sp" />
                     </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Action Buttons -->
+            <!-- Action Buttons INSIDE ScrollView -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

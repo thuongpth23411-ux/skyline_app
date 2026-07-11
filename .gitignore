@@ -13,7 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/
 
 # Backend Node.js
 backend/node_modules/
 backend/.env
+
+# Ignore specific network config if needed
+app/src/main/java/com/skyline/app/network/RetrofitClient.java

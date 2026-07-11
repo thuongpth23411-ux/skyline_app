@@ -9,45 +9,13 @@
     android:paddingTop="12dp"
     android:paddingBottom="10dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
         android:id="@+id/navHome"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:focusable="true">
-
-        <TextView
-            android:id="@+id/tvNavHomeText"
-            style="@style/BottomNavItemStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home"
-            android:textColor="@color/nav_item_color"
-            app:drawableTopCompat="@drawable/ic_home"
-            app:drawableTint="@color/nav_item_color"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvHomeBadge"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/bg_success_circle"
-            android:backgroundTint="@color/auth_error"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/white"
-            android:textSize="9sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@id/tvNavHomeText"
-            app:layout_constraintTop_toTopOf="@id/tvNavHomeText" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        style="@style/BottomNavItemStyle"
+        android:text="@string/home"
+        android:textColor="@color/nav_item_color"
+        app:drawableTopCompat="@drawable/ic_home"
+        app:drawableTint="@color/nav_item_color" />
 
     <TextView
         android:id="@+id/navBook"

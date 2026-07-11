@@ -103,16 +103,14 @@
             android:name=".BaggageSelectionActivity"
             android:exported="false" />
         <activity
-            android:name=".BookingConfirmationActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".BlogListActivity"
             android:exported="false" />
         <activity
             android:name=".BlogDetailActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".BookingConfirmationActivity"
+            android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
