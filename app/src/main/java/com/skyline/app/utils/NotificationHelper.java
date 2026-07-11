@@ -42,15 +42,27 @@ public class NotificationHelper {
             sm.markNotificationAsReceived(id);
         }
 
+        // Tạo Dialog popup thay vì PopupWindow
+        android.app.Dialog dialog = new android.app.Dialog(activity);
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+        
         LayoutInflater inflater = LayoutInflater.from(activity);
-        View popupView = inflater.inflate(R.layout.layout_notification_popup, null);
+        View dialogView = inflater.inflate(R.layout.dialog_custom_notification, null);
+        dialog.setContentView(dialogView);
 
-        TextView tvTitle = popupView.findViewById(R.id.tv_notif_title);
-        TextView tvDesc = popupView.findViewById(R.id.tv_notif_desc);
-        ImageView imgIcon = popupView.findViewById(R.id.img_notif_icon);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
+        TextView tvContent = dialogView.findViewById(R.id.tv_dialog_content);
+        ImageView imgIcon = dialogView.findViewById(R.id.img_dialog_icon);
+        View btnAction = dialogView.findViewById(R.id.btn_dialog_action);
+        View btnClose = dialogView.findViewById(R.id.btn_dialog_close);
 
         tvTitle.setText(title);
-        tvDesc.setText(content);
+        tvContent.setText(content);
 
         // Đổi icon theo loại
         int iconRes = R.drawable.ic_notifications;
@@ -61,26 +73,15 @@ public class NotificationHelper {
         }
         if (imgIcon != null) imgIcon.setImageResource(iconRes);
 
-        PopupWindow popupWindow = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
-        );
-
-        popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-
-        popupView.setOnClickListener(v -> {
-            popupWindow.dismiss();
+        btnAction.setOnClickListener(v -> {
+            dialog.dismiss();
             handleNotificationClick(activity, type, targetData);
         });
 
-        popupView.findViewById(R.id.btn_close_popup).setOnClickListener(v -> popupWindow.dismiss());
+        btnClose.setOnClickListener(v -> dialog.dismiss());
 
-        View rootView = activity.findViewById(android.R.id.content);
-        rootView.post(() -> {
-            popupWindow.showAtLocation(rootView, Gravity.TOP, 0, 50);
-            
+        activity.runOnUiThread(() -> {
+            dialog.show();
             // Lưu vào danh sách hiển thị
             sm.addLocalNotification(id, title, content, type.name(), targetData);
         });
