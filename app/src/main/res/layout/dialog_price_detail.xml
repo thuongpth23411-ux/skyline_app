@@ -92,7 +92,6 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvAdultPriceTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/price_adult_total"
@@ -102,7 +101,6 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvPricePerPerson"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -125,7 +123,6 @@
                         android:textSize="13sp" />
 
                     <TextView
-                        android:id="@+id/tvBaseFareValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/price_base_fare_value"
@@ -151,7 +148,6 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tvTaxFeesTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price_tax_fees_value"
@@ -161,15 +157,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutServiceFee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvServiceFeeLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -178,7 +171,6 @@
                     android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/tvServiceFeeValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price_service_fee_value"
@@ -187,12 +179,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutSecurityFee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -211,12 +201,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutVatFee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -235,12 +223,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutSurcharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -254,52 +240,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price_surcharge_value"
-                    android:textColor="@color/black"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Phí chọn ghế"
-                    android:textColor="@color/skyline_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvSeatFeeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 VND"
-                    android:textColor="@color/black"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Phí hành lý bổ sung"
-                    android:textColor="@color/skyline_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvAddonFeeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 VND"
                     android:textColor="@color/black"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -351,7 +291,6 @@
                     android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/tvGrandTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price_adult_total"

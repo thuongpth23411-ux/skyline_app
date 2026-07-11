@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class BaggageSelectionActivity extends AppCompatActivity {
 
@@ -172,7 +173,12 @@ public class BaggageSelectionActivity extends AppCompatActivity {
 
     private void updateFlightInfo() {
         if (flight == null) return;
-        setTextSafe(R.id.tvFlightNumberHeader, "CHUYẾN BAY " + flight.getFlightNumber());
+        
+        TextView tvFlightHeader = findViewById(R.id.tvFlightNumberHeader);
+        if (tvFlightHeader != null) {
+            tvFlightHeader.setText("CHUYẾN BAY " + flight.getFlightNumber());
+        }
+
         setTextSafe(R.id.tvDepCode, flight.getDepartureAirport().getCode());
         setTextSafe(R.id.tvArrCode, flight.getArrivalAirport().getCode());
         setTextSafe(R.id.tvDepAirport, cleanAirportName(flight.getDepartureAirport().getName()));
@@ -182,8 +188,8 @@ public class BaggageSelectionActivity extends AppCompatActivity {
         Date aDate = parseIsoDate(flight.getArrivalAt());
         SimpleDateFormat timeF = new SimpleDateFormat("HH:mm", Locale.US);
         SimpleDateFormat dateF = new SimpleDateFormat("dd 'Th'MM", new Locale("vi", "VN"));
-        timeF.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-        dateF.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        timeF.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateF.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (dDate != null) {
             setTextSafe(R.id.tvDepTime, timeF.format(dDate));

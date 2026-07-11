@@ -2,7 +2,6 @@ package com.skyline.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,11 +34,16 @@ public class FlightResultsActivity extends AppCompatActivity {
     private ActivityFlightResultsBinding binding;
     private FlightAdapter flightAdapter;
     private DateSelectorAdapter dateAdapter;
-    private String fromCode, toCode, selectedDateStr, returnDateStr;
-    private boolean isRoundTrip, isReturnLeg;
+    private String fromCode, toCode, selectedDateStr;
+    private boolean isRoundTrip = false;
+    private boolean isSelectingReturn = false;
+    private String returnDateStr;
+    private String outboundFlightJson;
+    private double outboundFarePrice;
+    private String outboundFareType;
+    private String fromName, toName;
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
     private LinearLayoutManager dateLayoutManager;
     private final Gson gson = new Gson();
     
@@ -54,25 +60,28 @@ public class FlightResultsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         apiDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        isoParser.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         fromCode = getIntent().getStringExtra("fromCode");
         toCode = getIntent().getStringExtra("toCode");
         selectedDateStr = getIntent().getStringExtra("date");
-        returnDateStr = getIntent().getStringExtra("returnDate");
+        fromName = getIntent().getStringExtra("fromName");
+        toName = getIntent().getStringExtra("toName");
+
+        // Nhận thông tin khứ hồi
         isRoundTrip = getIntent().getBooleanExtra("isRoundTrip", false);
-        isReturnLeg = getIntent().getBooleanExtra("isReturnLeg", false);
+        isSelectingReturn = getIntent().getBooleanExtra("isSelectingReturn", false);
+        returnDateStr = getIntent().getStringExtra("returnDate");
+        outboundFlightJson = getIntent().getStringExtra("outbound_flight");
+        outboundFarePrice = getIntent().getDoubleExtra("outbound_fare_price", 0);
+        outboundFareType = getIntent().getStringExtra("outbound_fare_type");
 
-        String fromName = getIntent().getStringExtra("fromName");
-        String toName = getIntent().getStringExtra("toName");
-
-        binding.tvFromCity.setText((fromName != null && fromName.length() > 3) ? fromName : fromCode);
-        binding.tvToCity.setText((toName != null && toName.length() > 3) ? toName : toCode);
-
-        if (isRoundTrip) {
-            binding.tvTitle.setText(isReturnLeg ? "KẾT QUẢ TÌM KIẾM CHIỀU VỀ" : "KẾT QUẢ TÌM KIẾM CHIỀU ĐI");
+        if (isSelectingReturn) {
+            binding.tvFromCity.setText((toName != null && toName.length() > 3) ? toName : toCode);
+            binding.tvToCity.setText((fromName != null && fromName.length() > 3) ? fromName : fromCode);
+            // Tiêu đề nhỏ bên dưới hoặc header có thể đổi để báo hiệu đang chọn lượt về
         } else {
-            binding.tvTitle.setText("KẾT QUẢ TÌM KIẾM");
+            binding.tvFromCity.setText((fromName != null && fromName.length() > 3) ? fromName : fromCode);
+            binding.tvToCity.setText((toName != null && toName.length() > 3) ? toName : toCode);
         }
         
         binding.btnBack.setOnClickListener(v -> finish());
@@ -121,9 +130,6 @@ public class FlightResultsActivity extends AppCompatActivity {
                 currentFlights.add(f);
             }
         }
-        
-        Log.d("FilterDebug", "Total original: " + originalFlights.size() + " | After filter: " + currentFlights.size());
-
         if (sortMode == 1) Collections.sort(currentFlights, (f1, f2) -> Double.compare(f1.getBasePrice(), f2.getBasePrice()));
         else if (sortMode == 2) Collections.sort(currentFlights, (f1, f2) -> Double.compare(f2.getBasePrice(), f1.getBasePrice()));
         
@@ -132,7 +138,6 @@ public class FlightResultsActivity extends AppCompatActivity {
             @Override public void onDetailClick(Flight f) { showFlightDetail(f); }
         });
         binding.rvFlights.setAdapter(flightAdapter);
-        binding.rvFlights.scrollToPosition(0);
 
         boolean empty = currentFlights.isEmpty();
         binding.layoutNoResults.setVisibility(empty ? View.VISIBLE : View.GONE);
@@ -141,11 +146,11 @@ public class FlightResultsActivity extends AppCompatActivity {
 
     private boolean isFlightMatchesFilter(Flight f) {
         if (flightFilter == null || flightFilter.isEmpty()) return true;
-
+        
         if (!flightFilter.airlineIds.isEmpty()) {
             if (f.getAirline() == null || !flightFilter.airlineIds.contains(f.getAirline().getName())) return false;
         }
-
+        
         if (flightFilter.priceRangeIndex != -1) {
             double p = f.getBasePrice() / 1_000_000.0;
             if (flightFilter.priceRangeIndex == 0 && p >= 1.5) return false;
@@ -153,44 +158,39 @@ public class FlightResultsActivity extends AppCompatActivity {
             if (flightFilter.priceRangeIndex == 2 && (p < 2.5 || p >= 4.0)) return false;
             if (flightFilter.priceRangeIndex == 3 && p < 4.0) return false;
         }
-
+        
         if (flightFilter.timeSlotIndex != -1) {
-            int hour = extractHourFromIso(f.getDepartureAt());
-            if (hour == -1) return false;
+            try {
+                String depAt = f.getDepartureAt();
+                int hour = -1;
+                
+                Pattern p = Pattern.compile("(\\d{2}):\\d{2}");
+                Matcher m = p.matcher(depAt);
+                if (m.find()) {
+                    hour = Integer.parseInt(m.group(1));
+                }
 
-            boolean isMatch = false;
-            switch (flightFilter.timeSlotIndex) {
-                case 0: isMatch = (hour >= 0 && hour < 6); break;   // Nửa đêm
-                case 1: isMatch = (hour >= 6 && hour < 12); break;  // Sáng
-                case 2: isMatch = (hour >= 12 && hour < 18); break; // Chiều
-                case 3: isMatch = (hour >= 18 && hour <= 23); break; // Tối
+                if (hour != -1) {
+                    switch(flightFilter.timeSlotIndex) {
+                        case 0: if (hour >= 6) return false; break;
+                        case 1: if (hour < 6 || hour >= 12) return false; break;
+                        case 2: if (hour < 12 || hour >= 18) return false; break;
+                        case 3: if (hour < 18) return false; break;
+                    }
+                }
+            } catch (Exception e) {
+                return true;
             }
-            if (!isMatch) return false;
         }
-
+        
         if (flightFilter.durationIndex != -1) {
             int d = f.getDuration();
             if (flightFilter.durationIndex == 0 && d >= 60) return false;
             if (flightFilter.durationIndex == 1 && (d < 60 || d > 120)) return false;
             if (flightFilter.durationIndex == 2 && d <= 120) return false;
         }
-
+        
         return true;
-    }
-
-    private int extractHourFromIso(String depAt) {
-        if (depAt == null || depAt.isEmpty()) return -1;
-        try {
-            Date date = isoParser.parse(depAt);
-            if (date != null) {
-                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                cal.setTime(date);
-                return cal.get(Calendar.HOUR_OF_DAY);
-            }
-        } catch (Exception e) {
-            Log.e("FilterDebug", "Lỗi phân giải giờ UTC từ: " + depAt, e);
-        }
-        return -1;
     }
 
     private void updateSortUI() {
@@ -204,32 +204,19 @@ public class FlightResultsActivity extends AppCompatActivity {
 
     private void setupDateSelector() {
         dateItems.clear();
-
-        Calendar localCal = Calendar.getInstance();
-        localCal.add(Calendar.DAY_OF_MONTH, 1);
-        int year = localCal.get(Calendar.YEAR);
-        int month = localCal.get(Calendar.MONTH);
-        int day = localCal.get(Calendar.DAY_OF_MONTH);
-
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(year, month, day, 0, 0, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        int initialPos = -1;
-        for (int i = 0; i < 90; i++) {
-            Date d = cal.getTime();
-            String dStr = apiDateFormat.format(d);
-
-            boolean isSelected = dStr.equals(selectedDateStr);
-            if (isSelected) initialPos = i;
-
-            dateItems.add(new DateSelectorAdapter.DateItem(d, 0, isSelected));
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        if (initialPos == -1) {
-            initialPos = 0;
-        }
+        int initialPos = 0;
+        try {
+            Date initialDate = apiDateFormat.parse(selectedDateStr);
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            if (initialDate != null) { cal.setTime(initialDate); cal.add(Calendar.DAY_OF_MONTH, -10); }
+            for (int i = 0; i < 30; i++) {
+                Date d = cal.getTime();
+                String dStr = apiDateFormat.format(d);
+                if (dStr.equals(selectedDateStr)) initialPos = i;
+                dateItems.add(new DateSelectorAdapter.DateItem(d, 0, dStr.equals(selectedDateStr)));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        } catch (Exception e) {}
 
         dateAdapter = new DateSelectorAdapter(dateItems, (date, pos) -> {
             centerItem(pos, true);
@@ -260,13 +247,11 @@ public class FlightResultsActivity extends AppCompatActivity {
                     View centerView = snapHelper.findSnapView(dateLayoutManager);
                     if (centerView != null) {
                         int pos = dateLayoutManager.getPosition(centerView);
-                        if (pos != RecyclerView.NO_POSITION && pos < dateItems.size()) {
-                            String newDate = apiDateFormat.format(dateItems.get(pos).date);
-                            if (!newDate.equals(selectedDateStr)) {
-                                selectedDateStr = newDate;
-                                dateAdapter.updateSelection(pos);
-                                searchFlights(fromCode, toCode, selectedDateStr);
-                            }
+                        String newDate = apiDateFormat.format(dateItems.get(pos).date);
+                        if (!newDate.equals(selectedDateStr)) {
+                            selectedDateStr = newDate;
+                            dateAdapter.updateSelection(pos);
+                            searchFlights(fromCode, toCode, selectedDateStr);
                         }
                     }
                 }
@@ -321,15 +306,19 @@ public class FlightResultsActivity extends AppCompatActivity {
     private void navigateToFareSelection(Flight f) {
         Intent i = new Intent(this, FareSelectionActivity.class);
         i.putExtra("flight_json", gson.toJson(f));
-
+        
+        // Truyền trạng thái khứ hồi
         i.putExtra("isRoundTrip", isRoundTrip);
-        i.putExtra("isReturnLeg", isReturnLeg);
+        i.putExtra("isSelectingReturn", isSelectingReturn);
         i.putExtra("returnDate", returnDateStr);
-
-        if (isReturnLeg) {
-            i.putExtra("departure_flight_json", getIntent().getStringExtra("departure_flight_json"));
-            i.putExtra("departure_fare_type", getIntent().getStringExtra("departure_fare_type"));
-            i.putExtra("departure_fare_price", getIntent().getDoubleExtra("departure_fare_price", 0));
+        i.putExtra("fromName", fromName);
+        i.putExtra("toName", toName);
+        
+        // Nếu đang chọn lượt về, truyền thêm thông tin lượt đi đã chọn
+        if (isSelectingReturn) {
+            i.putExtra("outbound_flight", outboundFlightJson);
+            i.putExtra("outbound_fare_price", outboundFarePrice);
+            i.putExtra("outbound_fare_type", outboundFareType);
         }
 
         startActivity(i);

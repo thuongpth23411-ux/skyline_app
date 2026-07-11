@@ -11,7 +11,6 @@ public class RetrofitClient {
     private static GroqService groqInstance;
 
     private static String getBaseUrl() {
-        // Sử dụng 10.0.2.2 để máy ảo Android có thể truy cập vào localhost của máy tính host
         return "http://10.0.2.2:3000/api/";
     }
 

@@ -157,27 +157,7 @@ public class PromotionsActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<List<Promotion>> call, @NonNull Response<List<Promotion>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Promotion> rawPromotions = response.body();
-                    
-                    // Sắp xếp: Ưu tiên "Thứ 6 Mở App" lên đầu
-                    List<Promotion> sorted = new ArrayList<>();
-                    Promotion priorityItem = null;
-                    for (Promotion p : rawPromotions) {
-                        if (p.getTitle() != null && p.getTitle().contains("Thứ 6 Mở App")) {
-                            priorityItem = p;
-                            break;
-                        }
-                    }
-                    if (priorityItem != null) {
-                        sorted.add(priorityItem);
-                    }
-                    for (Promotion p : rawPromotions) {
-                        if (p != priorityItem) {
-                            sorted.add(p);
-                        }
-                    }
-                    
-                    allPromotions = sorted;
+                    allPromotions = response.body();
                     // Load thông tin voucher đã lưu để tô màu icon Bookmark
                     loadSavedVouchers();
                 } else {
@@ -245,19 +225,6 @@ public class PromotionsActivity extends AppCompatActivity {
 
     private void updateList(List<Promotion> list) {
         adapter.setItems(list, savedVoucherIds);
-        
-        // Kiểm tra xem có yêu cầu mở popup cụ thể không
-        String targetPromoName = getIntent().getStringExtra("OPEN_PROMO_NAME");
-        if (targetPromoName != null && !targetPromoName.isEmpty()) {
-            for (Promotion p : list) {
-                if (p.getTitle() != null && p.getTitle().contains(targetPromoName)) {
-                    showPromotionDetail(p);
-                    // Sau khi mở xong thì xóa intent extra để không bị mở lại khi quay lại activity
-                    getIntent().removeExtra("OPEN_PROMO_NAME");
-                    break;
-                }
-            }
-        }
     }
 
     private void toggleSaveVoucher(Promotion item) {

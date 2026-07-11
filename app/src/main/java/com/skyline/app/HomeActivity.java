@@ -24,7 +24,6 @@ public class HomeActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
 
         setupClicks();
-        updateBottomNavBadge();
         handleIntent(getIntent());
     }
 
@@ -53,7 +52,6 @@ public class HomeActivity extends AppCompatActivity {
             updateNavSelection(binding.bottomNavigation.navHome);
             showFragment(new HomeFragment());
         }
-        updateBottomNavBadge();
     }
 
     private void setupClicks() {
@@ -84,10 +82,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateNavSelection(View selectedView) {
-        boolean isHome = selectedView.getId() == binding.bottomNavigation.navHome.getId();
-        binding.bottomNavigation.navHome.setSelected(isHome);
-        binding.bottomNavigation.tvNavHomeText.setSelected(isHome);
-
+        binding.bottomNavigation.navHome.setSelected(selectedView.getId() == binding.bottomNavigation.navHome.getId());
         binding.bottomNavigation.navBook.setSelected(selectedView.getId() == binding.bottomNavigation.navBook.getId());
         binding.bottomNavigation.navFlights.setSelected(selectedView.getId() == binding.bottomNavigation.navFlights.getId());
         binding.bottomNavigation.navProfile.setSelected(selectedView.getId() == binding.bottomNavigation.navProfile.getId());
@@ -97,16 +92,6 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit();
-    }
-
-    public void updateBottomNavBadge() {
-        int count = sessionManager.getUnreadNotifCount();
-        if (count > 0) {
-            binding.bottomNavigation.tvHomeBadge.setVisibility(View.VISIBLE);
-            binding.bottomNavigation.tvHomeBadge.setText(String.valueOf(count));
-        } else {
-            binding.bottomNavigation.tvHomeBadge.setVisibility(View.GONE);
-        }
     }
 
     private void toast(String message) {
