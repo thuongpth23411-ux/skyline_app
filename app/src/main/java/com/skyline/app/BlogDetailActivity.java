@@ -81,7 +81,6 @@ public class BlogDetailActivity extends AppCompatActivity {
     private void setupUI() {
         Glide.with(this).load(blog.coverImageUrl).placeholder(R.drawable.img_destination_danang).into(binding.ivCover);
         binding.tvTitle.setText(blog.title);
-        binding.tvCategory.setText(blog.category != null ? blog.category.toUpperCase() : "ĐIỂM ĐẾN");
         binding.tvAuthorName.setText(blog.author != null ? blog.author.name : "Skyline Team");
         binding.tvMeta.setText(String.format("%s • %s", formatDate(blog.publishedDate), blog.readTime));
         binding.tvSummary.setText(blog.introContent != null ? blog.introContent : blog.shortDescription);
@@ -91,8 +90,8 @@ public class BlogDetailActivity extends AppCompatActivity {
         }
 
         setupQuickInfo();
-        setupSections(); 
-        setupToc();
+        setupSections();
+        // setupToc();
 
         binding.btnShare.setOnClickListener(v -> {
             Intent share = new Intent(Intent.ACTION_SEND);
@@ -136,7 +135,7 @@ public class BlogDetailActivity extends AppCompatActivity {
             int iconRes = R.drawable.ic_location;
             if ("calendar".equals(info.icon)) iconRes = R.drawable.ic_calendar;
             else if ("temperature".equals(info.icon)) iconRes = R.drawable.ic_trending_up;
-            else if ("beach".equals(info.icon)) iconRes = R.drawable.ic_ticket; // Better icon for experiences
+            else if ("beach".equals(info.icon) || "experience".equals(info.icon)) iconRes = R.drawable.ic_ticket;
             
             infoBinding.ivIcon.setImageResource(iconRes);
             
@@ -211,10 +210,19 @@ public class BlogDetailActivity extends AppCompatActivity {
                         reasonBinding.tvDescription.setText(item.description);
                         int iconRes = R.drawable.ic_priority;
                         int color = Color.parseColor("#0B4DA2");
-                        if ("leaf".equals(item.icon)) { iconRes = R.drawable.ic_sparkle; color = Color.parseColor("#16A34A"); }
-                        else if ("users".equals(item.icon)) { iconRes = R.drawable.ic_profile; color = Color.parseColor("#9333EA"); }
-                        else if ("building".equals(item.icon)) { iconRes = R.drawable.ic_building; color = Color.parseColor("#EA580C"); }
-                        else if ("heart".equals(item.icon)) { iconRes = R.drawable.ic_heart; color = Color.parseColor("#E11D48"); }
+                        if ("leaf".equals(item.icon) || "nature".equals(item.icon)) {
+                            iconRes = R.drawable.ic_sparkle;
+                            color = Color.parseColor("#16A34A");
+                        } else if ("users".equals(item.icon) || "people".equals(item.icon)) {
+                            iconRes = R.drawable.ic_profile;
+                            color = Color.parseColor("#9333EA");
+                        } else if ("building".equals(item.icon) || "infrastructure".equals(item.icon) || "city".equals(item.icon)) {
+                            iconRes = R.drawable.ic_building;
+                            color = Color.parseColor("#EA580C");
+                        } else if ("heart".equals(item.icon) || "lifestyle".equals(item.icon)) {
+                            iconRes = R.drawable.ic_heart;
+                            color = Color.parseColor("#E11D48");
+                        }
                         reasonBinding.ivIcon.setImageResource(iconRes);
                         reasonBinding.ivIcon.setImageTintList(ColorStateList.valueOf(color));
                         itemView = reasonBinding.getRoot();
@@ -253,6 +261,40 @@ public class BlogDetailActivity extends AppCompatActivity {
                             ((TextView)itView.findViewById(R.id.tvPoints)).setText(sb.toString().trim());
                         }
                         binding.sectionsContainer.addView(itView);
+                    } else if ("text".equals(section.type)) {
+                        View textView = getLayoutInflater().inflate(R.layout.item_blog_section_side, binding.sectionsContainer, false);
+                        TextView tvDesc = textView.findViewById(R.id.tvDescription);
+                        android.widget.ImageView ivImage = textView.findViewById(R.id.ivImage);
+
+                        tvDesc.setText(item.description);
+                        if (item.imageUrl != null && !item.imageUrl.isEmpty()) {
+                            ivImage.setVisibility(View.VISIBLE);
+                            Glide.with(this).load(item.imageUrl).placeholder(R.drawable.bg_square_placeholder).into(ivImage);
+                        } else {
+                            ivImage.setVisibility(View.GONE);
+                        }
+
+                        if (section.sectionNumber % 2 == 0) {
+                            androidx.constraintlayout.widget.ConstraintSet set = new androidx.constraintlayout.widget.ConstraintSet();
+                            androidx.constraintlayout.widget.ConstraintLayout layout = (androidx.constraintlayout.widget.ConstraintLayout) textView;
+                            set.clone(layout);
+
+                            // Left side: now Image
+                            set.connect(ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.START, androidx.constraintlayout.widget.ConstraintSet.PARENT_ID, androidx.constraintlayout.widget.ConstraintSet.START, 0);
+                            set.connect(ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.END, tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.START, dpToPx(16));
+                            
+                            // Right side: now Text
+                            set.connect(tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.START, ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.END, 0);
+                            set.connect(tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.END, androidx.constraintlayout.widget.ConstraintSet.PARENT_ID, androidx.constraintlayout.widget.ConstraintSet.END, 0);
+
+                            // Weights
+                            set.setHorizontalWeight(ivImage.getId(), 0.9f);
+                            set.setHorizontalWeight(tvDesc.getId(), 1.1f);
+
+                            set.applyTo(layout);
+                        }
+
+                        binding.sectionsContainer.addView(textView);
                     }
                 }
             }
