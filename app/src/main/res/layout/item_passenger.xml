@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
+    app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -15,15 +16,26 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/img_notif_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_action_circle"
-            android:backgroundTint="#F0F4F8"
-            android:padding="10dp"
-            android:src="@drawable/ic_notifications"
-            app:tint="@color/skyline_blue" />
+        <FrameLayout
+            android:layout_width="54dp"
+            android:layout_height="54dp">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/img_passenger_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#607D8B"
+                app:shapeAppearanceOverlay="@style/Rounded12" />
+            <TextView
+                android:id="@+id/tv_passenger_initials"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="PH"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -33,35 +45,22 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_notif_title"
+                android:id="@+id/tv_passenger_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thông báo"
+                android:text="NGUYEN VAN A"
                 android:textColor="@color/skyline_text"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_notif_desc"
+                android:id="@+id/tv_passenger_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Nội dung thông báo chi tiết sẽ hiển thị ở đây."
+                android:layout_marginTop="4dp"
+                android:text="0987654321"
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="13sp" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/btn_close_popup"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:src="@drawable/ic_close"
-            app:tint="#9E9E9E" />
-
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

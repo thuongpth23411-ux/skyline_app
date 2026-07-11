@@ -13,6 +13,7 @@ public class SessionManager {
     public static final String USER_MEMBER_CODE = "user_member_code";
     public static final String USER_PHONE = "user_phone";
     public static final String USER_RANK = "user_rank";
+    public static final String USER_GENDER = "user_gender";
 
     public SessionManager(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -36,7 +37,17 @@ public class SessionManager {
         editor.putString(USER_EMAIL, user.getEmail());
         editor.putString(USER_MEMBER_CODE, user.getMemberCode());
         editor.putString(USER_PHONE, user.getPhone());
+        editor.putString(USER_GENDER, user.getGender());
+        
+        // Save full object as JSON for easy retrieval
+        editor.putString("user_json", new com.google.gson.Gson().toJson(user));
         editor.apply();
+    }
+
+    public com.skyline.app.network.User getUser() {
+        String json = prefs.getString("user_json", null);
+        if (json == null) return null;
+        return new com.google.gson.Gson().fromJson(json, com.skyline.app.network.User.class);
     }
 
     public boolean isLoggedIn() {
@@ -53,6 +64,7 @@ public class SessionManager {
     public String getUserName() { return prefs.getString(USER_NAME, "Khách"); }
     public String getUserEmail() { return prefs.getString(USER_EMAIL, ""); }
     public String getMemberCode() { return prefs.getString(USER_MEMBER_CODE, "---- ---- ----"); }
+    public String getUserGender() { return prefs.getString(USER_GENDER, ""); }
 
     public void setNotificationsEnabled(boolean enabled) {
         prefs.edit().putBoolean("notif_enabled", enabled).apply();

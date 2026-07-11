@@ -7,6 +7,23 @@ const { sendOTP } = require("../utils/mailer");
 const RankBenefit = require("../models/RankBenefit");
 const Promotion = require("../models/Promotion");
 const Blog = require("../models/Blog");
+const PassengerDirectory = require("../models/PassengerDirectory");
+
+// Middleware to verify JWT
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ success: false, message: "Không có quyền truy cập" });
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.id;
+        next();
+    } catch (err) {
+        res.status(401).json({ success: false, message: "Xác thực không hợp lệ" });
+    }
+};
 
 // Generate 6 digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -213,6 +230,40 @@ router.get("/profile", async (req, res) => {
     }
 });
 
+// Update User Profile
+router.post("/update-profile", async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ success: false, message: "Không có quyền truy cập" });
+        }
+
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const { fullName, phone, cccd, dob, email, gender } = req.body;
+
+        const user = await User.findById(decoded.id);
+        if (!user) return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
+
+        if (fullName) user.fullName = fullName;
+        if (phone) user.phone = phone;
+        if (cccd) user.cccd = cccd;
+        if (dob) user.dob = dob;
+        if (email) user.email = email;
+        if (gender) user.gender = gender;
+
+        // Update title based on gender if needed
+        if (gender === "Nam") user.title = "Ông";
+        else if (gender === "Nữ") user.title = "Bà";
+
+        await user.save();
+        res.json({ success: true, message: "Cập nhật thông tin thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
 // Get Rank Benefits
 router.get("/rank-benefits", async (req, res) => {
     try {
@@ -276,6 +327,57 @@ router.get("/destination-blogs", async (req, res) => {
     } catch (error) {
         console.error("Blog error:", error);
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+    }
+});
+
+// 1. Add new passenger
+router.post("/passenger-add", verifyToken, async (req, res) => {
+    try {
+        const { passengerName, passengerPhone, passengerCccd, passengerDob, passengerEmail } = req.body;
+        if (!passengerName) return res.status(400).json({ success: false, message: "Thiếu họ tên" });
+
+        const newPassenger = new PassengerDirectory({
+            userId: req.userId,
+            passengerName, passengerPhone, passengerCccd, passengerDob, passengerEmail
+        });
+        await newPassenger.save();
+        res.json({ success: true, message: "Thêm thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi lưu dữ liệu" });
+    }
+});
+
+// 2. Get my passengers
+router.get("/passenger-list", verifyToken, async (req, res) => {
+    try {
+        const list = await PassengerDirectory.find({ userId: req.userId }).sort({ createdAt: -1 });
+        res.json(list);
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// 3. Update passenger
+router.put("/passenger-update/:id", verifyToken, async (req, res) => {
+    try {
+        const { passengerName, passengerPhone, passengerCccd, passengerDob, passengerEmail } = req.body;
+        await PassengerDirectory.findOneAndUpdate(
+            { _id: req.params.id, userId: req.userId },
+            { passengerName, passengerPhone, passengerCccd, passengerDob, passengerEmail }
+        );
+        res.json({ success: true, message: "Cập nhật thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// 4. Delete passenger
+router.delete("/passenger-delete/:id", verifyToken, async (req, res) => {
+    try {
+        await PassengerDirectory.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+        res.json({ success: true, message: "Xóa thành công" });
+    } catch (error) {
+        res.status(500).json({ success: false });
     }
 });
 

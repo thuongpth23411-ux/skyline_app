@@ -50,14 +50,14 @@ public class RankDetailsActivity extends AppCompatActivity {
 
     private void updateTabUI(boolean isCurrentSelected) {
         binding.tabCurrent.setBackgroundResource(isCurrentSelected ? R.drawable.bg_terms_rank : 0);
-        binding.tabCurrent.setBackgroundTintList(isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.white)) : null);
+        binding.tabCurrent.setBackgroundTintList(isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.skyline_blue)) : null);
         binding.tabCurrent.setTypeface(null, isCurrentSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
-        binding.tabCurrent.setTextColor(getResources().getColor(isCurrentSelected ? R.color.skyline_text : R.color.skyline_text_secondary));
+        binding.tabCurrent.setTextColor(getResources().getColor(isCurrentSelected ? R.color.white : R.color.skyline_text_secondary));
 
         binding.tabNext.setBackgroundResource(!isCurrentSelected ? R.drawable.bg_terms_rank : 0);
-        binding.tabNext.setBackgroundTintList(!isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.white)) : null);
+        binding.tabNext.setBackgroundTintList(!isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.skyline_blue)) : null);
         binding.tabNext.setTypeface(null, !isCurrentSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
-        binding.tabNext.setTextColor(getResources().getColor(!isCurrentSelected ? R.color.skyline_text : R.color.skyline_text_secondary));
+        binding.tabNext.setTextColor(getResources().getColor(!isCurrentSelected ? R.color.white : R.color.skyline_text_secondary));
     }
 
     private void loadData() {
@@ -204,6 +204,9 @@ public class RankDetailsActivity extends AppCompatActivity {
         else if ("voucher".equals(benefit.getIconType())) iconRes = R.drawable.ic_gift;
         
         itemBinding.imgBenefitIcon.setImageResource(iconRes);
+        // Đảm bảo icon có màu xanh thương hiệu
+        itemBinding.imgBenefitIcon.setImageTintList(android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.skyline_blue)));
+
         binding.layoutBenefits.addView(itemBinding.getRoot());
     }
 

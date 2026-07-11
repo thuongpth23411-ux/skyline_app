@@ -18,6 +18,7 @@ const promotionRoutes = require("./routes/promotions");
 const ticketRoutes = require("./routes/tickets");
 const airlineRoutes = require("./routes/airlines");
 const blogRoutes = require("./routes/blogs");
+const passengerRoutes = require("./routes/passengers");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/airports", airportRoutes);
@@ -26,26 +27,13 @@ app.use("/api/promotions", promotionRoutes);
 app.use("/api/airlines", airlineRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/passenger-directory", passengerRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
     console.log("✅ Connected MongoDB");
-
-    // Seed Rank Benefits (Chỉ seed nếu trống)
-    const RankBenefit = require("./models/RankBenefit");
-    const count = await RankBenefit.countDocuments();
-    if (count < 3) {
-        await RankBenefit.insertMany([
-            { rank: "Đồng", title: "Tích điểm cơ bản", description: "Tích lũy điểm thưởng cho mỗi chuyến bay.", iconType: "points" },
-            { rank: "Bạc", title: "Tích điểm 1.2x", description: "Nhận thêm 20% điểm thưởng.", iconType: "points" },
-            { rank: "Vàng", title: "Phòng chờ hạng thương gia", description: "Tận hưởng không gian sang trọng.", iconType: "checkin" }
-        ]);
-        console.log("🚀 Rank Benefits Seeded");
-    }
-
-    // KHÔNG TỰ ĐỘNG SEED PROMOTIONS NỮA ĐỂ TRÁNH MẤT DATA CỦA BẠN
-    console.log("ℹ️ Database seeding is now manual or conditional.");
+    console.log("🚀 Server is ready. Route /api/passenger-directory is ACTIVE.");
 })
 .catch((err) => {
     console.error("❌ MongoDB connection error:", err);

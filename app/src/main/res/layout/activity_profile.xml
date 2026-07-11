@@ -271,7 +271,7 @@
                         android:background="@drawable/bg_action_circle"
                         android:padding="14dp"
                         android:src="@drawable/ic_ticket"
-                        app:tint="#E91E63" />
+                        app:tint="@color/skyline_blue" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -283,9 +283,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/btn_passenger_directory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
                     android:orientation="vertical">
                     <ImageView
@@ -294,7 +298,7 @@
                         android:background="@drawable/bg_action_circle"
                         android:padding="14dp"
                         android:src="@drawable/ic_profile"
-                        app:tint="#9E9E9E" />
+                        app:tint="@color/skyline_blue" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -306,9 +310,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/btn_book_flight"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
                     android:orientation="vertical">
                     <ImageView
@@ -317,7 +325,7 @@
                         android:background="@drawable/bg_action_circle"
                         android:padding="14dp"
                         android:src="@drawable/ic_plane"
-                        app:tint="#2196F3" />
+                        app:tint="@color/skyline_blue" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -344,7 +352,7 @@
                         android:background="@drawable/bg_action_circle"
                         android:padding="14dp"
                         android:src="@drawable/ic_notifications"
-                        app:tint="#424242" />
+                        app:tint="@color/skyline_blue" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

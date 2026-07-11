@@ -58,7 +58,7 @@ public class MyVouchersActivity extends AppCompatActivity {
 
             @Override
             public void onSaveVoucher(Promotion item) {
-                // Should not happen in "My Vouchers", but could implement remove
+                toggleSaveVoucher(item);
             }
 
             @Override
@@ -68,6 +68,30 @@ public class MyVouchersActivity extends AppCompatActivity {
         });
         binding.rvPromotions.setLayoutManager(new LinearLayoutManager(this));
         binding.rvPromotions.setAdapter(adapter);
+    }
+
+    private void toggleSaveVoucher(Promotion item) {
+        if (!sessionManager.isLoggedIn()) return;
+
+        String token = "Bearer " + sessionManager.fetchAuthToken();
+        java.util.Map<String, String> body = new java.util.HashMap<>();
+        String promoId = item.getId();
+        body.put("promotionId", promoId);
+
+        RetrofitClient.getInstance().toggleSaveVoucher(token, body).enqueue(new Callback<com.skyline.app.network.BaseResponse>() {
+            @Override
+            public void onResponse(Call<com.skyline.app.network.BaseResponse> call, Response<com.skyline.app.network.BaseResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(MyVouchersActivity.this, "Đã bỏ lưu voucher", Toast.LENGTH_SHORT).show();
+                    loadMyVouchers(); // Refresh list to remove the item
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.skyline.app.network.BaseResponse> call, Throwable t) {
+                Toast.makeText(MyVouchersActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadMyVouchers() {
@@ -106,17 +130,32 @@ public class MyVouchersActivity extends AppCompatActivity {
         ImageView imgPromo = view.findViewById(R.id.img_promo);
         
         tvTitle.setText(item.getTitle());
-        tvDesc.setText(item.getDescription());
+        
+        // Làm đẹp nội dung mô tả: tự động xuống dòng sau mỗi dấu chấm
+        String rawDesc = item.getDescription();
+        String formattedDesc = (rawDesc != null) ? rawDesc.replace("\\n", "\n").replace(". ", ".\n\n") : "";
+        tvDesc.setText(formattedDesc);
+
         tvCode.setText(item.getCode());
         tvExpiry.setText("Hạn dùng: " + item.getExpiryDate());
 
-        int imageRes = R.drawable.img_brand_banner;
-        String category = item.getCategory();
-        if (category.contains("MEMBER")) imageRes = R.drawable.img_experience_first;
-        else if (category.contains("EXCLUSIVE")) imageRes = R.drawable.bg_member_card_gradient;
-        else if (category.contains("NEW_USER")) imageRes = R.drawable.img_experience_economy;
+        int placeholderRes = R.drawable.img_brand_banner;
+        String category = item.getCategory() != null ? item.getCategory() : "";
+        if (category.contains("MEMBER")) placeholderRes = R.drawable.img_experience_first;
+        else if (category.contains("EXCLUSIVE")) placeholderRes = R.drawable.bg_member_card_gradient;
+        else if (category.contains("NEW_USER")) placeholderRes = R.drawable.img_experience_economy;
         
-        imgPromo.setImageResource(imageRes);
+        String imageUrl = item.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            if (imageUrl.startsWith("/")) imageUrl = "http://10.0.2.2:3000" + imageUrl;
+            com.bumptech.glide.Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(placeholderRes)
+                    .error(placeholderRes)
+                    .into(imgPromo);
+        } else {
+            imgPromo.setImageResource(placeholderRes);
+        }
 
         view.findViewById(R.id.btn_copy).setOnClickListener(v -> {
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
