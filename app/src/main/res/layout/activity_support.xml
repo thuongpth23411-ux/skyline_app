@@ -109,7 +109,7 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@null"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/img_experience_first" />
+                    android:src="@drawable/support" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Contact Method -->
@@ -120,7 +120,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="48dp"
                 android:text="@string/support_contact_method"
-                android:textColor="@color/black"
+                android:textColor="@color/skyline_text_secondary"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"

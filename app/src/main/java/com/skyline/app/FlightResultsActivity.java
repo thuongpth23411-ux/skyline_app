@@ -34,7 +34,8 @@ public class FlightResultsActivity extends AppCompatActivity {
     private FlightAdapter flightAdapter;
     private DateSelectorAdapter dateAdapter;
     private String fromCode, toCode, selectedDateStr, returnDateStr;
-    private boolean isRoundTrip, isReturnLeg;
+    private boolean isRoundTrip, isSelectingReturn;
+    private int adults, children;
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
@@ -61,7 +62,9 @@ public class FlightResultsActivity extends AppCompatActivity {
         selectedDateStr = getIntent().getStringExtra("date");
         returnDateStr = getIntent().getStringExtra("returnDate");
         isRoundTrip = getIntent().getBooleanExtra("isRoundTrip", false);
-        isReturnLeg = getIntent().getBooleanExtra("isReturnLeg", false);
+        isSelectingReturn = getIntent().getBooleanExtra("isSelectingReturn", false);
+        adults = getIntent().getIntExtra("adults", 1);
+        children = getIntent().getIntExtra("children", 0);
 
         String fromName = getIntent().getStringExtra("fromName");
         String toName = getIntent().getStringExtra("toName");
@@ -70,7 +73,7 @@ public class FlightResultsActivity extends AppCompatActivity {
         binding.tvToCity.setText((toName != null && toName.length() > 3) ? toName : toCode);
 
         if (isRoundTrip) {
-            binding.tvTitle.setText(isReturnLeg ? "KẾT QUẢ TÌM KIẾM CHIỀU VỀ" : "KẾT QUẢ TÌM KIẾM CHIỀU ĐI");
+            binding.tvTitle.setText(isSelectingReturn ? "KẾT QUẢ TÌM KIẾM CHIỀU VỀ" : "KẾT QUẢ TÌM KIẾM CHIỀU ĐI");
         } else {
             binding.tvTitle.setText("KẾT QUẢ TÌM KIẾM");
         }
@@ -372,13 +375,17 @@ public class FlightResultsActivity extends AppCompatActivity {
         i.putExtra("flight_json", gson.toJson(f));
 
         i.putExtra("isRoundTrip", isRoundTrip);
-        i.putExtra("isReturnLeg", isReturnLeg);
+        i.putExtra("isSelectingReturn", isSelectingReturn);
         i.putExtra("returnDate", returnDateStr);
+        i.putExtra("fromName", binding.tvFromCity.getText().toString());
+        i.putExtra("toName", binding.tvToCity.getText().toString());
+        i.putExtra("adults", adults);
+        i.putExtra("children", children);
 
-        if (isReturnLeg) {
-            i.putExtra("departure_flight_json", getIntent().getStringExtra("departure_flight_json"));
-            i.putExtra("departure_fare_type", getIntent().getStringExtra("departure_fare_type"));
-            i.putExtra("departure_fare_price", getIntent().getDoubleExtra("departure_fare_price", 0));
+        if (isSelectingReturn) {
+            i.putExtra("outbound_flight", getIntent().getStringExtra("outbound_flight"));
+            i.putExtra("outbound_fare_type", getIntent().getStringExtra("outbound_fare_type"));
+            i.putExtra("outbound_fare_price", getIntent().getDoubleExtra("outbound_fare_price", 0));
         }
 
         startActivity(i);

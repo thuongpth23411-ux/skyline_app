@@ -18,6 +18,7 @@ const promotionRoutes = require("./routes/promotions");
 const ticketRoutes = require("./routes/tickets");
 const airlineRoutes = require("./routes/airlines");
 const blogRoutes = require("./routes/blogs");
+const passengerRoutes = require("./routes/passengers");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/airports", airportRoutes);
@@ -26,10 +27,12 @@ app.use("/api/promotions", promotionRoutes);
 app.use("/api/airlines", airlineRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/passenger-directory", passengerRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
+    console.log("✅ Connected MongoDB");
     console.log("✅ Connected MongoDB");
 
     // Seed Rank Benefits (Chỉ seed nếu trống)
@@ -81,6 +84,7 @@ mongoose.connect(process.env.MONGO_URI)
         ]);
         console.log("🚀 Promotions Seeded Automatically");
     }
+    console.log("🚀 Server is ready. Route /api/passenger-directory is ACTIVE.");
 })
 .catch((err) => {
     console.error("❌ MongoDB connection error:", err);

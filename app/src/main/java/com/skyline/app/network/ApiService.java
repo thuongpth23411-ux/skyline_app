@@ -7,6 +7,8 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.DELETE;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -34,6 +36,9 @@ public interface ApiService {
 
     @GET("auth/profile")
     Call<User> getProfile(@Header("Authorization") String token);
+
+    @POST("auth/update-profile")
+    Call<BaseResponse> updateProfile(@Header("Authorization") String token, @Body Map<String, String> body);
 
     @GET("auth/rank-benefits")
     Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
@@ -84,4 +89,17 @@ public interface ApiService {
     Call<List<Blog>> getFeaturedBlogs();
 
     @GET("blogs/{identifier}")
-    Call<Blog> getBlogByIdentifier(@Path("identifier") String identifier);}
+    Call<Blog> getBlogByIdentifier(@Path("identifier") String identifier);
+
+    @POST("auth/passenger-add")
+    Call<BaseResponse> addPassenger(@Header("Authorization") String token, @Body Map<String, String> body);
+
+    @GET("auth/passenger-list")
+    Call<List<PassengerDirectory>> getMyPassengers(@Header("Authorization") String token);
+
+    @PUT("auth/passenger-update/{id}")
+    Call<BaseResponse> updatePassenger(@Header("Authorization") String token, @Path("id") String id, @Body Map<String, String> body);
+
+    @DELETE("auth/passenger-delete/{id}")
+    Call<BaseResponse> deletePassenger(@Header("Authorization") String token, @Path("id") String id);
+}

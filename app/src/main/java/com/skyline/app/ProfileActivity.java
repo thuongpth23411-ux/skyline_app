@@ -133,6 +133,18 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(ProfileActivity.this, PrivacyActivity.class));
         });
 
+        binding.btnPassengerDirectory.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, PassengerDirectoryActivity.class));
+        });
+
+        binding.btnBookFlight.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            intent.putExtra("TARGET_FRAGMENT", "BOOK");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
         binding.btnLogoutItem.setOnClickListener(v -> {
             sessionManager.logout();
             Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();

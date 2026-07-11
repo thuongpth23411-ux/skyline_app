@@ -30,7 +30,7 @@ public class SupportActivity extends AppCompatActivity {
         });
 
         binding.btnChat.setOnClickListener(v -> {
-            Toast.makeText(SupportActivity.this, "Đang kết nối với tư vấn viên...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(SupportActivity.this, ChatActivity.class));
         });
     }
 }
