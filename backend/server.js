@@ -33,7 +33,6 @@ app.use("/api/passenger-directory", passengerRoutes);
 mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
     console.log("✅ Connected MongoDB");
-    console.log("✅ Connected MongoDB");
 
     // Seed Rank Benefits (Chỉ seed nếu trống)
     const RankBenefit = require("./models/RankBenefit");
@@ -91,8 +90,8 @@ mongoose.connect(process.env.MONGO_URI)
     } catch (e) {
         // Index might not exist or already dropped
     }
-
-    // Seed Rank Benefits (Chỉ seed nếu trống)
+})
+.catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 app.get("/", (req, res) => {
     res.send("Skyline API is running...");

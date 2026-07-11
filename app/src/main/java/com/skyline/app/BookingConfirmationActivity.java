@@ -678,7 +678,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         tvFare.setTextColor(ContextCompat.getColor(this, fType != null && fType.equalsIgnoreCase("Business") ? R.color.skyline_teal : R.color.skyline_blue));
 
         String seat = isReturn ? returnSelectedSeats.get(index) : selectedSeats.get(index);
-        tvSeat.setText(seat.isEmpty() ? "Ngẫu nhiên" : seat);
+        tvSeat.setText(seat.isEmpty() ? "SGN_1A" : seat);
         tvSeat.setTextColor(ContextCompat.getColor(this, fType != null && fType.equalsIgnoreCase("Business") ? R.color.skyline_teal : R.color.skyline_blue));
         
         int b10 = isReturn ? rb10s.get(index) : b10s.get(index);
@@ -768,14 +768,14 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             if (selectedSeats.get(i).isEmpty()) {
                 final int idx = i;
                 fetchRandomSeat(flight, fareType, seat -> {
-                    selectedSeats.set(idx, seat + " (Ngẫu nhiên)");
+                    selectedSeats.set(idx, seat);
                     updateUI();
                 });
             }
             if (isRoundTrip && returnSelectedSeats.get(i).isEmpty()) {
                 final int idx = i;
                 fetchRandomSeat(returnFlight, returnFareType, seat -> {
-                    returnSelectedSeats.set(idx, seat + " (Ngẫu nhiên)");
+                    returnSelectedSeats.set(idx, seat);
                     updateUI();
                 });
             }
@@ -860,6 +860,8 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         intent.putExtra("passenger_email", binding.edtEmail.getText().toString().trim());
         intent.putExtra("passenger_phone", binding.edtPhone.getText().toString().trim());
         intent.putExtra("passenger_names", names);
+        intent.putExtra("adults", adults);
+        intent.putExtra("children", children);
         intent.putExtra("fare_type", fareType);
         intent.putExtra("isRoundTrip", isRoundTrip);
         intent.putExtra("flight_json", gson.toJson(flight));
@@ -870,6 +872,14 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             sbSeats.append(selectedSeats.get(i)).append(i == selectedSeats.size() - 1 ? "" : ", ");
         }
         intent.putExtra("selected_seat", sbSeats.toString());
+
+        // Pass detailed fees for Price Detail dialog
+        intent.putExtra("baseFare", (baseFarePrice * totalPax) + (isRoundTrip ? returnBasePrice * totalPax : 0));
+        intent.putExtra("taxes", (baseFarePrice * 0.1 * totalPax) + (isRoundTrip ? returnBasePrice * 0.1 * totalPax : 0));
+        intent.putExtra("airportFees", (450000.0 * totalPax) + (isRoundTrip ? 450000.0 * totalPax : 0));
+        intent.putExtra("addonPrice", totalAddons);
+        intent.putExtra("voucher_discount", voucherDiscountAmount);
+        intent.putExtra("roundTripDiscount", roundTripDiscount);
 
         if (isRoundTrip) {
             intent.putExtra("return_flight_json", gson.toJson(returnFlight));

@@ -181,15 +181,22 @@ public class ChangeTicketFragment extends Fragment {
                 return;
             }
 
+            // Gán ghế ngẫu nhiên: ví dụ hàng 10, ghế A-F
+            String randomSeat = (selectedFlight.getArrivalAirport() != null ? selectedFlight.getArrivalAirport().getCode() : "SGN") 
+                                + "_" + (10 + (int)(Math.random() * 20)) 
+                                + (char)('A' + (int)(Math.random() * 6));
+
             Intent intent = new Intent(requireContext(), ConfirmPaymentActivity.class);
             intent.putExtra("totalAmount", currentTotal);
             intent.putExtra("passenger_name", oldTicket.getPassengerName());
             intent.putExtra("passenger_email", new com.skyline.app.utils.SessionManager(requireContext()).getUserEmail());
+            intent.putExtra("selected_seat", randomSeat);
             intent.putExtra("flight_json", gson.toJson(selectedFlight));
             intent.putExtra("is_exchange", true);
             intent.putExtra("exchange_fee", currentFee);
             intent.putExtra("price_diff", currentDiff);
             intent.putExtra("fare_type", oldTicket.getFlightClass());
+            intent.putExtra("old_ticket_id", oldTicket.getFlightNo()); // bookingCode dùng làm định danh tạm
             startActivity(intent);
         });
         

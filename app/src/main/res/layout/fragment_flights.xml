@@ -35,7 +35,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:paddingHorizontal="16dp"
-            android:text="@string/check_booking_checkin"
+            android:text="@string/check_booking"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="11sp"

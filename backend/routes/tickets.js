@@ -8,6 +8,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { sendTicketEmail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
+const PointHistory = require("../models/PointHistory");
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -23,11 +24,17 @@ const verifyToken = (req, res, next) => {
 router.post("/create", async (req, res) => {
     try {
         console.log("📥 Received create booking request:", JSON.stringify(req.body, null, 2));
-        const { userId, flights, passengerName, totalAmount, paymentMethod, email } = req.body;
+        const { userId, flights, passengerName, totalAmount, paymentMethod, email, oldTicketId } = req.body;
 
         if (!flights || !Array.isArray(flights) || flights.length === 0) {
             console.error("❌ Flights data is missing or invalid");
             return res.status(400).json({ success: false, message: "Thông tin chuyến bay không hợp lệ" });
+        }
+
+        // Nếu là đổi vé, tiến hành xóa vé cũ (theo bookingCode)
+        if (oldTicketId) {
+            const deleteResult = await Ticket.deleteMany({ bookingCode: oldTicketId });
+            console.log(`🗑️ Deleted old ticket(s) for exchange: ${oldTicketId}, count: ${deleteResult.deletedCount}`);
         }
 
         let bookingCode;
@@ -114,6 +121,34 @@ router.post("/create", async (req, res) => {
         // Lưu tất cả vé
         const savedTickets = await Ticket.insertMany(ticketDocs);
         console.log(`✅ Saved ${savedTickets.length} tickets with bookingCode: ${bookingCode}`);
+
+        // 1.5 CỘNG ĐIỂM THÀNH VIÊN: 100.000 VNĐ = 10 điểm
+        if (totalAmount > 0) {
+            const pointsToEarn = Math.floor(totalAmount / 100000) * 10;
+            if (pointsToEarn > 0) {
+                const user = await User.findById(targetUserId);
+                if (user) {
+                    user.skyPoints = (user.skyPoints || 0) + pointsToEarn;
+
+                    // Tự động nâng hạng nếu đủ điểm (Ví dụ đơn giản)
+                    if (user.skyPoints >= 5000) user.rank = "Kim cương";
+                    else if (user.skyPoints >= 2000) user.rank = "Vàng";
+                    else if (user.skyPoints >= 500) user.rank = "Bạc";
+
+                    await user.save();
+
+                    // Lưu lịch sử tích điểm
+                    await PointHistory.create({
+                        userId: targetUserId,
+                        points: pointsToEarn,
+                        type: "EARN",
+                        description: `Tích điểm từ đơn hàng ${bookingCode}`,
+                        bookingCode: bookingCode
+                    });
+                    console.log(`💰 Awarded ${pointsToEarn} points to user ${user.fullName}`);
+                }
+            }
+        }
 
         const createdTickets = [];
         for (let savedTicket of savedTickets) {

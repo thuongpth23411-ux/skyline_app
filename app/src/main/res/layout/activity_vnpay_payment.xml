@@ -149,7 +149,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
                 android:backgroundTint="@color/skyline_blue_dark"
-                android:text="XÁC NHẬN ĐÃ QUÉT MÃ THÀNH CÔNG"
+                android:text="XÁC NHẬN THANH TOÁN THÀNH CÔNG"
                 android:textStyle="bold"
                 app:cornerRadius="12dp" />
 

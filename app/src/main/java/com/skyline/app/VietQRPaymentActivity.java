@@ -74,7 +74,7 @@ public class VietQRPaymentActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(VietQRPaymentActivity.this, "Không thể xác thực. Thử lại sau.", Toast.LENGTH_SHORT).show();
                     binding.btnConfirmPaid.setEnabled(true);
-                    binding.btnConfirmPaid.setText("XÁC NHẬN ĐÃ CHUYỂN");
+                    binding.btnConfirmPaid.setText("XÁC NHẬN THANH TOÁN THÀNH CÔNG");
                 }
             }
 

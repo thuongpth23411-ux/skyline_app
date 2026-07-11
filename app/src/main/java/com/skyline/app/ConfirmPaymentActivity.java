@@ -28,7 +28,8 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     private String passengerEmail, passengerName, selectedSeat, fareType;
     private Flight flight;
     private String selectedMethodName = "";
-    private double baseFare = 0, taxes = 0, seatPrice = 0, addonPrice = 0;
+    private double baseFare = 0, taxes = 0, airportFees = 0, seatPrice = 0, addonPrice = 0, voucherDiscount = 0, roundTripDiscount = 0;
+    private int adults = 1, children = 0;
     private boolean isExchange = false;
     private double exchangeFee = 0;
     private double priceDiff = 0;
@@ -50,15 +51,20 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         passengerName = intent.getStringExtra("passenger_name");
         selectedSeat = intent.getStringExtra("selected_seat");
         fareType = intent.getStringExtra("fare_type");
+        adults = intent.getIntExtra("adults", 1);
+        children = intent.getIntExtra("children", 0);
         
         isExchange = intent.getBooleanExtra("is_exchange", false);
         exchangeFee = intent.getDoubleExtra("exchange_fee", 0);
         priceDiff = intent.getDoubleExtra("price_diff", 0);
 
-        baseFare = intent.getDoubleExtra("baseFare", totalAmount * 0.8);
-        taxes = intent.getDoubleExtra("taxes", totalAmount * 0.1);
+        baseFare = intent.getDoubleExtra("baseFare", 0);
+        taxes = intent.getDoubleExtra("taxes", 0);
+        airportFees = intent.getDoubleExtra("airportFees", 0);
         seatPrice = intent.getDoubleExtra("seatPrice", 0);
         addonPrice = intent.getDoubleExtra("addonPrice", 0);
+        voucherDiscount = intent.getDoubleExtra("voucher_discount", 0);
+        roundTripDiscount = intent.getDoubleExtra("roundTripDiscount", 0);
 
         String json = intent.getStringExtra("flight_json");
         if (json != null) {
@@ -275,6 +281,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
         intent.putExtra("return_flight_json", getIntent().getStringExtra("return_flight_json"));
         intent.putExtra("return_selected_seat", getIntent().getStringExtra("return_selected_seat"));
+        intent.putExtra("old_ticket_id", getIntent().getStringExtra("old_ticket_id"));
 
         startActivity(intent);
     }
@@ -293,8 +300,12 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         TextView tvBaseLabel = view.findViewById(R.id.tvBaseLabel);
         TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
         TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
+        TextView tvAirportFeeValue = view.findViewById(R.id.tvAirportFeeValue);
         TextView tvSeatFeeValue = view.findViewById(R.id.tvSeatFeeValue);
         TextView tvAddonFeeValue = view.findViewById(R.id.tvAddonFeeValue);
+        TextView tvVoucherValue = view.findViewById(R.id.tvVoucherValue);
+        View layoutRoundTrip = view.findViewById(R.id.layoutRoundTripDiscount);
+        TextView tvRoundTripDiscountValue = view.findViewById(R.id.tvRoundTripDiscountValue);
         TextView tvGrandTotal = view.findViewById(R.id.tvGrandTotal);
 
         if (isExchange) {
@@ -305,18 +316,34 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             if (tvBaseLabel != null) tvBaseLabel.setText("Chênh lệch giá vé");
             if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(priceDiff) + " VND");
             
-            // Hide taxes/fees section for exchange as requested
+            // Hide layouts not needed for exchange
             View taxLayout = view.findViewById(R.id.layoutTaxFees);
             if (taxLayout != null) taxLayout.setVisibility(View.GONE);
+            if (layoutRoundTrip != null) layoutRoundTrip.setVisibility(View.GONE);
         } else {
-            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(baseFare) + " VND");
-            if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(baseFare) + " VND/Người");
+            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(baseFare + taxes + airportFees) + " VND");
+            if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format((baseFare + taxes + airportFees) / (adults + children > 0 ? adults + children : 1)) + " VND/Người");
             if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(baseFare) + " VND");
             if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(taxes) + " VND");
+            if (tvAirportFeeValue != null) tvAirportFeeValue.setText(df.format(airportFees) + " VND");
+            
+            if (roundTripDiscount > 0) {
+                if (layoutRoundTrip != null) layoutRoundTrip.setVisibility(View.VISIBLE);
+                if (tvRoundTripDiscountValue != null) tvRoundTripDiscountValue.setText("- " + df.format(roundTripDiscount) + " VND");
+            }
         }
 
         if (tvSeatFeeValue != null) tvSeatFeeValue.setText(seatPrice > 0 ? df.format(seatPrice) + " VND" : "Miễn phí");
         if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(addonPrice) + " VND");
+        
+        if (tvVoucherValue != null) {
+            if (voucherDiscount > 0) {
+                tvVoucherValue.setText("- " + df.format(voucherDiscount) + " VND");
+                tvVoucherValue.setVisibility(View.VISIBLE);
+            } else {
+                tvVoucherValue.setText("0 VND");
+            }
+        }
         if (tvGrandTotal != null) tvGrandTotal.setText(df.format(totalAmount) + " VND");
 
         view.findViewById(R.id.btnBack).setOnClickListener(v -> dialog.dismiss());

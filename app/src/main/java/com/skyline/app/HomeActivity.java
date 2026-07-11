@@ -49,6 +49,15 @@ public class HomeActivity extends AppCompatActivity {
         } else if ("FLIGHTS".equals(target)) {
             updateNavSelection(binding.bottomNavigation.navFlights);
             showFragment(new FlightsFragment2());
+        } else if ("TICKET_DETAIL".equals(target)) {
+            com.skyline.model.Ticket ticket = (com.skyline.model.Ticket) intent.getSerializableExtra("ticket_data");
+            if (ticket != null) {
+                updateNavSelection(binding.bottomNavigation.navFlights);
+                showFragment(TicketDetailFragment.newInstance(ticket));
+            } else {
+                updateNavSelection(binding.bottomNavigation.navHome);
+                showFragment(new HomeFragment());
+            }
         } else {
             updateNavSelection(binding.bottomNavigation.navHome);
             showFragment(new HomeFragment());

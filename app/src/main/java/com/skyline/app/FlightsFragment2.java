@@ -58,9 +58,89 @@ public class FlightsFragment2 extends Fragment {
             }
         });
         
-        binding.btnCheck.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
+        binding.btnCheck.setOnClickListener(v -> showCheckBookingDialog());
+    }
+
+    private void showCheckBookingDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_check_booking, null);
+        com.google.android.material.textfield.TextInputEditText etBookingCode = dialogView.findViewById(R.id.etBookingCode);
+
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setPositiveButton("Tìm kiếm", null) // Set null to override later
+            .setNegativeButton("Hủy", null)
+            .create();
+
+        // Bo góc cho Dialog
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_card_white);
+        }
+
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String code = etBookingCode.getText().toString().trim();
+                if (!code.isEmpty()) {
+                    searchAndOpenTicket(code, dialog);
+                } else {
+                    Toast.makeText(requireContext(), "Vui lòng nhập mã vé", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+
+        dialog.show();
+    }
+
+    private void searchAndOpenTicket(String code, androidx.appcompat.app.AlertDialog dialog) {
+        TicketResponse target = null;
+        for (TicketResponse res : allTickets) {
+            if (code.equalsIgnoreCase(res.getBookingCode())) {
+                target = res;
+                break;
+            }
+        }
+
+        if (target != null) {
+            if (dialog != null) dialog.dismiss();
+            // Convert to model Ticket and open
+            try {
+                SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+                SimpleDateFormat monthYearFormat = new SimpleDateFormat("'THÁNG' MM\nyyyy", Locale.getDefault());
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
+                
+                Date depDate = inputFormat.parse(target.getFlight().getDepartureAt());
+                String seatNum = target.getSeatId();
+                if (seatNum != null && seatNum.contains("_")) {
+                    seatNum = seatNum.substring(seatNum.lastIndexOf("_") + 1);
+                }
+
+                Ticket ticket = new Ticket(
+                    dayFormat.format(depDate), 
+                    monthYearFormat.format(depDate).toUpperCase(),
+                    "Phổ thông",
+                    target.getBookingCode(),
+                    target.getFlight().getDepartureAirport().getCode(),
+                    target.getFlight().getDepartureAirport().getCity(),
+                    target.getFlight().getArrivalAirport().getCode(),
+                    target.getFlight().getArrivalAirport().getCity(),
+                    timeFormat.format(depDate),
+                    seatNum != null ? seatNum : "--",
+                    target.getTotalAmount(),
+                    target.getPassengerName(),
+                    target.getTicketType()
+                );
+                openDetail(ticket);
+            } catch (Exception e) {
+                Toast.makeText(requireContext(), "Lỗi khi xử lý dữ liệu vé", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Không tìm thấy, hiện thông báo
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Thông báo")
+                .setMessage("Không tìm thấy thông tin vé với mã: " + code + ". Vui lòng kiểm tra lại.")
+                .setPositiveButton("Đóng", null)
+                .show();
+        }
     }
 
     private void fetchTickets() {

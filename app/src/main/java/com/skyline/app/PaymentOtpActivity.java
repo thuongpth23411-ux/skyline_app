@@ -105,6 +105,7 @@ public class PaymentOtpActivity extends AppCompatActivity {
         bookingData.put("email", intent.getStringExtra("passenger_email"));
         bookingData.put("totalAmount", total);
         bookingData.put("paymentMethod", intent.getStringExtra("payment_method") != null ? intent.getStringExtra("payment_method") : "Unknown");
+        bookingData.put("oldTicketId", intent.getStringExtra("old_ticket_id"));
         
         List<Map<String, String>> flightsList = new ArrayList<>();
         com.google.gson.Gson gson = new com.google.gson.Gson();
@@ -169,6 +170,12 @@ public class PaymentOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             intent.putExtras(getIntent().getExtras());
         }
+        // Ensure flight_json and other data are passed for "View My Ticket" button
+        intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
+        intent.putExtra("selected_seat", getIntent().getStringExtra("selected_seat"));
+        intent.putExtra("passenger_name", getIntent().getStringExtra("passenger_name"));
+        intent.putExtra("totalAmount", getIntent().getDoubleExtra("totalAmount", 0));
+
         startActivity(intent);
         finish();
     }
