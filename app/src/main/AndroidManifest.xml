@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Skyline"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="true">
 
         <activity android:name=".AboutActivity" android:exported="false" />
@@ -41,6 +42,12 @@
         <activity
             android:name=".ConfirmPaymentActivity"
             android:exported="false" />
+        <activity android:name=".PaymentProcessingActivity" android:exported="false" />
+        <activity android:name=".VietQRPaymentActivity" android:exported="false" />
+        <activity android:name=".CardPaymentActivity" android:exported="false" />
+        <activity android:name=".PaymentOtpActivity" android:exported="false" />
+        <activity android:name=".PaymentSuccessActivity" android:exported="false" />
+        <activity android:name=".PaymentFailureActivity" android:exported="false" />
         <activity
             android:name=".HomeActivity"
             android:exported="true" />
@@ -94,14 +101,28 @@
             android:name=".BaggageSelectionActivity"
             android:exported="false" />
         <activity
+            android:name=".BookingConfirmationActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".BlogListActivity"
             android:exported="false" />
         <activity
             android:name=".BlogDetailActivity"
             android:exported="false" />
-        <activity
-            android:name=".BookingConfirmationActivity"
-            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PATHS"
+                android:resource="@xml/file_paths" />
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

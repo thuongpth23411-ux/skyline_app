@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.skyline.app.databinding.ItemDestinationBinding;
 import com.skyline.model.Destination;
 import java.util.List;
@@ -47,7 +48,18 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         }
 
         public void bind(Destination item) {
-            binding.imgDestination.setImageResource(item.getImageRes());
+            String url = item.getImageUrl();
+            if (url != null && !url.isEmpty()) {
+                Glide.with(binding.imgDestination.getContext())
+                        .load(url)
+                        .placeholder(R.drawable.img_destination_hochiminh)
+                        .error(R.drawable.img_destination_hochiminh)
+                        .into(binding.imgDestination);
+            } else if (item.getImageRes() != 0) {
+                binding.imgDestination.setImageResource(item.getImageRes());
+            } else {
+                binding.imgDestination.setImageResource(R.drawable.img_destination_hochiminh);
+            }
             binding.tvCountry.setText(item.getCountry());
             binding.tvDestinationTitle.setText(item.getTitle());
             binding.getRoot().setOnClickListener(v -> listener.onItemClick(item));

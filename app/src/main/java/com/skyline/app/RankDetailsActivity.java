@@ -49,13 +49,11 @@ public class RankDetailsActivity extends AppCompatActivity {
     }
 
     private void updateTabUI(boolean isCurrentSelected) {
-        // Tab Hiện tại
         binding.tabCurrent.setBackgroundResource(isCurrentSelected ? R.drawable.bg_terms_rank : 0);
         binding.tabCurrent.setBackgroundTintList(isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.white)) : null);
         binding.tabCurrent.setTypeface(null, isCurrentSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
         binding.tabCurrent.setTextColor(getResources().getColor(isCurrentSelected ? R.color.skyline_text : R.color.skyline_text_secondary));
 
-        // Tab Kế tiếp
         binding.tabNext.setBackgroundResource(!isCurrentSelected ? R.drawable.bg_terms_rank : 0);
         binding.tabNext.setBackgroundTintList(!isCurrentSelected ? android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.white)) : null);
         binding.tabNext.setTypeface(null, !isCurrentSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
@@ -199,14 +197,13 @@ public class RankDetailsActivity extends AppCompatActivity {
         itemBinding.tvBenefitTitle.setText(benefit.getTitle());
         itemBinding.tvBenefitDesc.setText(benefit.getDescription());
         
+        // Set icon based on iconType
         int iconRes = R.drawable.ic_notifications;
         if ("points".equals(benefit.getIconType())) iconRes = R.drawable.ic_trending_up;
         else if ("checkin".equals(benefit.getIconType())) iconRes = R.drawable.ic_priority;
         else if ("voucher".equals(benefit.getIconType())) iconRes = R.drawable.ic_gift;
         
         itemBinding.imgBenefitIcon.setImageResource(iconRes);
-        itemBinding.imgBenefitIcon.setImageTintList(android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.skyline_blue)));
-
         binding.layoutBenefits.addView(itemBinding.getRoot());
     }
 

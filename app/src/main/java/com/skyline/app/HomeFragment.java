@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.util.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 import com.skyline.app.databinding.FragmentHomeBinding;
 import com.skyline.app.network.Promotion;
+import com.skyline.app.utils.NotificationHelper;
 import com.skyline.app.utils.SessionManager;
 import com.skyline.model.Destination;
 import com.skyline.model.Experience;
@@ -39,12 +41,75 @@ public class HomeFragment extends Fragment {
         setupDestinations();
         setupExperiences();
         setupClicks();
+        updateNotificationBadge();
+        checkNewPromotions();
+    }
+
+    private void updateNotificationBadge() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        int count = sessionManager.getUnreadNotifCount();
+        if (count > 0) {
+            binding.tvNotifBadge.setVisibility(View.VISIBLE);
+            binding.tvNotifBadge.setText(String.valueOf(count));
+        } else {
+            binding.tvNotifBadge.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkNewPromotions() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (!sessionManager.isLoggedIn()) {
+            Log.d("HomeFragment", "User not logged in, skipping simulated notifications.");
+            return;
+        }
+
+        Log.d("HomeFragment", "Simulating various notifications for logged-in user...");
+        // Giả lập nhận các loại thông báo khác nhau sau một khoảng trễ ngắn
+        if (binding != null) {
+            binding.getRoot().postDelayed(() -> {
+                if (isAdded() && getActivity() != null) {
+                    NotificationHelper.showDropDownNotification(
+                        getActivity(),
+                        "PROMO_DANANG_20", 
+                        "Ưu đãi vé bay", 
+                        "Giảm ngay 20% khi đặt vé đi Đà Nẵng hôm nay!", 
+                        NotificationHelper.NotifType.PROMOTION, 
+                        "Khám phá Phú Quốc" // Dùng tên thật trong danh sách để test redirect
+                    );
+                    updateNotificationBadge();
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).updateBottomNavBadge();
+                    }
+                }
+            }, 3000);
+
+            binding.getRoot().postDelayed(() -> {
+                if (isAdded() && getActivity() != null) {
+                    NotificationHelper.showDropDownNotification(
+                        getActivity(),
+                        "PROFILE_RANK_UP_SILVER", 
+                        "Cập nhật hồ sơ", 
+                        "Chúc mừng! Bạn đã được thăng hạng hội viên BẠC.", 
+                        NotificationHelper.NotifType.PROFILE, 
+                        "" // targetData
+                    );
+                    updateNotificationBadge();
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).updateBottomNavBadge();
+                    }
+                }
+            }, 8000);
+        }
+    }
+
+    private void showNotificationPopup(Promotion promotion) {
     }
 
     @Override
     public void onResume() {
         super.onResume();
         checkLoginStatus();
+        updateNotificationBadge();
     }
 
     private void checkLoginStatus() {
@@ -62,16 +127,73 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupPromotionPager() {
-        // Chỉ nạp dữ liệu Banner du lịch cố định cho trang chủ cho đẹp
-        List<Promotion> promotions = new ArrayList<>();
-        promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "10/07/2026", R.drawable.img_promo_bangkok));
-        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/07/2026", R.drawable.img_promo_phuquoc));
-        promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "01/08/2026", R.drawable.img_brand_banner));
+        Log.d("HomeFragment", "Fetching promotions...");
+        com.skyline.app.network.RetrofitClient.getInstance().getPromotions().enqueue(new retrofit2.Callback<List<Promotion>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Promotion>> call, retrofit2.Response<List<Promotion>> response) {
+                if (binding == null || !isAdded()) return;
 
-        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> {
-            // Khi nhấn vào item trong Pager (có chữ "Tìm hiểu thêm"), nhảy qua trang Khuyến mãi
-            startActivity(new Intent(requireContext(), PromotionsActivity.class));
-        }));
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    List<Promotion> allPromotions = response.body();
+                    Log.d("HomeFragment", "Promotions received: " + allPromotions.size());
+                    
+                    // Sắp xếp: Ưu tiên cái có tên "Thứ 6 Mở App - Giảm đến 10%" lên đầu
+                    List<Promotion> filtered = new ArrayList<>();
+                    Promotion priorityItem = null;
+                    
+                    for (Promotion p : allPromotions) {
+                        if (p.getTitle().contains("Thứ 6 Mở App")) {
+                            priorityItem = p;
+                            break;
+                        }
+                    }
+                    
+                    if (priorityItem != null) {
+                        filtered.add(priorityItem);
+                    }
+                    
+                    for (Promotion p : allPromotions) {
+                        if (p != priorityItem) {
+                            filtered.add(p);
+                        }
+                        if (filtered.size() == 3) break;
+                    }
+                    
+                    List<Promotion> displayList = filtered.isEmpty() ? allPromotions : filtered;
+                    if (displayList.size() > 3) displayList = displayList.subList(0, 3);
+                    
+                    binding.promoPager.setAdapter(new PromotionAdapter(displayList, item -> toast("Đã chọn: " + item.getTitle())));
+                    createDots(binding.promoDots, displayList.size());
+                    selectDot(binding.promoDots, 0);
+
+                    binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            if (binding != null) selectDot(binding.promoDots, position);
+                        }
+                    });
+                } else {
+                    Log.e("HomeFragment", "Promotions response error or empty: " + response.code());
+                    setupLocalPromotions(); // Vẫn giữ fallback nhưng log lỗi rõ ràng
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Promotion>> call, Throwable t) {
+                Log.e("HomeFragment", "Promotions API failure: " + t.getMessage());
+                if (binding != null && isAdded()) {
+                    setupLocalPromotions();
+                }
+            }
+        });
+    }
+
+    private void setupLocalPromotions() {
+        List<Promotion> promotions = new ArrayList<>();
+        promotions.add(new Promotion("Ưu đãi bay Bangkok", "Hết hạn: 31/12/2025", R.drawable.img_promo_bangkok));
+        promotions.add(new Promotion("Khám phá Phú Quốc", "Hết hạn: 30/11/2025", R.drawable.img_promo_phuquoc));
+
+        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
         createDots(binding.promoDots, promotions.size());
         selectDot(binding.promoDots, 0);
 
@@ -83,49 +205,51 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void setupLocalPromotions() {
-        List<Promotion> promotions = new ArrayList<>();
-        promotions.add(new Promotion("Xin chào Bangkok! Ưu đãi ngay 20%", "11/06/2026 - 10/07/2026", R.drawable.img_promo_bangkok));
-        promotions.add(new Promotion("Xin chào Phú Quốc! Ưu đãi ngay 20%", "15/06/2026 - 15/07/2026", R.drawable.img_promo_phuquoc));
-        promotions.add(new Promotion("Thứ 6 mở app – giảm đến 10%", "17/06/2026 - 01/07/2026", R.drawable.img_brand_banner));
-
-        binding.promoPager.setAdapter(new PromotionAdapter(promotions, item -> toast("Đã chọn: " + item.getTitle())));
-        createDots(binding.promoDots, promotions.size());
-        selectDot(binding.promoDots, 0);
-
-        binding.promoPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+    private void setupDestinations() {
+        Log.d("HomeFragment", "Fetching destination blogs...");
+        com.skyline.app.network.RetrofitClient.getInstance().getDestinationBlogs().enqueue(new retrofit2.Callback<List<Destination>>() {
             @Override
-            public void onPageSelected(int position) {
-                selectDot(binding.promoDots, position);
+            public void onResponse(retrofit2.Call<List<Destination>> call, retrofit2.Response<List<Destination>> response) {
+                if (binding == null || !isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Destination> allBlogs = response.body();
+                    Log.d("HomeFragment", "Blogs received: " + allBlogs.size());
+                    
+                    // Lấy 3 bài viết đầu tiên từ server
+                    List<Destination> displayList = allBlogs.size() > 3 ? allBlogs.subList(0, 3) : allBlogs;
+
+                    binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                    binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> {
+                        if (item.getBlogSlug() != null && !item.getBlogSlug().isEmpty()) {
+                            Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
+                            intent.putExtra("slug", item.getBlogSlug());
+                            startActivity(intent);
+                        } else {
+                            toast("Khám phá " + item.getCountry());
+                        }
+                    }));
+                } else {
+                    Log.e("HomeFragment", "Blogs response error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Destination>> call, Throwable t) {
+                Log.e("HomeFragment", "Blogs API failure: " + t.getMessage());
             }
         });
     }
 
-    private void setupDestinations() {
-        List<Destination> destinations = new ArrayList<>();
-        destinations.add(new Destination("Việt Nam", "Phú Quốc – “đảo ngọc” xinh đẹp của Việt Nam", R.drawable.img_destination_phuquoc));
-        destinations.add(new Destination("Việt Nam", "Đà Nẵng – thành phố đáng sống nhất Việt Nam", R.drawable.img_destination_danang));
-
-        binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.destinationRecycler.setAdapter(new DestinationAdapter(destinations, item -> toast("Khám phá " + item.getTitle())));
-    }
-
     private void setupExperiences() {
         List<Experience> experiences = new ArrayList<>();
-        experiences.add(new Experience(getString(R.string.exp_economy_desc), getString(R.string.exp_economy_title), getString(R.string.exp_economy_sub), R.drawable.img_experience_economy));
-        experiences.add(new Experience(getString(R.string.exp_first_desc), getString(R.string.exp_first_title), getString(R.string.exp_first_sub), R.drawable.img_experience_first));
-        experiences.add(new Experience(getString(R.string.exp_economy_desc), getString(R.string.exp_economy_title), getString(R.string.exp_economy_sub), R.drawable.img_experience_economy));
-        experiences.add(new Experience(getString(R.string.exp_first_desc), getString(R.string.exp_first_title), getString(R.string.exp_first_sub), R.drawable.img_experience_first));
+        experiences.add(new Experience("Mức giá tốt, dịch vụ chu đáo.", "Hạng Phổ thông", "Thoải mái trong mọi hành trình", R.drawable.img_experience_economy));
+        experiences.add(new Experience("Nâng tầm trải nghiệm", "Hạng Thương gia", "Không gian riêng tư, dịch vụ tinh tế.", R.drawable.img_experience_first));
+        // Duplicate to ensure smooth infinite scroll and show at least 3 cards
+        experiences.add(new Experience("Mức giá tốt, dịch vụ chu đáo.", "Hạng Phổ thông", "Thoải mái trong mọi hành trình", R.drawable.img_experience_economy));
+        experiences.add(new Experience("Nâng tầm trải nghiệm", "Hạng Thương gia", "Không gian riêng tư, dịch vụ tinh tế.", R.drawable.img_experience_first));
 
-        binding.experiencePager.setAdapter(new ExperienceAdapter(experiences, item -> {
-            if (item.getTitle().equals(getString(R.string.exp_economy_title))) {
-                openEconomyExperienceBlog();
-            } else if (item.getTitle().equals(getString(R.string.exp_business_title)) || item.getTitle().contains("Thương gia")) {
-                openBusinessExperienceBlog();
-            } else {
-                toast("Đã chọn " + item.getTitle());
-            }
-        }));
+        binding.experiencePager.setAdapter(new ExperienceAdapter(experiences, item -> toast("Đã chọn " + item.getTitle())));
         binding.experiencePager.setOffscreenPageLimit(3);
         
         // Start from a middle position for infinite effect
@@ -144,176 +268,12 @@ public class HomeFragment extends Fragment {
         binding.btnExpNext.setOnClickListener(v -> binding.experiencePager.setCurrentItem(binding.experiencePager.getCurrentItem() + 1));
     }
 
-    private void openEconomyExperienceBlog() {
-        com.skyline.app.network.Blog economyBlog = new com.skyline.app.network.Blog();
-        economyBlog.title = "Hạng phổ thông - Hành trình của sự chăm chút";
-        economyBlog.category = "TRẢI NGHIỆM";
-        economyBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.phothong_banner;
-        economyBlog.introContent = "Một chuyến đi trọn vẹn không nhất thiết phải bắt đầu từ hạng vé cao cấp, mà từ việc lựa chọn đúng chuyến bay, đúng quyền lợi và đúng nhu cầu. Với hạng Phổ thông, hành khách có thể cân bằng giữa chi phí, thời gian và sự thuận tiện. Skyline giúp tổng hợp chuyến bay từ nhiều hãng hàng không để việc tìm kiếm, so sánh và đặt vé trở nên dễ dàng, rõ ràng hơn.";
-        economyBlog.readTime = "6 phút đọc";
-        economyBlog.publishedDate = "2024-05-20T08:00:00Z";
-
-        List<com.skyline.app.network.Blog.Section> sections = new ArrayList<>();
-
-        // Section 1
-        com.skyline.app.network.Blog.Section s1 = new com.skyline.app.network.Blog.Section();
-        s1.sectionNumber = 1;
-        s1.title = "Lựa chọn vừa vặn cho những hành trình thường ngày";
-        s1.type = "text";
-        com.skyline.app.network.Blog.SectionItem item1 = new com.skyline.app.network.Blog.SectionItem();
-        item1.description = "Hạng Phổ thông là lựa chọn phổ biến của hành khách trên các chuyến bay nội địa và quốc tế. Mức giá hợp lý, nhiều khung giờ và đa dạng hãng bay giúp hạng vé này phù hợp with nhiều nhu cầu như du lịch, công tác, về quê hoặc thăm gia đình. Tùy từng hãng và từng loại giá vé, hành khách có thể nhận được các quyền lợi khác nhau về hành lý, lựa chọn chỗ ngồi, suất ăn và khả năng thay đổi lịch trình.";
-        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_1;
-        s1.items = new ArrayList<>();
-        s1.items.add(item1);
-        sections.add(s1);
-
-        // Section 2
-        com.skyline.app.network.Blog.Section s2 = new com.skyline.app.network.Blog.Section();
-        s2.sectionNumber = 2;
-        s2.title = "Một tấm vé phù hợp không chỉ được quyết định bởi giá thấp";
-        s2.type = "text";
-        com.skyline.app.network.Blog.SectionItem item2 = new com.skyline.app.network.Blog.SectionItem();
-        item2.description = "Giá vé hiển thị ban đầu chưa phải lúc nào cũng là tổng chi phí của chuyến đi. Khi lựa chọn vé hạng Phổ thông, hành khách nên cân nhắc đồng thời giá vé, giờ bay, thời gian di chuyển, quyền lợi hành lý và điều kiện thay đổi vé. Một lựa chọn phù hợp là lựa chọn đáp ứng tốt nhu cầu thực tế, thay vì chỉ có mức giá thấp nhất.";
-        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_2;
-        s2.items = new ArrayList<>();
-        s2.items.add(item2);
-        sections.add(s2);
-
-        // Section 3
-        com.skyline.app.network.Blog.Section s3 = new com.skyline.app.network.Blog.Section();
-        s3.sectionNumber = 3;
-        s3.title = "Mỗi hãng hàng không mang đến một chính sách khác nhau";
-        s3.type = "text";
-        com.skyline.app.network.Blog.SectionItem item3 = new com.skyline.app.network.Blog.SectionItem();
-        item3.description = "Dù cùng thuộc hạng Phổ thông, các hãng hàng không có thể áp dụng những chính sách và quyền lợi không giống nhau. Điều kiện đổi ngày, hoàn vé hoặc lựa chọn chỗ ngồi cũng có thể thay đổi theo từng hãng. Vì vậy, hành khách nên kiểm tra kỹ thông tin trước khi thanh toán để hiểu rõ những quyền lợi đã bao gồm.";
-        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_3;
-        s3.items = new ArrayList<>();
-        s3.items.add(item3);
-        sections.add(s3);
-
-        // Section 4
-        com.skyline.app.network.Blog.Section s4 = new com.skyline.app.network.Blog.Section();
-        s4.sectionNumber = 4;
-        s4.title = "So sánh đầy đủ để tìm ra chuyến bay phù hợp nhất";
-        s4.type = "text";
-        com.skyline.app.network.Blog.SectionItem item4 = new com.skyline.app.network.Blog.SectionItem();
-        item4.description = "Thông qua Skyline, người dùng có thể xem và so sánh chuyến bay từ nhiều hãng hàng không trên cùng một nền tảng. Các thông tin về hãng bay, giờ khởi hành, thời gian đến, giá vé và điều kiện đi kèm được trình bày trực quan, giúp hành khách dễ dàng đưa ra quyết định phù hợp nhất với mình.";
-        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_4;
-        s4.items = new ArrayList<>();
-        s4.items.add(item4);
-        sections.add(s4);
-
-        // Section 5
-        com.skyline.app.network.Blog.Section s5 = new com.skyline.app.network.Blog.Section();
-        s5.sectionNumber = 5;
-        s5.title = "Một quy trình đặt vé nhẹ nhàng cho hành trình thêm an tâm";
-        s5.type = "text";
-        com.skyline.app.network.Blog.SectionItem item5 = new com.skyline.app.network.Blog.SectionItem();
-        item5.description = "Skyline giúp đơn giản hóa quá trình đặt vé từ bước tìm kiếm chuyến bay đến khi hoàn tất thông tin hành khách. Sự rõ ràng trong từng bước giúp hạn chế nhầm lẫn và mang lại cảm giác an tâm hơn khi chuẩn bị cho chuyến đi. Hạng Phổ thông không chỉ là lựa chọn tiết kiệm, mà còn có thể mang đến một hành trình thuận tiện.";
-        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_5;
-        s5.items = new ArrayList<>();
-        s5.items.add(item5);
-        sections.add(s5);
-
-        economyBlog.sections = sections;
-        
-        com.skyline.app.network.Blog.CTA cta = new com.skyline.app.network.Blog.CTA();
-        cta.text = "ĐẶT VÉ NGAY!";
-        cta.action = "BOOK_FLIGHT";
-        economyBlog.cta = cta;
-
-        Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
-        intent.putExtra("blog", economyBlog);
-        startActivity(intent);
-    }
-
-    private void openBusinessExperienceBlog() {
-        com.skyline.app.network.Blog businessBlog = new com.skyline.app.network.Blog();
-        businessBlog.title = "Hạng Thương gia – Hành trình của những đặc quyền";
-        businessBlog.category = "TRẢI NGHIỆM";
-        businessBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.hangthuonggia_banner;
-        businessBlog.introContent = "Hạng Thương gia không chỉ mang đến một chỗ ngồi rộng rãi hơn mà còn mở ra trải nghiệm di chuyển ưu tiên, riêng tư và tiện nghi trong suốt hành trình. Với Skyline, bạn có thể tìm kiếm, so sánh và lựa chọn vé hạng Thương gia của nhiều hãng hàng không trên cùng một nền tảng.";
-        businessBlog.readTime = "8 phút đọc";
-        businessBlog.publishedDate = "2024-05-20T08:00:00Z";
-
-        List<com.skyline.app.network.Blog.Section> sections = new ArrayList<>();
-
-        // Section 1
-        com.skyline.app.network.Blog.Section s1 = new com.skyline.app.network.Blog.Section();
-        s1.sectionNumber = 1;
-        s1.title = "Trải nghiệm ưu tiên ngay từ sân bay";
-        s1.type = "text";
-        com.skyline.app.network.Blog.SectionItem item1 = new com.skyline.app.network.Blog.SectionItem();
-        item1.description = "Hành khách hạng Thương gia thường được sử dụng quầy làm thủ tục riêng, ưu tiên lên máy bay và nhận hành lý sớm hơn sau khi hạ cánh. Một số hãng còn cung cấp lối ưu tiên tại khu vực kiểm tra an ninh, giúp tiết kiệm thời gian chờ đợi.";
-        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_1;
-        s1.items = new ArrayList<>();
-        s1.items.add(item1);
-        sections.add(s1);
-
-        // Section 2
-        com.skyline.app.network.Blog.Section s2 = new com.skyline.app.network.Blog.Section();
-        s2.sectionNumber = 2;
-        s2.title = "Không gian ghế ngồi riêng tư và thoải mái";
-        s2.type = "text";
-        com.skyline.app.network.Blog.SectionItem item2 = new com.skyline.app.network.Blog.SectionItem();
-        item2.description = "Ghế hạng Thương gia thường có kích thước rộng, khoảng cách để chân thoải mái và khả năng điều chỉnh linh hoạt. Trên một số chuyến bay đường dài, ghế có thể ngả thành giường nằm, đi kèm không gian riêng tư và khu vực làm việc tiện lợi.";
-        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_2;
-        s2.items = new ArrayList<>();
-        s2.items.add(item2);
-        sections.add(s2);
-
-        // Section 3
-        com.skyline.app.network.Blog.Section s3 = new com.skyline.app.network.Blog.Section();
-        s3.sectionNumber = 3;
-        s3.title = "Dịch vụ và ẩm thực được nâng tầm";
-        s3.type = "text";
-        com.skyline.app.network.Blog.SectionItem item3 = new com.skyline.app.network.Blog.SectionItem();
-        item3.description = "Trải nghiệm hạng Thương gia thường đi kèm phong cách phục vụ chu đáo, thực đơn đa dạng và cách trình bày chỉn chu hơn. Hành khách có thể được lựa chọn suất ăn, đồ uống hoặc đăng ký trước các yêu cầu ăn uống đặc biệt.";
-        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_3;
-        s3.items = new ArrayList<>();
-        s3.items.add(item3);
-        sections.add(s3);
-
-        // Section 4
-        com.skyline.app.network.Blog.Section s4 = new com.skyline.app.network.Blog.Section();
-        s4.sectionNumber = 4;
-        s4.title = "Hành lý linh hoạt và phòng chờ tiện nghi";
-        s4.type = "text";
-        com.skyline.app.network.Blog.SectionItem item4 = new com.skyline.app.network.Blog.SectionItem();
-        item4.description = "Vé hạng Thương gia thường có hạn mức hành lý cao hơn. Bên cạnh đó, một số loại vé còn đi kèm quyền sử dụng phòng chờ sân bay với không gian nghỉ ngơi, Wi-Fi, đồ ăn nhẹ và khu vực làm việc yên tĩnh.";
-        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_4;
-        s4.items = new ArrayList<>();
-        s4.items.add(item4);
-        sections.add(s4);
-
-        // Section 5
-        com.skyline.app.network.Blog.Section s5 = new com.skyline.app.network.Blog.Section();
-        s5.sectionNumber = 5;
-        s5.title = "Dễ dàng so sánh vé hạng Thương gia trên Skyline";
-        s5.type = "text";
-        com.skyline.app.network.Blog.SectionItem item5 = new com.skyline.app.network.Blog.SectionItem();
-        item5.description = "Trên Skyline, bạn có thể tìm kiếm và so sánh nhiều chuyến bay dựa trên giá vé, thời gian khởi hành, hạn mức hành lý và các điều kiện đi kèm. Nhờ đó, bạn có thể tận hưởng trải nghiệm hạng Thương gia một cách trọn vẹn nhất.";
-        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_5;
-        s5.items = new ArrayList<>();
-        s5.items.add(item5);
-        sections.add(s5);
-
-        businessBlog.sections = sections;
-        
-        com.skyline.app.network.Blog.CTA cta = new com.skyline.app.network.Blog.CTA();
-        cta.text = "ĐẶT VÉ NGAY!";
-        cta.action = "BOOK_FLIGHT";
-        businessBlog.cta = cta;
-
-        Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
-        intent.putExtra("blog", businessBlog);
-        startActivity(intent);
-    }
-
     private void setupClicks() {
         binding.btnNotification.setOnClickListener(v -> {
             SessionManager sessionManager = new SessionManager(requireContext());
             if (sessionManager.isLoggedIn()) {
+                sessionManager.clearUnreadNotifCount();
+                updateNotificationBadge();
                 startActivity(new Intent(requireContext(), NotificationActivity.class));
             } else {
                 showLoginRequiredDialog();
@@ -321,12 +281,15 @@ public class HomeFragment extends Fragment {
         });
 
         // Nhấn "Khám phá ngay" hoặc "Xem tất cả" mở trang Khuyến mãi
-        View.OnClickListener promoListener = v -> startActivity(new Intent(requireContext(), PromotionsActivity.class));
+        binding.btnExploreNow.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), PromotionsActivity.class);
+            intent.putExtra("OPEN_PROMO_NAME", "Thứ 6 Mở App");
+            startActivity(intent);
+        });
 
-        binding.btnExploreNow.setOnClickListener(promoListener);
-        binding.promotionHeader.tvViewAll.setOnClickListener(promoListener);
+        binding.promotionHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), PromotionsActivity.class)));
 
-        binding.destinationHeader.tvViewAll.setOnClickListener(v -> toast("Tất cả điểm đến"));
+        binding.destinationHeader.tvViewAll.setOnClickListener(v -> startActivity(new Intent(requireContext(), BlogListActivity.class)));
         binding.btnAboutUs.setOnClickListener(v -> startActivity(new Intent(requireContext(), AboutActivity.class)));
         binding.memberCard.btnRegister.setOnClickListener(v -> startActivity(new Intent(requireContext(), RegisterEmailActivity.class)));
         binding.memberCard.tvLogin.setOnClickListener(v -> startActivity(new Intent(requireContext(), LoginActivity.class)));
