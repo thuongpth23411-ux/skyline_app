@@ -25,10 +25,22 @@ public class Blog implements Serializable {
     public CTA cta;
     public boolean isFeatured;
 
+    public String getFullThumbnailUrl() {
+        return RetrofitClient.formatUrl(thumbnailUrl);
+    }
+
+    public String getFullCoverImageUrl() {
+        return RetrofitClient.formatUrl(coverImageUrl);
+    }
+
     public static class Author implements Serializable {
         public String authorId;
         public String name;
         public String avatarUrl;
+
+        public String getFullAvatarUrl() {
+            return RetrofitClient.formatUrl(avatarUrl);
+        }
     }
 
     public static class QuickInfo implements Serializable {

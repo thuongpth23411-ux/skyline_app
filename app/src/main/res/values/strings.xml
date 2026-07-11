@@ -223,17 +223,6 @@
     <string name="mastercard">Mastercard</string>
     <string name="jcb">JCB</string>
     <string name="amex">American Express</string>
-    <string name="retry_after_time">Thử lại sau %s</string>
-    <string name="retry_now">Thử lại ngay</string>
-
-    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG</string>
-    <string name="transaction_id_label">Mã giao dịch: %s</string>
-    <string name="passenger_caps">HÀNH KHÁCH</string>
-    <string name="flight_caps">CHUYẾN BAY</string>
-    <string name="seat_caps">CHỖ NGỒI</string>
-    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
-    <string name="payment_success_email_note">Vé điện tử và hóa đơn đã được gửi đến email của bạn.\nVui lòng kiểm tra hộp thư (bao gồm cả thư rác).</string>
-    <string name="back_to_home">Về trang chủ</string>
 
     <!-- Price Detail Dialog -->
     <string name="price_detail_title">Chi tiết giá</string>
@@ -362,12 +351,12 @@
 
     <!-- Payment Success Strings -->
     <string name="payment_success_title">THANH TOÁN THÀNH CÔNG</string>
-    <string name="transaction_id_label">Mã giao dịch: &#8212;</string>
+    <string name="transaction_id_label">Mã giao dịch: %s</string>
     <string name="passenger_caps">HÀNH KHÁCH</string>
     <string name="flight_caps">CHUYẾN BAY</string>
     <string name="seat_caps">CHỖ NGỒI</string>
     <string name="total_payment_caps">TỔNG THANH TOÁN</string>
-    <string name="payment_success_email_note">Thông tin vé và hóa đơn điện tử đã được gửi về email của bạn. Vui lòng kiểm tra hộp thư.</string>
+    <string name="payment_success_email_note">Vé điện tử và hóa đơn đã được gửi đến email của bạn.\nVui lòng kiểm tra hộp thư (bao gồm cả thư rác).</string>
     <string name="back_to_home">Về trang chủ</string>
 
     <!-- Override Material Date Picker strings -->

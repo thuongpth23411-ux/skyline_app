@@ -48,7 +48,7 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
         }
 
         public void bind(Promotion item) {
-            String url = item.getImageUrl();
+            String url = item.getFullImageUrl();
             if (url != null && !url.isEmpty()) {
                 Glide.with(binding.imgPromo.getContext())
                         .load(url)
