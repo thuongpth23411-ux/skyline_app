@@ -1,5 +1,6 @@
 package com.skyline.app;
 
+import android.util.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 import com.skyline.app.databinding.FragmentHomeBinding;
 import com.skyline.app.network.Promotion;
+import com.skyline.app.utils.NotificationHelper;
 import com.skyline.app.utils.SessionManager;
 import com.skyline.model.Destination;
 import com.skyline.model.Experience;
@@ -145,42 +147,37 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupDestinations() {
-        com.skyline.app.network.RetrofitClient.getInstance().getBlogs().enqueue(new retrofit2.Callback<List<com.skyline.app.network.Blog>>() {
+        Log.d("HomeFragment", "Fetching destination blogs...");
+        com.skyline.app.network.RetrofitClient.getInstance().getDestinationBlogs().enqueue(new retrofit2.Callback<List<Destination>>() {
             @Override
-            public void onResponse(retrofit2.Call<List<com.skyline.app.network.Blog>> call, retrofit2.Response<List<com.skyline.app.network.Blog>> response) {
+            public void onResponse(retrofit2.Call<List<Destination>> call, retrofit2.Response<List<Destination>> response) {
                 if (binding == null || !isAdded()) return;
 
                 if (response.isSuccessful() && response.body() != null) {
-                    List<com.skyline.app.network.Blog> allBlogs = response.body();
-                    List<Destination> destinations = new ArrayList<>();
+                    List<Destination> allBlogs = response.body();
+                    Log.d("HomeFragment", "Blogs received: " + allBlogs.size());
                     
-                    // Chuyển đổi từ Blog sang Destination để hiển thị ở trang chủ
-                    for (com.skyline.app.network.Blog b : allBlogs) {
-                        if ("ĐIỂM ĐẾN".equalsIgnoreCase(b.category)) {
-                            destinations.add(new Destination(b.category, b.title, b.thumbnailUrl));
-                        }
-                    }
-
-                    if (destinations.isEmpty()) {
-                        setupLocalDestinations();
-                        return;
-                    }
+                    // Lấy 3 bài viết đầu tiên từ server
+                    List<Destination> displayList = allBlogs.size() > 3 ? allBlogs.subList(0, 3) : allBlogs;
 
                     binding.destinationRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-                    binding.destinationRecycler.setAdapter(new DestinationAdapter(destinations, item -> {
-                        Intent intent = new Intent(requireContext(), BlogListActivity.class);
-                        startActivity(intent);
+                    binding.destinationRecycler.setAdapter(new DestinationAdapter(displayList, item -> {
+                        if (item.getBlogSlug() != null && !item.getBlogSlug().isEmpty()) {
+                            Intent intent = new Intent(requireContext(), BlogDetailActivity.class);
+                            intent.putExtra("slug", item.getBlogSlug());
+                            startActivity(intent);
+                        } else {
+                            toast("Khám phá " + item.getCountry());
+                        }
                     }));
                 } else {
-                    setupLocalDestinations();
+                    Log.e("HomeFragment", "Blogs response error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(retrofit2.Call<List<com.skyline.app.network.Blog>> call, Throwable t) {
-                if (binding != null && isAdded()) {
-                    setupLocalDestinations();
-                }
+            public void onFailure(retrofit2.Call<List<Destination>> call, Throwable t) {
+                Log.e("HomeFragment", "Blogs API failure: " + t.getMessage());
             }
         });
     }
@@ -232,7 +229,7 @@ public class HomeFragment extends Fragment {
         com.skyline.app.network.Blog economyBlog = new com.skyline.app.network.Blog();
         economyBlog.title = "Hạng phổ thông - Hành trình của sự chăm chút";
         economyBlog.category = "TRẢI NGHIỆM";
-        economyBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        economyBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.phothong_banner;
         economyBlog.introContent = "Một chuyến đi trọn vẹn không nhất thiết phải bắt đầu từ hạng vé cao cấp, mà từ việc lựa chọn đúng chuyến bay, đúng quyền lợi và đúng nhu cầu. Với hạng Phổ thông, hành khách có thể cân bằng giữa chi phí, thời gian và sự thuận tiện. Skyline giúp tổng hợp chuyến bay từ nhiều hãng hàng không để việc tìm kiếm, so sánh và đặt vé trở nên dễ dàng, rõ ràng hơn.";
         economyBlog.readTime = "6 phút đọc";
         economyBlog.publishedDate = "2024-05-20T08:00:00Z";
@@ -246,7 +243,7 @@ public class HomeFragment extends Fragment {
         s1.type = "text";
         com.skyline.app.network.Blog.SectionItem item1 = new com.skyline.app.network.Blog.SectionItem();
         item1.description = "Hạng Phổ thông là lựa chọn phổ biến của hành khách trên các chuyến bay nội địa và quốc tế. Mức giá hợp lý, nhiều khung giờ và đa dạng hãng bay giúp hạng vé này phù hợp with nhiều nhu cầu như du lịch, công tác, về quê hoặc thăm gia đình. Tùy từng hãng và từng loại giá vé, hành khách có thể nhận được các quyền lợi khác nhau về hành lý, lựa chọn chỗ ngồi, suất ăn và khả năng thay đổi lịch trình.";
-        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_1;
         s1.items = new ArrayList<>();
         s1.items.add(item1);
         sections.add(s1);
@@ -258,7 +255,7 @@ public class HomeFragment extends Fragment {
         s2.type = "text";
         com.skyline.app.network.Blog.SectionItem item2 = new com.skyline.app.network.Blog.SectionItem();
         item2.description = "Giá vé hiển thị ban đầu chưa phải lúc nào cũng là tổng chi phí của chuyến đi. Khi lựa chọn vé hạng Phổ thông, hành khách nên cân nhắc đồng thời giá vé, giờ bay, thời gian di chuyển, quyền lợi hành lý và điều kiện thay đổi vé. Một lựa chọn phù hợp là lựa chọn đáp ứng tốt nhu cầu thực tế, thay vì chỉ có mức giá thấp nhất.";
-        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_2;
         s2.items = new ArrayList<>();
         s2.items.add(item2);
         sections.add(s2);
@@ -270,7 +267,7 @@ public class HomeFragment extends Fragment {
         s3.type = "text";
         com.skyline.app.network.Blog.SectionItem item3 = new com.skyline.app.network.Blog.SectionItem();
         item3.description = "Dù cùng thuộc hạng Phổ thông, các hãng hàng không có thể áp dụng những chính sách và quyền lợi không giống nhau. Điều kiện đổi ngày, hoàn vé hoặc lựa chọn chỗ ngồi cũng có thể thay đổi theo từng hãng. Vì vậy, hành khách nên kiểm tra kỹ thông tin trước khi thanh toán để hiểu rõ những quyền lợi đã bao gồm.";
-        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_3;
         s3.items = new ArrayList<>();
         s3.items.add(item3);
         sections.add(s3);
@@ -282,7 +279,7 @@ public class HomeFragment extends Fragment {
         s4.type = "text";
         com.skyline.app.network.Blog.SectionItem item4 = new com.skyline.app.network.Blog.SectionItem();
         item4.description = "Thông qua Skyline, người dùng có thể xem và so sánh chuyến bay từ nhiều hãng hàng không trên cùng một nền tảng. Các thông tin về hãng bay, giờ khởi hành, thời gian đến, giá vé và điều kiện đi kèm được trình bày trực quan, giúp hành khách dễ dàng đưa ra quyết định phù hợp nhất với mình.";
-        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_4;
         s4.items = new ArrayList<>();
         s4.items.add(item4);
         sections.add(s4);
@@ -294,7 +291,7 @@ public class HomeFragment extends Fragment {
         s5.type = "text";
         com.skyline.app.network.Blog.SectionItem item5 = new com.skyline.app.network.Blog.SectionItem();
         item5.description = "Skyline giúp đơn giản hóa quá trình đặt vé từ bước tìm kiếm chuyến bay đến khi hoàn tất thông tin hành khách. Sự rõ ràng trong từng bước giúp hạn chế nhầm lẫn và mang lại cảm giác an tâm hơn khi chuẩn bị cho chuyến đi. Hạng Phổ thông không chỉ là lựa chọn tiết kiệm, mà còn có thể mang đến một hành trình thuận tiện.";
-        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_economy;
+        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_pt_5;
         s5.items = new ArrayList<>();
         s5.items.add(item5);
         sections.add(s5);
@@ -315,7 +312,7 @@ public class HomeFragment extends Fragment {
         com.skyline.app.network.Blog businessBlog = new com.skyline.app.network.Blog();
         businessBlog.title = "Hạng Thương gia – Hành trình của những đặc quyền";
         businessBlog.category = "TRẢI NGHIỆM";
-        businessBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        businessBlog.coverImageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.hangthuonggia_banner;
         businessBlog.introContent = "Hạng Thương gia không chỉ mang đến một chỗ ngồi rộng rãi hơn mà còn mở ra trải nghiệm di chuyển ưu tiên, riêng tư và tiện nghi trong suốt hành trình. Với Skyline, bạn có thể tìm kiếm, so sánh và lựa chọn vé hạng Thương gia của nhiều hãng hàng không trên cùng một nền tảng.";
         businessBlog.readTime = "8 phút đọc";
         businessBlog.publishedDate = "2024-05-20T08:00:00Z";
@@ -329,7 +326,7 @@ public class HomeFragment extends Fragment {
         s1.type = "text";
         com.skyline.app.network.Blog.SectionItem item1 = new com.skyline.app.network.Blog.SectionItem();
         item1.description = "Hành khách hạng Thương gia thường được sử dụng quầy làm thủ tục riêng, ưu tiên lên máy bay và nhận hành lý sớm hơn sau khi hạ cánh. Một số hãng còn cung cấp lối ưu tiên tại khu vực kiểm tra an ninh, giúp tiết kiệm thời gian chờ đợi.";
-        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        item1.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_1;
         s1.items = new ArrayList<>();
         s1.items.add(item1);
         sections.add(s1);
@@ -341,7 +338,7 @@ public class HomeFragment extends Fragment {
         s2.type = "text";
         com.skyline.app.network.Blog.SectionItem item2 = new com.skyline.app.network.Blog.SectionItem();
         item2.description = "Ghế hạng Thương gia thường có kích thước rộng, khoảng cách để chân thoải mái và khả năng điều chỉnh linh hoạt. Trên một số chuyến bay đường dài, ghế có thể ngả thành giường nằm, đi kèm không gian riêng tư và khu vực làm việc tiện lợi.";
-        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        item2.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_2;
         s2.items = new ArrayList<>();
         s2.items.add(item2);
         sections.add(s2);
@@ -353,7 +350,7 @@ public class HomeFragment extends Fragment {
         s3.type = "text";
         com.skyline.app.network.Blog.SectionItem item3 = new com.skyline.app.network.Blog.SectionItem();
         item3.description = "Trải nghiệm hạng Thương gia thường đi kèm phong cách phục vụ chu đáo, thực đơn đa dạng và cách trình bày chỉn chu hơn. Hành khách có thể được lựa chọn suất ăn, đồ uống hoặc đăng ký trước các yêu cầu ăn uống đặc biệt.";
-        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        item3.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_3;
         s3.items = new ArrayList<>();
         s3.items.add(item3);
         sections.add(s3);
@@ -365,7 +362,7 @@ public class HomeFragment extends Fragment {
         s4.type = "text";
         com.skyline.app.network.Blog.SectionItem item4 = new com.skyline.app.network.Blog.SectionItem();
         item4.description = "Vé hạng Thương gia thường có hạn mức hành lý cao hơn. Bên cạnh đó, một số loại vé còn đi kèm quyền sử dụng phòng chờ sân bay với không gian nghỉ ngơi, Wi-Fi, đồ ăn nhẹ và khu vực làm việc yên tĩnh.";
-        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        item4.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_4;
         s4.items = new ArrayList<>();
         s4.items.add(item4);
         sections.add(s4);
@@ -377,7 +374,7 @@ public class HomeFragment extends Fragment {
         s5.type = "text";
         com.skyline.app.network.Blog.SectionItem item5 = new com.skyline.app.network.Blog.SectionItem();
         item5.description = "Trên Skyline, bạn có thể tìm kiếm và so sánh nhiều chuyến bay dựa trên giá vé, thời gian khởi hành, hạn mức hành lý và các điều kiện đi kèm. Nhờ đó, bạn có thể tận hưởng trải nghiệm hạng Thương gia một cách trọn vẹn nhất.";
-        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.img_experience_first;
+        item5.imageUrl = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.blog_tg_5;
         s5.items = new ArrayList<>();
         s5.items.add(item5);
         sections.add(s5);
