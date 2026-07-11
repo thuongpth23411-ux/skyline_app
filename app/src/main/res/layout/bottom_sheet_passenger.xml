@@ -117,7 +117,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2 đến 11 tuổi"
+                android:text="Dưới 12 tuổi"
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -161,74 +161,7 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Infants -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Em bé"
-                android:textColor="@color/skyline_blue_dark"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dưới 2 tuổi"
-                android:textColor="@color/skyline_text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/btnMinusInfants"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/bg_circle_outline"
-                android:padding="8dp"
-                android:src="@drawable/ic_minus"
-                android:contentDescription="@null" />
-
-            <TextView
-                android:id="@+id/tvInfantsCount"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="0"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/btnPlusInfants"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/bg_circle_outline"
-                android:padding="8dp"
-                android:src="@drawable/ic_plus"
-                android:contentDescription="@null" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDone"

@@ -1,11 +1,9 @@
 package com.skyline.app;
 
-import android.graphics.Paint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,19 +11,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.gson.Gson;
 import com.skyline.app.databinding.ActivityConfirmPaymentBinding;
+import com.skyline.app.network.BaseResponse;
 import com.skyline.app.network.Flight;
+import com.skyline.app.network.RetrofitClient;
+import com.skyline.app.utils.SessionManager;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmPaymentActivity extends AppCompatActivity {
 
     private ActivityConfirmPaymentBinding binding;
-    private double totalAmount, baseFare, addonPrice, seatPrice, taxes;
-    private String passengerEmail, passengerName, selectedSeat;
-    private String selectedMethodName = "";
-    private android.os.CountDownTimer paymentTimer;
+    private double totalAmount;
+    private final Gson gson = new Gson();
+    private String passengerEmail, selectedSeat, fareType, passengerPhone, passengerDoc;
+    private List<String> passengerNames;
+    private Flight flight, returnFlight;
+    private String returnSelectedSeat;
+    private boolean isRoundTrip = false;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,62 +49,41 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding = ActivityConfirmPaymentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sessionManager = new SessionManager(this);
+
         initData();
         initViews();
-        startPaymentTimer();
-    }
-
-    private void startPaymentTimer() {
-        paymentTimer = new android.os.CountDownTimer(15 * 60 * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int minutes = (int) (millisUntilFinished / 1000) / 60;
-                int seconds = (int) (millisUntilFinished / 1000) % 60;
-                if (binding != null) {
-                    binding.tvPaymentTimer.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", minutes, seconds));
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                if (binding != null) {
-                    binding.tvPaymentTimer.setText("00:00");
-                }
-                Toast.makeText(ConfirmPaymentActivity.this, "Hết thời gian thanh toán!", Toast.LENGTH_LONG).show();
-                finish();
-            }
-        }.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (paymentTimer != null) paymentTimer.cancel();
     }
 
     private void initData() {
         Intent intent = getIntent();
         totalAmount = intent.getDoubleExtra("totalAmount", 0);
-        baseFare = intent.getDoubleExtra("baseFare", 0);
-        addonPrice = intent.getDoubleExtra("addonPrice", 0);
-        seatPrice = intent.getDoubleExtra("seatPrice", 0);
-        taxes = intent.getDoubleExtra("taxes", 0);
-
         passengerEmail = intent.getStringExtra("passenger_email");
-        passengerName = intent.getStringExtra("passenger_name");
+        passengerNames = intent.getStringArrayListExtra("passenger_names");
+        passengerPhone = intent.getStringExtra("passenger_phone");
+        passengerDoc = intent.getStringExtra("passenger_doc");
         selectedSeat = intent.getStringExtra("selected_seat");
+        fareType = intent.getStringExtra("fare_type");
+        
+        isRoundTrip = intent.getBooleanExtra("isRoundTrip", false);
+
+        String json = intent.getStringExtra("flight_json");
+        if (json != null) {
+            flight = gson.fromJson(json, Flight.class);
+        }
+
+        if (isRoundTrip) {
+            String retJson = intent.getStringExtra("return_flight_json");
+            if (retJson != null) returnFlight = gson.fromJson(retJson, Flight.class);
+            returnSelectedSeat = intent.getStringExtra("returnSelectedSeat");
+        }
 
         DecimalFormat df = new DecimalFormat("#,###");
-        String totalStr = df.format(totalAmount) + " VND";
-        binding.tvTotalPrice.setText(totalStr);
+        binding.tvTotalPrice.setText(df.format(totalAmount) + " VND");
     }
 
     private void initViews() {
         binding.btnBack.setOnClickListener(v -> finish());
-        
-        // Gạch chân Chi tiết giá và đảm bảo click được
-        binding.tvPriceDetail.setPaintFlags(binding.tvPriceDetail.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        binding.tvPriceDetail.setOnClickListener(v -> showPriceDetails());
 
         // Setup Card Type Spinner
         String[] cardTypes = {"Visa", "Mastercard", "JCB", "American Express"};
@@ -96,10 +91,10 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         binding.spinnerCardType.setAdapter(adapter);
 
         // Payment Method Selection
-        binding.cardPaymentMethod.setOnClickListener(v -> selectPaymentMethod("card"));
-        binding.vnpayMethod.setOnClickListener(v -> selectPaymentMethod("vnpay"));
-        binding.vietqrMethod.setOnClickListener(v -> selectPaymentMethod("vietqr"));
-        binding.momoMethod.setOnClickListener(v -> selectPaymentMethod("momo"));
+        binding.cardPaymentMethod.setOnClickListener(v -> toggleCardDetails(true));
+        binding.vnpayMethod.setOnClickListener(v -> toggleCardDetails(false));
+        binding.vietqrMethod.setOnClickListener(v -> toggleCardDetails(false));
+        binding.momoMethod.setOnClickListener(v -> toggleCardDetails(false));
 
         binding.etExpiry.setOnClickListener(v -> showExpiryPicker());
 
@@ -109,97 +104,12 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         });
 
         binding.btnPay.setOnClickListener(v -> processPayment());
-        
-        // Không chọn mặc định phương thức nào
-        clearPaymentSelections();
     }
 
-    private void clearPaymentSelections() {
-        binding.rbPaymentCard.setChecked(false);
-        binding.rbVNPay.setChecked(false);
-        binding.rbVietQR.setChecked(false);
-        binding.rbMomo.setChecked(false);
-
-        binding.cardDetails.setVisibility(View.GONE);
-        binding.tvVNPayRedirect.setVisibility(View.GONE);
-        binding.tvVietQRRedirect.setVisibility(View.GONE);
-        binding.tvMomoRedirect.setVisibility(View.GONE);
-
-        // Reset strokes - Viền xám nhạt mặc định
-        int defaultStrokeColor = android.graphics.Color.parseColor("#E5E7EB");
-        int defaultStrokeWidth = (int) (1.0 * getResources().getDisplayMetrics().density);
-
-        binding.cardPaymentMethod.setStrokeColor(defaultStrokeColor);
-        binding.cardPaymentMethod.setStrokeWidth(defaultStrokeWidth);
-        binding.vnpayMethod.setStrokeColor(defaultStrokeColor);
-        binding.vnpayMethod.setStrokeWidth(defaultStrokeWidth);
-        binding.vietqrMethod.setStrokeColor(defaultStrokeColor);
-        binding.vietqrMethod.setStrokeWidth(defaultStrokeWidth);
-        binding.momoMethod.setStrokeColor(defaultStrokeColor);
-        binding.momoMethod.setStrokeWidth(defaultStrokeWidth);
-    }
-
-    private void selectPaymentMethod(String method) {
-        clearPaymentSelections();
-        this.selectedMethodName = method;
-
-        binding.rbPaymentCard.setChecked("card".equals(method));
-        binding.rbVNPay.setChecked("vnpay".equals(method));
-        binding.rbVietQR.setChecked("vietqr".equals(method));
-        binding.rbMomo.setChecked("momo".equals(method));
-
-        binding.cardDetails.setVisibility("card".equals(method) ? View.VISIBLE : View.GONE);
-        binding.tvVNPayRedirect.setVisibility("vnpay".equals(method) ? View.VISIBLE : View.GONE);
-        binding.tvVietQRRedirect.setVisibility("vietqr".equals(method) ? View.VISIBLE : View.GONE);
-        binding.tvMomoRedirect.setVisibility("momo".equals(method) ? View.VISIBLE : View.GONE);
-
-        // Highlight selected - Viền đen (không màu)
-        int strokeColor = android.graphics.Color.BLACK;
-        int strokeWidth = (int) (1.5 * getResources().getDisplayMetrics().density);
-
-        if ("card".equals(method)) {
-            binding.cardPaymentMethod.setStrokeColor(strokeColor);
-            binding.cardPaymentMethod.setStrokeWidth(strokeWidth);
-        } else if ("vnpay".equals(method)) {
-            binding.vnpayMethod.setStrokeColor(strokeColor);
-            binding.vnpayMethod.setStrokeWidth(strokeWidth);
-        } else if ("vietqr".equals(method)) {
-            binding.vietqrMethod.setStrokeColor(strokeColor);
-            binding.vietqrMethod.setStrokeWidth(strokeWidth);
-        } else if ("momo".equals(method)) {
-            binding.momoMethod.setStrokeColor(strokeColor);
-            binding.momoMethod.setStrokeWidth(strokeWidth);
-        }
-    }
-
-    private void showPriceDetails() {
-        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme);
-        View view = getLayoutInflater().inflate(R.layout.dialog_price_detail, null);
-        dialog.setContentView(view);
-        
-        DecimalFormat df = new DecimalFormat("#,###");
-        
-        TextView tvAdultPriceTotal = view.findViewById(R.id.tvAdultPriceTotal);
-        TextView tvPricePerPerson = view.findViewById(R.id.tvPricePerPerson);
-        TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
-        TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
-        TextView tvSeatFeeValue = view.findViewById(R.id.tvSeatFeeValue);
-        TextView tvAddonFeeValue = view.findViewById(R.id.tvAddonFeeValue);
-        TextView tvGrandTotal = view.findViewById(R.id.tvGrandTotal);
-
-        if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(baseFare) + " VND");
-        if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(baseFare) + " VND/Người");
-        if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(baseFare) + " VND");
-        if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(taxes) + " VND");
-        if (tvSeatFeeValue != null) tvSeatFeeValue.setText(seatPrice > 0 ? df.format(seatPrice) + " VND" : "Miễn phí");
-        if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(addonPrice) + " VND");
-        if (tvGrandTotal != null) tvGrandTotal.setText(df.format(totalAmount) + " VND");
-
-        view.findViewById(R.id.btnBack).setOnClickListener(v -> dialog.dismiss());
-        view.findViewById(R.id.btnClose).setOnClickListener(v -> dialog.dismiss());
-        view.findViewById(R.id.btnConfirm).setOnClickListener(v -> dialog.dismiss());
-        
-        dialog.show();
+    private void toggleCardDetails(boolean show) {
+        binding.cardDetails.setVisibility(show ? View.VISIBLE : View.GONE);
+        binding.rbPaymentCard.setChecked(show);
+        // Simple logic for radio buttons in sample
     }
 
     private void showExpiryPicker() {
@@ -221,33 +131,81 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     }
 
     private void processPayment() {
-        if (selectedMethodName.isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         binding.btnPay.setEnabled(false);
-        binding.btnPay.setText("ĐANG CHUYỂN HƯỚNG...");
+        binding.btnPay.setText("ĐANG XỬ LÝ GIAO DỊCH...");
 
-        Intent intent;
-        if ("card".equals(selectedMethodName)) {
-            intent = new Intent(this, CardPaymentActivity.class);
-        } else if ("vietqr".equals(selectedMethodName)) {
-            intent = new Intent(this, VietQRPaymentActivity.class);
-        } else {
-            intent = new Intent(this, PaymentProcessingActivity.class);
+        if (passengerNames == null || passengerNames.isEmpty()) return;
+
+        // Tách danh sách ghế (ví dụ: "21A, 21B" -> ["21A", "21B"])
+        String[] seatsOut = selectedSeat != null ? selectedSeat.split(", ") : new String[]{"--"};
+        String[] seatsRet = returnSelectedSeat != null ? returnSelectedSeat.split(", ") : new String[]{"--"};
+
+        final int totalRequests = passengerNames.size() * (isRoundTrip ? 2 : 1);
+        final int[] completedRequests = {0};
+
+        for (int i = 0; i < passengerNames.size(); i++) {
+            String pName = passengerNames.get(i);
+            String pSeat = i < seatsOut.length ? seatsOut[i] : seatsOut[0];
+
+            // 1. Đặt vé lượt đi
+            Map<String, Object> bookingData = new HashMap<>();
+            bookingData.put("userId", sessionManager.fetchAuthToken());
+            bookingData.put("flightId", flight.getId());
+            bookingData.put("seatId", flight.getId() + "_" + pSeat);
+            bookingData.put("passengerName", pName);
+            bookingData.put("totalAmount", totalAmount / passengerNames.size()); // Chia đều tiền cho mỗi vé
+            bookingData.put("ticketType", isRoundTrip ? "Departure" : "OneWay");
+            bookingData.put("status", "Paid");
+
+            RetrofitClient.getInstance().createBooking(bookingData).enqueue(new Callback<BaseResponse>() {
+                @Override
+                public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
+                    completedRequests[0]++;
+                    checkAllCompleted(completedRequests[0], totalRequests);
+                }
+                @Override public void onFailure(Call<BaseResponse> call, Throwable t) {
+                    completedRequests[0]++;
+                    checkAllCompleted(completedRequests[0], totalRequests);
+                }
+            });
+
+            // 2. Đặt vé lượt về (nếu có)
+            if (isRoundTrip && returnFlight != null) {
+                String pSeatRet = i < seatsRet.length ? seatsRet[i] : seatsRet[0];
+                Map<String, Object> returnData = new HashMap<>(bookingData);
+                returnData.put("flightId", returnFlight.getId());
+                returnData.put("seatId", returnFlight.getId() + "_" + pSeatRet);
+                returnData.put("ticketType", "Return");
+
+                RetrofitClient.getInstance().createBooking(returnData).enqueue(new Callback<BaseResponse>() {
+                    @Override
+                    public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
+                        completedRequests[0]++;
+                        checkAllCompleted(completedRequests[0], totalRequests);
+                    }
+                    @Override public void onFailure(Call<BaseResponse> call, Throwable t) {
+                        completedRequests[0]++;
+                        checkAllCompleted(completedRequests[0], totalRequests);
+                    }
+                });
+            }
         }
+    }
 
-        // Truyền dữ liệu sang màn hình thanh toán
-        intent.putExtra("payment_method", selectedMethodName);
-        intent.putExtra("totalAmount", totalAmount);
-        intent.putExtra("passenger_name", passengerName);
-        intent.putExtra("passenger_email", passengerEmail);
-        intent.putExtra("selected_seat", selectedSeat);
-        intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
-        intent.putExtra("return_flight_json", getIntent().getStringExtra("return_flight_json"));
-        intent.putExtra("return_selected_seat", getIntent().getStringExtra("return_selected_seat"));
+    private void checkAllCompleted(int current, int total) {
+        if (current >= total) {
+            navigateToSuccess();
+        }
+    }
 
+    private void navigateToSuccess() {
+        Toast.makeText(this, "Thanh toán thành công cho " + passengerNames.size() + " hành khách!", Toast.LENGTH_LONG).show();
+        sessionManager.addLocalNotification("Đặt vé thành công", "Bạn đã đặt thành công vé cho đoàn " + passengerNames.size() + " người.");
+        
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("TARGET_FRAGMENT", "FLIGHTS");
         startActivity(intent);
+        finish();
     }
 }

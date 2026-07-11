@@ -42,11 +42,12 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
     private LinearLayout seatMap;
     private TextView txtSelectedSeat;
-    private String selectedSeat = "";
-    private TextView currentSelectedView = null;
+    private final List<String> selectedSeats = new ArrayList<>();
+    private final List<TextView> selectedViews = new ArrayList<>();
     private int maxRowNumber = 0;
     private String fareType = "";
     private int themeColor;
+    private int passengerCount = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +66,14 @@ public class SeatSelectionActivity extends AppCompatActivity {
         String json = intent.getStringExtra("flight_json");
         if (json != null) flight = gson.fromJson(json, Flight.class);
         
-        String initialSeat = intent.getStringExtra("initialSeat");
-        selectedSeat = (initialSeat != null) ? initialSeat : "";
+        String initialSeats = intent.getStringExtra("initialSeat");
+        if (initialSeats != null && !initialSeats.isEmpty()) {
+            String[] parts = initialSeats.split(", ");
+            for (String p : parts) if (!p.isEmpty()) selectedSeats.add(p);
+        }
+        
         fareType = intent.getStringExtra("fareType");
+        passengerCount = intent.getIntExtra("passengerCount", 1);
 
         if ("Business".equalsIgnoreCase(fareType)) {
             themeColor = ContextCompat.getColor(this, R.color.skyline_teal);
@@ -79,32 +85,44 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private void initViews() {
         seatMap = findViewById(R.id.seatMap);
         txtSelectedSeat = findViewById(R.id.txtSelectedSeat);
-        if (!selectedSeat.isEmpty()) {
-            txtSelectedSeat.setText(selectedSeat);
-        }
+        updateSelectedSeatText();
 
         // Thống nhất hình thức trình bày cho Legend (Pill shape)
         setupLegendItem(R.id.legendEmpty, Color.parseColor("#26FFFFFF"));
         setupLegendItem(R.id.legendOccupied, Color.parseColor("#26FFFFFF"));
         setupLegendItem(R.id.legendSelected, themeColor);
 
-        findViewById(R.id.btnClose).setOnClickListener(v -> {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("selectedSeat", ""); 
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        });
+        findViewById(R.id.btnClose).setOnClickListener(v -> finish());
 
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
-            if (selectedSeat.isEmpty()) {
-                Toast.makeText(this, "Vui lòng chọn ghế", Toast.LENGTH_SHORT).show();
+            if (selectedSeats.size() < passengerCount) {
+                Toast.makeText(this, "Vui lòng chọn đủ " + passengerCount + " ghế", Toast.LENGTH_SHORT).show();
             } else {
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("selectedSeat", selectedSeat);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < selectedSeats.size(); i++) {
+                    sb.append(selectedSeats.get(i)).append(i == selectedSeats.size() - 1 ? "" : ", ");
+                }
+                resultIntent.putExtra("selectedSeat", sb.toString());
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }
         });
+    }
+
+    private void updateSelectedSeatText() {
+        if (selectedSeats.isEmpty()) {
+            txtSelectedSeat.setText("Vui lòng chọn " + passengerCount + " ghế");
+            txtSelectedSeat.setTextColor(ContextCompat.getColor(this, R.color.auth_error));
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Đã chọn (").append(selectedSeats.size()).append("/").append(passengerCount).append("): ");
+            for (int i = 0; i < selectedSeats.size(); i++) {
+                sb.append(selectedSeats.get(i)).append(i == selectedSeats.size() - 1 ? "" : ", ");
+            }
+            txtSelectedSeat.setText(sb.toString());
+            txtSelectedSeat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
+        }
     }
 
     private void setupLegendItem(int viewId, int color) {
@@ -216,17 +234,41 @@ public class SeatSelectionActivity extends AppCompatActivity {
         if ("OCCUPIED".equalsIgnoreCase(found.getSeatStatus()) || "BOOKED".equalsIgnoreCase(found.getSeatStatus())) {
             seat.setBackground(createSeatDrawable(Color.parseColor("#E0E3E5"), Color.parseColor("#E0E3E5")));
             seat.setTextColor(Color.parseColor("#9CA3AF"));
-            seat.setEnabled(false);
-        } else {
+            seat.setEnabled(false);        } else {
             seat.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
             seat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
             
             seat.setOnClickListener(v -> {
-                showSeatDescription(row, col, cabinClass);
-                selectSeat(seat, seatCode);
+                if (selectedSeats.contains(seatCode)) {
+                    // Bỏ chọn
+                    selectedSeats.remove(seatCode);
+                    selectedViews.remove(seat);
+                    seat.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
+                    seat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
+                } else {
+                    // Chọn mới
+                    if (selectedSeats.size() >= passengerCount) {
+                        // Xóa ghế đầu tiên nếu đã đủ số lượng (Chế độ thay thế)
+                        TextView firstView = selectedViews.remove(0);
+                        selectedSeats.remove(0);
+                        firstView.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
+                        firstView.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
+                    }
+                    
+                    selectedSeats.add(seatCode);
+                    selectedViews.add(seat);
+                    seat.setBackground(createSeatDrawable(themeColor, Color.parseColor("#AAC9F3")));
+                    seat.setTextColor(Color.WHITE);
+                    showSeatDescription(row, col, cabinClass);
+                }
+                updateSelectedSeatText();
             });
             
-            if (seatCode.equals(selectedSeat)) selectSeat(seat, seatCode);
+            if (selectedSeats.contains(seatCode)) {
+                selectedViews.add(seat);
+                seat.setBackground(createSeatDrawable(themeColor, Color.parseColor("#AAC9F3")));
+                seat.setTextColor(Color.WHITE);
+            }
         }
         return seat;
     }
@@ -264,18 +306,6 @@ public class SeatSelectionActivity extends AppCompatActivity {
             lp.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
             window.setAttributes(lp);
         }
-    }
-
-    private void selectSeat(TextView seatView, String seatCode) {
-        if (currentSelectedView != null) {
-            currentSelectedView.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
-            currentSelectedView.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
-        }
-        currentSelectedView = seatView;
-        selectedSeat = seatCode;
-        seatView.setBackground(createSeatDrawable(themeColor, Color.parseColor("#AAC9F3")));
-        seatView.setTextColor(Color.WHITE);
-        txtSelectedSeat.setText(seatCode);
     }
 
     private GradientDrawable createSeatDrawable(int solidColor, int strokeColor) {
@@ -344,7 +374,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     private String cleanAirportName(String name) {
         if (name == null) return "";
-        return name.toUpperCase().replace("SÂN BAY QUỐC TẾ ", "").replace("SÂN BAY ", "").trim();
+        return name.replaceAll("(?i)(SÂN BAY QUỐC TẾ |SÂN BAY |AIRPORT )", "").trim().toUpperCase();
     }
 
     private int dp(int v) {

@@ -47,7 +47,7 @@ public class BookFragment extends Fragment {
     private String toCode = "", toCity = "Chọn điểm đến", toAirportName = "", toError = "";
     private long departureDate = 0;
     private long returnDate = 0;
-    private int adults = 1, children = 0, infants = 0;
+    private int adults = 1, children = 0;
     private boolean isRoundTrip = false;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -145,16 +145,9 @@ public class BookFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     for (Airport a : response.body()) {
                         if (a.getCode().equals(code)) {
-                            if (a.getCode().equals(fromCode)) {
-                                toError = "Điểm đến không được trùng với điểm đi";
-                                toCode = "";
-                                updateAirportDisplay();
-                                return;
-                            }
                             toCode = a.getCode();
                             toCity = a.getCity();
                             toAirportName = a.getName();
-                            toError = "";
                             updateAirportDisplay();
                             break;
                         }
@@ -220,8 +213,8 @@ public class BookFragment extends Fragment {
         setupManualDateEntry(binding.tvReturnDate, false);
 
         binding.btnSelectPassengers.setOnClickListener(v -> {
-            PassengerBottomSheet sheet = new PassengerBottomSheet(adults, children, infants, (a, c, i) -> {
-                adults = a; children = c; infants = i;
+            PassengerBottomSheet sheet = new PassengerBottomSheet(adults, children, (a, c) -> {
+                adults = a; children = c;
                 updatePassengersDisplay();
             });
             sheet.show(getChildFragmentManager(), "PassengerBottomSheet");
@@ -237,11 +230,6 @@ public class BookFragment extends Fragment {
             }
             if (toCode.isEmpty()) {
                 toError = "Vui lòng chọn điểm đến";
-                hasAirportError = true;
-            }
-
-            if (!fromCode.isEmpty() && !toCode.isEmpty() && fromCode.equals(toCode)) {
-                toError = "Điểm đến không được trùng với điểm đi";
                 hasAirportError = true;
             }
 
@@ -288,23 +276,20 @@ public class BookFragment extends Fragment {
             
             Intent intent = new Intent(requireContext(), FlightResultsActivity.class);
             intent.putExtra("fromCode", fromCode);
-            intent.putExtra("toCode", toCode); // DÒNG QUAN TRỌNG NHẤT
-
-            String finalFromName = (fromAirportName != null && !fromAirportName.isEmpty()) ? fromAirportName : fromCode;
-            String finalToName = (toAirportName != null && !toAirportName.isEmpty()) ? toAirportName : toCode;
+            intent.putExtra("toCode", toCode);
+            intent.putExtra("fromName", (fromAirportName != null && !fromAirportName.isEmpty()) ? fromAirportName : fromCode);
+            intent.putExtra("toName", (toAirportName != null && !toAirportName.isEmpty()) ? toAirportName : toCode);
+            intent.putExtra("date", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(departureDate)));
             
-            intent.putExtra("fromName", finalFromName);
-            intent.putExtra("toName", finalToName);
-
-            SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            apiFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            intent.putExtra("date", apiFormat.format(new Date(departureDate)));
-
+            // TRUYỀN SỐ LƯỢNG HÀNH KHÁCH
+            intent.putExtra("adults", adults);
+            intent.putExtra("children", children);
+            
+            // TRUYỀN THÊM THÔNG TIN KHỨ HỒI
             intent.putExtra("isRoundTrip", isRoundTrip);
-            if (isRoundTrip && returnDate != 0) {
-                intent.putExtra("returnDate", apiFormat.format(new Date(returnDate)));
+            if (isRoundTrip) {
+                intent.putExtra("returnDate", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(returnDate)));
             }
-            intent.putExtra("isReturnLeg", false);
 
             startActivity(intent);
         });
@@ -350,45 +335,25 @@ public class BookFragment extends Fragment {
     }
 
     private long getTomorrowStartUtc() {
-        Calendar local = Calendar.getInstance();
-        local.add(Calendar.DAY_OF_MONTH, 1);
-
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(local.get(Calendar.YEAR), local.get(Calendar.MONTH), local.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_MONTH, 1);
         return cal.getTimeInMillis();
     }
 
     private void syncDatesFromInput() {
         try {
-            long tomorrow = getTomorrowStartUtc();
             String depStr = binding.tvDepDate.getText().toString();
             if (depStr.length() == 10) {
                 Date d = dateFormat.parse(depStr);
-                if (d != null) {
-                    if (d.getTime() < tomorrow) {
-                        departureDate = 0;
-                    } else {
-                        departureDate = d.getTime();
-                    }
-                }
-            } else {
-                departureDate = 0;
+                if (d != null) departureDate = d.getTime();
             }
             
             if (isRoundTrip) {
                 String retStr = binding.tvReturnDate.getText().toString();
                 if (retStr.length() == 10) {
                     Date r = dateFormat.parse(retStr);
-                    if (r != null) {
-                        if (r.getTime() < tomorrow || (departureDate != 0 && r.getTime() < departureDate)) {
-                            returnDate = 0;
-                        } else {
-                            returnDate = r.getTime();
-                        }
-                    }
-                } else {
-                    returnDate = 0;
+                    if (r != null) returnDate = r.getTime();
                 }
             }
         } catch (ParseException e) {
@@ -423,22 +388,19 @@ public class BookFragment extends Fragment {
                             
                             if (isDeparture) {
                                 if (time < tomorrow) {
-                                    binding.tvDepError.setText("Ngày bay không khả dụng. Quý khách vui lòng chọn lại ngày bay mới!");
+                                    binding.tvDepError.setText("Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới.");
                                     binding.tvDepError.setVisibility(View.VISIBLE);
-                                    departureDate = 0;
                                 } else {
                                     binding.tvDepError.setVisibility(View.GONE);
                                     departureDate = time;
                                 }
                             } else {
                                 if (departureDate != 0 && time < departureDate) {
-                                    binding.tvReturnError.setText("Ngày bay không khả dụng. Quý khách vui lòng chọn lại ngày bay mới!");
+                                    binding.tvReturnError.setText("Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới.");
                                     binding.tvReturnError.setVisibility(View.VISIBLE);
-                                    returnDate = 0;
                                 } else if (time < tomorrow) {
-                                    binding.tvReturnError.setText("Ngày bay không khả dụng. Quý khách vui lòng chọn lại ngày bay mới!");
+                                    binding.tvReturnError.setText("Ngày bay không khả dụng, Quý khách vui lòng chọn lại ngày bay mới.");
                                     binding.tvReturnError.setVisibility(View.VISIBLE);
-                                    returnDate = 0;
                                 } else {
                                     binding.tvReturnError.setVisibility(View.GONE);
                                     returnDate = time;
@@ -446,17 +408,10 @@ public class BookFragment extends Fragment {
                             }
                         }
                     } catch (ParseException e) {
-                        if (isDeparture) departureDate = 0;
-                        else returnDate = 0;
                     }
                 } else {
-                    if (isDeparture) {
-                        binding.tvDepError.setVisibility(View.GONE);
-                        departureDate = 0;
-                    } else {
-                        binding.tvReturnError.setVisibility(View.GONE);
-                        returnDate = 0;
-                    }
+                    if (isDeparture) binding.tvDepError.setVisibility(View.GONE);
+                    else binding.tvReturnError.setVisibility(View.GONE);
                 }
             }
         });
@@ -473,7 +428,6 @@ public class BookFragment extends Fragment {
         StringBuilder sb = new StringBuilder();
         sb.append(adults).append(" Người lớn");
         if (children > 0) sb.append(", ").append(children).append(" Trẻ em");
-        if (infants > 0) sb.append(", ").append(infants).append(" Em bé");
         binding.tvPassengers.setText(sb.toString());
     }
 
@@ -623,7 +577,6 @@ public class BookFragment extends Fragment {
         search.isRoundTrip = isRoundTrip;
         search.adults = adults;
         search.children = children;
-        search.infants = infants;
         search.createdAt = System.currentTimeMillis();
 
         list.removeIf(item -> 
@@ -633,8 +586,7 @@ public class BookFragment extends Fragment {
             ((item.returnDate == null && search.returnDate == null) || (item.returnDate != null && item.returnDate.equals(search.returnDate))) &&
             item.isRoundTrip == search.isRoundTrip &&
             item.adults == search.adults &&
-            item.children == search.children &&
-            item.infants == search.infants
+            item.children == search.children
         );
 
         list.add(0, search);
@@ -670,7 +622,6 @@ public class BookFragment extends Fragment {
                     isRoundTrip = item.isRoundTrip;
                     adults = item.adults;
                     children = item.children;
-                    infants = item.infants;
 
                     fromError = "";
                     toError = "";
@@ -678,29 +629,12 @@ public class BookFragment extends Fragment {
                     binding.tvReturnError.setVisibility(View.GONE);
                     
                     try {
-                        long tomorrow = getTomorrowStartUtc();
                         Date dDate = dateFormat.parse(item.departureDate);
-                        if (dDate != null) {
-                            if (dDate.getTime() < tomorrow) {
-                                departureDate = 0; // // Không nạp ngày quá khứ
-                                binding.tvDepDate.setText("");
-                            } else {
-                                departureDate = dDate.getTime();
-                                binding.tvDepDate.setText(item.departureDate);
-                            }
-                        }
+                        if (dDate != null) departureDate = dDate.getTime();
                         
                         if (item.returnDate != null) {
                             Date rDate = dateFormat.parse(item.returnDate);
-                            if (rDate != null) {
-                                if (rDate.getTime() < tomorrow || (departureDate != 0 && rDate.getTime() < departureDate)) {
-                                    returnDate = 0;
-                                    binding.tvReturnDate.setText("");
-                                } else {
-                                    returnDate = rDate.getTime();
-                                    binding.tvReturnDate.setText(item.returnDate);
-                                }
-                            }
+                            if (rDate != null) returnDate = rDate.getTime();
                         } else {
                             returnDate = 0;
                         }
@@ -714,7 +648,7 @@ public class BookFragment extends Fragment {
                     
                     updatePassengersDisplay();
                     updateTabUI();
-                    // updateDateUI(); // // Đã cập nhật text trực tiếp ở trên để tránh ghi đè logic rỗng
+                    updateDateUI();
                 }));
             }
         }
