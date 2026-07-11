@@ -163,6 +163,7 @@ public class PromotionsActivity extends AppCompatActivity {
                     }
                     // Load thông tin voucher đã lưu để tô màu icon Bookmark
                     loadSavedVouchers();
+                    checkOpenSpecificPromo();
                 } else {
                     toast("Lỗi tải dữ liệu: " + response.code());
                     updateList(new ArrayList<>()); // Clear list on error
@@ -316,6 +317,18 @@ public class PromotionsActivity extends AppCompatActivity {
 
         view.findViewById(R.id.btn_close).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
+    }
+
+    private void checkOpenSpecificPromo() {
+        String promoId = getIntent().getStringExtra("OPEN_PROMO_ID");
+        if (promoId != null && !promoId.isEmpty()) {
+            for (Promotion p : allPromotions) {
+                if (promoId.equals(p.getId())) {
+                    showPromotionDetail(p);
+                    break;
+                }
+            }
+        }
     }
 
     private void performSearch(String query) {
