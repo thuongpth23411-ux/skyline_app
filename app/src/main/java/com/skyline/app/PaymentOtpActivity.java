@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyline.app.databinding.ActivityPaymentOtpBinding;
 import com.skyline.app.network.BaseResponse;
-import com.skyline.app.network.BookingResponse;
 import com.skyline.app.network.RetrofitClient;
 import com.skyline.app.utils.SessionManager;
 
@@ -127,11 +126,11 @@ public class PaymentOtpActivity extends AppCompatActivity {
         
         bookingData.put("flights", flightsList);
 
-        RetrofitClient.getInstance().createBooking(bookingData).enqueue(new Callback<BookingResponse>() {
+        RetrofitClient.getInstance().createBooking(bookingData).enqueue(new Callback<BaseResponse>() {
             @Override
-            public void onResponse(@NonNull Call<BookingResponse> call, @NonNull Response<BookingResponse> response) {
+            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    navigateToSuccess(response.body().getBookingCode());
+                    navigateToSuccess();
                 } else {
                     String error = "Lỗi lưu thông tin vé";
                     if (response.body() != null && response.body().getMessage() != null) {
@@ -142,16 +141,15 @@ public class PaymentOtpActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<BookingResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
                 navigateToFailure("Lỗi mạng: " + t.getMessage());
             }
         });
     }
 
-    private void navigateToSuccess(String bookingCode) {
+    private void navigateToSuccess() {
         Intent intent = new Intent(this, PaymentSuccessActivity.class);
         intent.putExtras(getIntent().getExtras());
-        intent.putExtra("bookingCode", bookingCode);
         startActivity(intent);
         finish();
     }

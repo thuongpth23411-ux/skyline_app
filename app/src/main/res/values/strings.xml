@@ -14,7 +14,7 @@
     <string name="register">Đăng ký</string>
     <string name="already_account">Bạn đã có tài khoản?</string>
     <string name="login_now">Đăng nhập ngay</string>
-    <string name="experience_skyline">Trải nghiệm cùng Skyline</string>
+    <string name="experience_skyline">Trải nghiệm cùng Skyline Airways</string>
     <string name="explore_now">Khám phá ngay</string>
     <string name="notification">Thông báo</string>
     <string name="learn_more">Tìm hiểu thêm</string>
@@ -40,7 +40,7 @@
     <string name="upcoming_flights">Chuyến bay sắp tới</string>
     <string name="completed_flights">Chuyến bay hoàn thành</string>
     <string name="no_flights_yet">Chưa có chuyến bay nào</string>
-    <string name="fly_with_skyline">Bay cùng Skyline ngay hôm nay</string>
+    <string name="fly_with_skyline">Bay cùng Skyline Airways ngay hôm nay</string>
     <string name="book_now">Đặt vé ngay</string>
 
     <!-- Splash Strings -->
@@ -63,7 +63,7 @@
 
     <!-- Permission Strings -->
     <string name="perm_title">Cho phép chúng tôi đồng hành cùng Quý khách</string>
-    <string name="perm_desc">Quý khách vui lòng cho phép Skyline gửi thông báo để không bỏ lỡ các cập nhật quan trọng về chuyến bay, tình trạng đặt chỗ và các ưu đãi cá nhân hóa dành riêng cho Quý khách.</string>
+    <string name="perm_desc">Quý khách vui lòng cho phép Skyline Airways gửi thông báo để không bỏ lỡ các cập nhật quan trọng về chuyến bay, tình trạng đặt chỗ và các ưu đãi cá nhân hóa dành riêng cho Quý khách.</string>
     <string name="perm_notif_title">Cho phép thông báo</string>
     <string name="perm_notif_desc">Gợi ý hành trình, đề xuất các ưu đãi cá nhân hóa</string>
     <string name="perm_data_title">Quyền cho phép theo dõi việc sử dụng dữ liệu.</string>
@@ -215,6 +215,142 @@
     <string name="payment_terms">Tôi hiểu và đồng ý với Điều lệ vận chuyển, Điều kiện điều khoản, Chính sách bảo mật và Điều kiện giá vé của Skyline.</string>
     <string name="pay_now">Thanh toán ngay</string>
     <string name="payment_footer_note">Trong trường hợp Quý khách đã thanh toán thành công nhưng chưa nhận được vé sau 1 tiếng, vui lòng liên hệ trung tâm trợ giúp 1900 1234 để được hỗ trợ.</string>
+    <string name="payment_success_title">THANH TOÁN THÀNH CÔNG!</string>
+    <string name="transaction_id_label">Mã giao dịch: %s</string>
+    <string name="passenger_caps">HÀNH KHÁCH</string>
+    <string name="flight_caps">CHUYẾN BAY</string>
+    <string name="seat_caps">SỐ GHẾ</string>
+    <string name="total_payment_caps">TỔNG THANH TOÁN</string>
+    <string name="payment_success_email_note">Vé điện tử đã được gửi vào địa chỉ Email của bạn.\nVui lòng kiểm tra hộp thư trước khi khởi hành.</string>
+    <string name="back_to_home">VỀ TRANG CHỦ</string>
+    <string name="otp_error_retry">Mã OTP không chính xác. Còn lại %d lần thử.</string>
+    <string name="retry_after_time">THỬ LẠI SAU (%s)</string>
+    <string name="retry_now">THỬ LẠI NGAY</string>
+    <string name="card_expiry_hint">mm/yy</string>
+    <string name="card_cvv_hint">cvv/cvc</string>
+    <string name="card_number_hint">0000 0000 0000 0000</string>
+    <string name="processing_payment">Đang xử lý thanh toán...</string>
+    <string name="visa">Visa</string>
+    <string name="mastercard">Mastercard</string>
+    <string name="jcb">JCB</string>
+    <string name="amex">American Express</string>
+
+    <!-- Price Detail Dialog -->
+    <string name="price_detail_title">Chi tiết giá</string>
+    <string name="adult_ticket_count">Giá vé người lớn x1</string>
+    <string name="price_per_person">4.941.000 VND/Người</string>
+    <string name="price_adult_total">4.941.000 VND</string>
+    <string name="base_fare">Giá vé</string>
+    <string name="price_base_fare_value">3.918.000 VND</string>
+    <string name="tax_and_fees">Thuế, phí</string>
+    <string name="price_tax_fees_value">1.503.000 VND</string>
+    <string name="passenger_service_fee">Phí dịch vụ hành khách chặng nội địa,\nViệt Nam</string>
+    <string name="price_service_fee_value">198.000 VND</string>
+    <string name="security_screening_fee">Phí soi chiếu an ninh hành khách và\nhành lý, Việt Nam</string>
+    <string name="price_screening_fee_value">40.000 VND</string>
+    <string name="white">Trắng</string>
+    <string name="vat_fee">Thuế GTGT, Việt Nam</string>
+    <string name="price_vat_value">385.000 VND</string>
+    <string name="system_surcharge">Phụ thu quản trị hệ thống</string>
+    <string name="price_surcharge_value">400.000 VND</string>
+    <string name="all_inclusive_note">Giá đã bao gồm tất cả các khoản thuế phí bắt buộc từ hãng hàng không và sân bay.</string>
+    <string name="total_cost">Tổng chi phí</string>
+    <string name="confirm">Xác nhận</string>
+
+    <!-- Flights 2 Strings -->
+    <string name="ready_for_journey">SẴN SÀNG CHO HÀNH TRÌNH</string>
+    <string name="your_itinerary">Lịch trình của bạn</string>
+    <string name="economy_class">HẠNG PHỔ THÔNG</string>
+    <string name="business_class_caps">THƯƠNG GIA</string>
+    <string name="flight_time_label">THỜI GIAN</string>
+    <string name="seat_label">CHỖ NGỒI</string>
+    <string name="ticket_detail">Chi tiết vé</string>
+    <string name="change_ticket">Đổi vé</string>
+    <string name="cancel_ticket">Hủy vé</string>
+
+    <!-- Ticket Detail Strings -->
+    <string name="cancel_ticket_title">Hủy vé</string>
+    <string name="policy">Chính sách</string>
+    <!-- Change Ticket Strings -->
+    <string name="change_ticket_title">Đổi vé</string>
+    <string name="filter_label">Bộ lọc</string>
+    <string name="sort_lowest_price">Giá thấp nhất</string>
+    <string name="price_difference_label">Chênh lệch</string>
+    <string name="direct_flight">Bay thẳng</string>
+    <string name="confirm_button">Xác nhận</string>
+    <string name="total_additional_cost">Tổng chi phí</string>
+
+    <string name="cancel_flight_header">Hủy vé máy bay</string>
+    <string name="cancel_flight_desc">Vui lòng kiểm tra lại thông tin chuyến bay và chính sách trước khi xác nhận hủy.</string>
+    <string name="warning_irrevocable">Hành động không thể hoàn tác</string>
+    <string name="warning_cancel_desc">Sau khi xác nhận, vé của bạn sẽ bị hủy ngay lập tức và không thể khôi phục lại.</string>
+    <string name="booking_id_label">Mã đặt chỗ: %s</string>
+    <string name="refund_detail_title">Chi tiết hoàn tiền</string>
+    <string name="original_price">Giá vé gốc</string>
+    <string name="cancel_fee">Phí hủy vé</string>
+    <string name="refund_amount">Số tiền hoàn lại</string>
+    <string name="refund_method_note">Số tiền sẽ được hoàn trả về phương thức thanh toán ban đầu (Thẻ Visa **** 4242) trong vòng 3 - 5 ngày làm việc.</string>
+    <string name="additional_notes">LƯU Ý BỔ SUNG</string>
+    <string name="note_services">Mọi dịch vụ đi kèm (suất ăn, hành lý) cũng sẽ bị hủy.</string>
+    <string name="note_invoice">Hóa đơn điện tử điều chỉnh sẽ được gửi qua email.</string>
+    <string name="confirm_cancel">Xác nhận hủy vé</string>
+    <string name="go_back">Quay lại</string>
+
+    <string name="ticket_detail_title">Chi tiết vé</string>
+    <string name="gate_label">Cửa</string>
+    <string name="terminal_label">Nhà ga</string>
+    <string name="seat_class_label">Chỗ / Hạng</string>
+    <string name="qr_instruction">Xuất trình mã QR này cho nhân viên tại cửa khởi hành để được ưu tiên lên máy bay.</string>
+    <string name="save_to_device">Lưu vào máy</string>
+    <string name="share_ticket">Chia sẻ vé</string>
+    <string name="boarding_warning">Cửa ra máy bay đóng trước 20 phút. Quý khách nên có mặt tại Nhà ga T2 ít nhất 90 phút trước giờ khởi hành.</string>
+    <string name="flight_duration">2h 10m</string>
+    <string name="from_code_demo">HAN</string>
+    <string name="from_city_demo">Hà Nội</string>
+    <string name="to_code_demo">SGN</string>
+    <string name="to_city_demo">TP. Hồ Chí Minh</string>
+    <string name="ticket_id_demo">SK-2024-9921X</string>
+    <string name="date_label">Ngày</string>
+    <string name="date_value_demo">12 Th05, 2024</string>
+    <string name="passenger_label">Hành khách</string>
+    <string name="passenger_name_demo">Nguyen Van A</string>
+    <string name="time_label">Giờ</string>
+    <string name="time_value_demo">08:30 - 10:40</string>
+    <string name="seat_class_demo">12A / Phổ thông</string>
+    <string name="gate_value_demo">G12</string>
+    <string name="terminal_value_demo">T2</string>
+
+    <string name="ticket_policy_title">Chính sách vé</string>
+    <string name="policy_intro">Để đảm bảo tính linh hoạt cho người dùng đồng thời mô phỏng quy trình xử lý của các hãng hàng không, hệ thống áp dụng chính sách hủy và đổi vé tự động dựa trên các điều kiện được thiết lập sẵn.</string>
+    <string name="change_policy_title">Chính sách đổi vé</string>
+    <string name="cancel_policy_title">Chính sách hủy vé</string>
+    <string name="apply_condition">ĐIỀU KIỆN ÁP DỤNG</string>
+    <string name="cond_paid">Vé đã thanh toán</string>
+    <string name="cond_not_departed">Chuyến bay chưa khởi hành</string>
+    <string name="cond_time_limit">Yêu cầu trước ít nhất 24 giờ</string>
+    <string name="economy_fee_label">PHỔ THÔNG</string>
+    <string name="business_fee_label">THƯƠNG GIA</string>
+    <string name="change_note_hint">*Khách trả chênh lệch nếu vé mới cao hơn, không hoàn lại nếu vé mới thấp hơn.*</string>
+    <string name="refund_table_time">Thời gian</string>
+    <string name="refund_table_rate">Hoàn trả</string>
+    <string name="need_more_help">Cần hỗ trợ thêm?</string>
+    <string name="support_contact_desc">Liên hệ tổng đài 1900 1234 hoặc gửi email về support@skyline.vn để được tư vấn chi tiết về trường hợp của bạn.</string>
+
+    <!-- Booking Strings -->
+    <string name="search_flights_title">Tìm kiếm chuyến bay</string>
+    <string name="one_way">Một chiều</string>
+    <string name="round_trip">Khứ hồi</string>
+    <string name="from_label">Từ</string>
+    <string name="to_label">Đến</string>
+    <string name="departure_date">Ngày đi</string>
+    <string name="return_date">Ngày về</string>
+    <string name="passengers_label">Hành khách</string>
+    <string name="class_label">Hạng ghế</string>
+    <string name="search_button">Tìm chuyến bay</string>
+
+    <!-- Support Extra -->
+    <string name="support_title">Liên hệ hỗ trợ</string>
+    <string name="clear_all_notifs">Xóa tất cả</string>
 
     <!-- Payment Failure Strings -->
     <string name="payment_failure_title">THANH TOÁN THẤT BẠI</string>
