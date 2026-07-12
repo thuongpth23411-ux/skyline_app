@@ -1,6 +1,8 @@
 package com.skyline.app;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -18,7 +20,6 @@ import com.skyline.app.network.User;
 import com.skyline.app.utils.SessionManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +40,17 @@ public class MemberInfoActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private boolean isEditMode = false;
     private Uri cameraImageUri;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    openCamera();
+                } else {
+                    toast("Ứng dụng cần quyền Camera để chụp ảnh");
+                }
+            }
+    );
 
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -127,16 +139,54 @@ public class MemberInfoActivity extends AppCompatActivity {
         
         binding.tvUsername.setText(user.getName());
         binding.edtUsername.setText(user.getName());
-        binding.tvSkyPoints.setText(String.valueOf(user.getSkyPoints()));
         binding.tvMemberId.setText(user.getMemberCode());
         
-        String rank = user.getRank() != null ? user.getRank().toUpperCase() : "ĐỒNG";
-        binding.tvRankBadge.setText(rank);
-        binding.tvMemberTier.setText("Hạng " + rank.toLowerCase());
+        int points = user.getSkyPoints();
+        String actualRank;
+        int targetPoints;
+        int badgeColor;
+
+        // CẬP NHẬT LOGIC CHUẨN: Dưới 1000 là ĐỒNG
+        if (points < 1000) {
+            actualRank = "ĐỒNG";
+            targetPoints = 1000;
+            badgeColor = 0xFF8D6E63;
+        } else if (points < 5000) {
+            actualRank = "BẠC";
+            targetPoints = 5000;
+            badgeColor = 0xFF455A64;
+        } else {
+            actualRank = "VÀNG";
+            targetPoints = 5000;
+            badgeColor = 0xFFBF953F;
+        }
+
+        binding.tvRankBadge.setText(actualRank);
+        binding.tvMemberTier.setText("Hạng " + actualRank.toLowerCase());
         
-        if ("VÀNG".equals(rank)) binding.progressTier.setProgress(100);
-        else if ("BẠC".equals(rank)) binding.progressTier.setProgress(60);
-        else binding.progressTier.setProgress(0);
+        if ("VÀNG".equals(actualRank)) {
+            binding.progressTier.setProgress(100);
+            binding.tvSkyPoints.setText(String.valueOf(points));
+        } else {
+            binding.progressTier.setProgress(points * 100 / targetPoints);
+            binding.tvSkyPoints.setText(points + " / " + targetPoints);
+        }
+
+        binding.tvRankBadge.setBackgroundTintList(ColorStateList.valueOf(badgeColor));
+        binding.tvRankBadge.setTextColor(Color.WHITE);
+        binding.tvMemberTier.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_medal, 0, 0, 0);
+        androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(binding.tvMemberTier, ColorStateList.valueOf(badgeColor));
+
+        // Load Avatar via Glide
+        String avatarUrl = user.getAvatarUrl();
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            if (avatarUrl.startsWith("/")) avatarUrl = "http://10.0.2.2:3000" + avatarUrl;
+            com.bumptech.glide.Glide.with(this)
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.img_team1)
+                    .error(R.drawable.img_team1)
+                    .into(binding.imgAvatar);
+        }
 
         binding.itemEmail.fieldValue.setText(user.getEmail());
         binding.itemEmail.imgLock.setVisibility(View.GONE);
@@ -212,7 +262,7 @@ public class MemberInfoActivity extends AppCompatActivity {
         });
         
         binding.imgAvatar.setOnClickListener(v -> {
-            if (isEditMode) showImageSourceDialog();
+            if (isEditMode) showImagePickerBottomSheet();
             else showEditRequiredToast();
         });
 
@@ -222,11 +272,9 @@ public class MemberInfoActivity extends AppCompatActivity {
                 if (newName.isEmpty()) { toast("Vui lòng nhập họ tên"); return; }
                 saveProfileChanges(newName);
             } else {
-                // Sync values to EditTexts before entering edit mode
                 binding.itemEmail.edtFieldValue.setText(binding.itemEmail.fieldValue.getText());
                 binding.itemPhone.edtFieldValue.setText(binding.itemPhone.fieldValue.getText());
                 binding.itemPassport.edtFieldValue.setText(binding.itemPassport.fieldValue.getText());
-
                 isEditMode = true;
                 updateEditModeUI();
             }
@@ -236,15 +284,27 @@ public class MemberInfoActivity extends AppCompatActivity {
         binding.btnChangePassword.setOnClickListener(v -> startActivity(new Intent(this, ChangePasswordActivity.class)));
     }
 
-    private void showImageSourceDialog() {
-        String[] options = {"Chụp ảnh", "Chọn từ thư viện"};
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Cập nhật ảnh đại diện")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) openCamera();
-                    else pickImageLauncher.launch("image/*");
-                })
-                .show();
+    private void showImagePickerBottomSheet() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.layout_image_picker, null);
+        dialog.setContentView(view);
+
+        view.findViewById(R.id.btn_take_photo).setOnClickListener(v -> {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                requestPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+            }
+            dialog.dismiss();
+        });
+
+        view.findViewById(R.id.btn_pick_gallery).setOnClickListener(v -> {
+            pickImageLauncher.launch("image/*");
+            dialog.dismiss();
+        });
+
+        view.findViewById(R.id.btn_cancel_picker).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void openCamera() {
@@ -263,6 +323,9 @@ public class MemberInfoActivity extends AppCompatActivity {
         body.put("dob", binding.itemDob.fieldValue.getText().toString());
         body.put("country", binding.itemCountry.fieldValue.getText().toString());
         body.put("gender", binding.itemGender.fieldValue.getText().toString());
+        
+        // Gửi URL ảnh demo để kiểm tra tính năng đồng bộ
+        body.put("avatarUrl", "https://i.pravatar.cc/300?u=" + name);
 
         RetrofitClient.getInstance().updateProfile(token, body).enqueue(new Callback<BaseResponse>() {
             @Override
@@ -344,22 +407,6 @@ public class MemberInfoActivity extends AppCompatActivity {
             binding.itemDob.fieldValue.setText(sdf.format(new Date(selection)));
         });
         datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
-    }
-
-    private void showPassportInputDialog() {
-        android.widget.EditText editText = new android.widget.EditText(this);
-        editText.setText(binding.itemPassport.fieldValue.getText());
-        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
-        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(-1, -2);
-        int margin = (int) (24 * getResources().getDisplayMetrics().density);
-        params.setMargins(margin, margin/2, margin, margin/2);
-        editText.setLayoutParams(params);
-        container.addView(editText);
-
-        new MaterialAlertDialogBuilder(this, R.style.SkylineDatePicker)
-            .setTitle("Hộ chiếu").setView(container)
-            .setPositiveButton("Xác nhận", (dialog, which) -> binding.itemPassport.fieldValue.setText(editText.getText().toString()))
-            .setNegativeButton("Hủy", null).show();
     }
 
     private void updateEditModeUI() {

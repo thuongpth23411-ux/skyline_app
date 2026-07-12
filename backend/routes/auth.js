@@ -259,7 +259,7 @@ router.post("/update-profile", async (req, res) => {
         const token = authHeader.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const { fullName, phone, cccd, dob, email, gender } = req.body;
+        const { fullName, phone, cccd, dob, email, gender, avatarUrl } = req.body;
 
         const user = await User.findById(decoded.id);
         if (!user) return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
@@ -270,6 +270,7 @@ router.post("/update-profile", async (req, res) => {
         if (dob) user.dob = dob;
         if (email) user.email = email;
         if (gender) user.gender = gender;
+        if (avatarUrl) user.avatarUrl = avatarUrl; // Chấp nhận URL ảnh mới
 
         // Update title based on gender if needed
         if (gender === "Nam") user.title = "Ông";

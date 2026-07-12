@@ -25,6 +25,9 @@ public class User {
     
     private String memberCode;
     
+    @SerializedName("avatarUrl")
+    private String avatarUrl;
+    
     @SerializedName("createdAt")
     private String createdAt;
 
@@ -41,5 +44,6 @@ public class User {
     public String getRank() { return rank; }
     public int getSkyPoints() { return skyPoints; }
     public String getMemberCode() { return memberCode; }
+    public String getAvatarUrl() { return avatarUrl; }
     public String getJoinDate() { return createdAt; }
 }

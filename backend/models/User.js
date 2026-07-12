@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema(
         type: String
     },
 
+    avatarUrl: {
+        type: String,
+        default: ""
+    },
+
     rank: {
         type: String,
         default: "Đồng"
