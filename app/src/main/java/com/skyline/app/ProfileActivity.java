@@ -192,24 +192,32 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         binding.btnLogoutItem.setOnClickListener(v -> {
-            sessionManager.logout();
-            Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+            android.app.Dialog dialog = new android.app.Dialog(this);
+            View dialogView = getLayoutInflater().inflate(R.layout.layout_dialog_logout, null);
+            dialog.setContentView(dialogView);
+            
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
+            dialogView.findViewById(R.id.btn_cancel).setOnClickListener(d -> dialog.dismiss());
+            
+            dialogView.findViewById(R.id.btn_logout_confirm).setOnClickListener(d -> {
+                dialog.dismiss();
+                sessionManager.logout();
+                Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            });
+
+            dialog.show();
         });
 
         binding.btnViewDetails.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
-        });
-
-        binding.layoutSkyPoints.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, PointHistoryActivity.class));
-        });
-
-        binding.layoutSkyPoints.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, PointHistoryActivity.class));
         });
 
         binding.btnMyVouchers.setOnClickListener(v -> {

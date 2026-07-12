@@ -169,6 +169,9 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         setupTextWatcher(binding.edtEmail, binding.tvErrorEmail);
         setupTextWatcher(binding.edtPhone, binding.tvErrorPhone);
 
+        // Add click listener for Chi tiết thanh toán card
+        binding.cardPaymentDetails.setOnClickListener(v -> showPriceDetails());
+
         // Restore contact draft
         if (!draftEmail.isEmpty()) binding.edtEmail.setText(draftEmail);
         if (!draftPhone.isEmpty()) binding.edtPhone.setText(draftPhone);
@@ -1388,6 +1391,98 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                     .setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
             }
         });
+
+        dialog.show();
+    }
+
+    private void showPriceDetails() {
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme);
+        View view = getLayoutInflater().inflate(R.layout.dialog_price_detail, null);
+        dialog.setContentView(view);
+        
+        DecimalFormat df = new DecimalFormat("#,###");
+
+        TextView tvTitle = view.findViewById(R.id.tvTitle);
+        TextView tvAdultLabel = view.findViewById(R.id.tvAdultLabel);
+        TextView tvAdultPriceTotal = view.findViewById(R.id.tvAdultPriceTotal);
+        TextView tvPricePerPerson = view.findViewById(R.id.tvPricePerPerson);
+        TextView tvBaseLabel = view.findViewById(R.id.tvBaseLabel);
+        TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
+        TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
+        TextView tvAirportFeeValue = view.findViewById(R.id.tvAirportFeeValue);
+        TextView tvSeatFeeValue = view.findViewById(R.id.tvSeatFeeValue);
+        TextView tvAddonFeeValue = view.findViewById(R.id.tvAddonFeeValue);
+        TextView tvVoucherValue = view.findViewById(R.id.tvVoucherValue);
+        View layoutRoundTrip = view.findViewById(R.id.layoutRoundTripDiscount);
+        TextView tvRoundTripDiscountValue = view.findViewById(R.id.tvRoundTripDiscountValue);
+        TextView tvGrandTotal = view.findViewById(R.id.tvGrandTotal);
+
+        int totalPax = adults + children;
+        
+        // RE-CALCULATE ALL VALUES FOR DIALOG
+        double totalAddons = 0;
+        for (int i = 0; i < b10s.size(); i++) {
+            totalAddons += b10s.get(i) * 200000 + b23s.get(i) * 450000;
+            if (isRoundTrip) totalAddons += rb10s.get(i) * 200000 + rb23s.get(i) * 450000;
+        }
+
+        double adultTotalOut = baseFarePrice;
+        double childTotalOut = 0.75 * (adultTotalOut - 450000) + 450000;
+        
+        double totalTicketPrice = (adultTotalOut * adults + childTotalOut * children);
+        double totalBaseFare = ((adultTotalOut - 450000) / 1.1) * adults + ((childTotalOut - 450000) / 1.1) * children;
+        double totalTaxes = (totalBaseFare * 0.1);
+        double totalAirportFees = 450000 * totalPax;
+
+        if (isRoundTrip) {
+            double adultTotalIn = returnBasePrice;
+            double childTotalIn = 0.75 * (adultTotalIn - 450000) + 450000;
+            
+            totalTicketPrice += (adultTotalIn * adults + childTotalIn * children);
+            
+            double baseIn = ((adultTotalIn - 450000) / 1.1) * adults + ((childTotalIn - 450000) / 1.1) * children;
+            totalBaseFare += baseIn;
+            totalTaxes += (baseIn * 0.1);
+            totalAirportFees += 450000 * totalPax;
+        }
+
+        // Apply Round Trip Discount (5% on pure fares)
+        double farePartOut = (adultTotalOut - 450000) * adults + (childTotalOut - 450000) * children;
+        double farePartIn = isRoundTrip ? ((returnBasePrice - 450000) * adults + (0.75 * (returnBasePrice - 450000) + 450000 - 450000) * children) : 0;
+        double rtDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
+
+        double finalGrandTotal = totalTicketPrice + totalAddons - rtDiscount - voucherDiscountAmount;
+
+        // Populate Dialog
+        String label = "Giá vé";
+        if (totalPax > 1) label += " (x" + totalPax + ")";
+        else if (adults == 1) label = "Giá vé người lớn x1";
+        
+        if (tvAdultLabel != null) tvAdultLabel.setText(label);
+        if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(totalTicketPrice) + " VND");
+        if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(totalTicketPrice / totalPax) + " VND/Người");
+        
+        if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(totalBaseFare) + " VND");
+        if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(totalTaxes) + " VND");
+        if (tvAirportFeeValue != null) tvAirportFeeValue.setText(df.format(totalAirportFees) + " VND");
+        
+        if (tvSeatFeeValue != null) tvSeatFeeValue.setText("Miễn phí");
+        if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(totalAddons) + " VND");
+        
+        if (tvVoucherValue != null) {
+            tvVoucherValue.setText(voucherDiscountAmount > 0 ? "- " + df.format(voucherDiscountAmount) + " VND" : "0 VND");
+        }
+
+        if (isRoundTrip && layoutRoundTrip != null) {
+            layoutRoundTrip.setVisibility(View.VISIBLE);
+            if (tvRoundTripDiscountValue != null) tvRoundTripDiscountValue.setText("- " + df.format(rtDiscount) + " VND");
+        }
+
+        if (tvGrandTotal != null) tvGrandTotal.setText(df.format(finalGrandTotal) + " VND");
+
+        view.findViewById(R.id.btnBack).setOnClickListener(v -> dialog.dismiss());
+        view.findViewById(R.id.btnClose).setOnClickListener(v -> dialog.dismiss());
+        view.findViewById(R.id.btnConfirm).setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
