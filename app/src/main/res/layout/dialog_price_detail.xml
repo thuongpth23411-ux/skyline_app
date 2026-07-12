@@ -96,7 +96,7 @@
                         android:id="@+id/tvAdultPriceTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4.941.000 VND"
+                        android:text="0 VND"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -107,7 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="4.941.000 VND/Người"
+                    android:text="0 VND/Người"
                     android:textColor="@color/skyline_text_secondary"
                     android:textSize="12sp" />
 
@@ -130,7 +130,7 @@
                         android:id="@+id/tvBaseFareValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3.918.000 VND"
+                        android:text="0 VND"
                         android:textColor="@color/black"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -157,10 +157,33 @@
                     android:id="@+id/tvTaxFeesTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1.503.000 VND"
+                    android:text="0 VND"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Phí dịch vụ sân bay"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvAirportFeeValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 VND"
+                    android:textColor="@color/black"
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -207,6 +230,56 @@
                     android:text="0 VND"
                     android:textColor="@color/black"
                     android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutRoundTripDiscount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ưu đãi khứ hồi (5%)"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvRoundTripDiscountValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-0 VND"
+                    android:textColor="#10B981"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Voucher giảm giá"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvVoucherValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-0 VND"
+                    android:textColor="#10B981"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Info Note -->
@@ -259,7 +332,7 @@
                     android:id="@+id/tvGrandTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5.421.000 VND"
+                    android:text="0 VND"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />

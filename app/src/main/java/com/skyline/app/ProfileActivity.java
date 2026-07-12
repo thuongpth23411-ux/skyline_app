@@ -10,6 +10,7 @@ import com.skyline.app.databinding.ActivityProfileBinding;
 import com.skyline.app.network.AuthResponse;
 import com.skyline.app.network.RetrofitClient;
 import com.skyline.app.network.User;
+import com.skyline.app.utils.QrGenerator;
 import com.skyline.app.utils.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,11 +68,20 @@ public class ProfileActivity extends AppCompatActivity {
                     // Cập nhật lại SessionManager với dữ liệu mới nhất
                     sessionManager.saveUser(user);
                     
-                    // Cập nhật UI từ MongoDB
+                    // Cập nhật UI dựa trên ĐIỂM thực tế
+                    int points = user.getSkyPoints();
+                    String actualRank = (points < 1000) ? "ĐỒNG" : (points < 5000) ? "BẠC" : "VÀNG";
+                    
                     binding.tvUsername.setText(user.getName());
-                    binding.tvUserRank.setText("HẠNG " + (user.getRank() != null ? user.getRank().toUpperCase() : "ĐỒNG"));
-                    binding.tvSkyPoints.setText(String.valueOf(user.getSkyPoints()));
+                    binding.tvUserRank.setText("HẠNG " + actualRank);
+                    binding.tvSkyPoints.setText(String.valueOf(points));
                     binding.tvCardNumber.setText(user.getMemberCode());
+
+                    // Generate Mini QR for the card
+                    if (user.getMemberCode() != null) {
+                        android.graphics.Bitmap qr = QrGenerator.generateQrCode(user.getMemberCode(), 200);
+                        if (qr != null) binding.imgCardQr.setImageBitmap(qr);
+                    }
                 }
             }
 
@@ -169,9 +179,14 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
         });
 
-        // Nhấn vào mục Voucher trong Profile để xem Voucher của tôi
         binding.btnMyVouchers.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, MyVouchersActivity.class));
+        });
+
+        binding.layoutCardQr.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, MemberQrActivity.class);
+            intent.putExtra("RANK", binding.tvUserRank.getText().toString().replace("HẠNG ", ""));
+            startActivity(intent);
         });
     }
 

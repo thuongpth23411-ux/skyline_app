@@ -96,35 +96,53 @@ public class PaymentOtpActivity extends AppCompatActivity {
         String flightJson = intent.getStringExtra("flight_json");
         String returnFlightJson = intent.getStringExtra("return_flight_json");
         
+        android.util.Log.d("Booking", "Total Amount: " + total);
+        android.util.Log.d("Booking", "Flight JSON: " + flightJson);
+
         Map<String, Object> bookingData = new HashMap<>();
         bookingData.put("userId", userId != null ? userId : "guest_" + System.currentTimeMillis());
-        bookingData.put("passengerName", name);
-        bookingData.put("email", intent.getStringExtra("passenger_email")); // Thêm email để backend gửi mail
+        bookingData.put("passengerName", name != null ? name : "Khách hàng");
+        bookingData.put("email", intent.getStringExtra("passenger_email"));
         bookingData.put("totalAmount", total);
-        bookingData.put("paymentMethod", intent.getStringExtra("payment_method"));
+        bookingData.put("paymentMethod", intent.getStringExtra("payment_method") != null ? intent.getStringExtra("payment_method") : "Unknown");
+        bookingData.put("oldTicketId", intent.getStringExtra("old_ticket_id"));
         
         List<Map<String, String>> flightsList = new ArrayList<>();
-        
-        // Flight 1 (Departure)
         com.google.gson.Gson gson = new com.google.gson.Gson();
-        com.skyline.app.network.Flight flight = gson.fromJson(flightJson, com.skyline.app.network.Flight.class);
-        Map<String, String> f1 = new HashMap<>();
-        f1.put("flightId", flight.getId());
-        f1.put("seatNumber", intent.getStringExtra("selected_seat"));
-        f1.put("ticketType", returnFlightJson != null ? "Chiều đi" : "Một chiều");
-        flightsList.add(f1);
         
-        // Flight 2 (Return - if any)
-        if (returnFlightJson != null) {
-            com.skyline.app.network.Flight returnFlight = gson.fromJson(returnFlightJson, com.skyline.app.network.Flight.class);
-            Map<String, String> f2 = new HashMap<>();
-            f2.put("flightId", returnFlight.getId());
-            f2.put("seatNumber", intent.getStringExtra("return_selected_seat"));
-            f2.put("ticketType", "Chiều về");
-            flightsList.add(f2);
+        try {
+            // Flight 1 (Departure)
+            if (flightJson != null && !flightJson.isEmpty()) {
+                com.skyline.app.network.Flight flight = gson.fromJson(flightJson, com.skyline.app.network.Flight.class);
+                Map<String, String> f1 = new HashMap<>();
+                f1.put("flightId", flight.getId());
+                f1.put("seatNumber", intent.getStringExtra("selected_seat") != null ? intent.getStringExtra("selected_seat") : "N/A");
+                f1.put("ticketType", returnFlightJson != null ? "Chiều đi" : "Một chiều");
+                flightsList.add(f1);
+            }
+            
+            // Flight 2 (Return - if any)
+            if (returnFlightJson != null && !returnFlightJson.isEmpty()) {
+                com.skyline.app.network.Flight returnFlight = gson.fromJson(returnFlightJson, com.skyline.app.network.Flight.class);
+                Map<String, String> f2 = new HashMap<>();
+                f2.put("flightId", returnFlight.getId());
+                f2.put("seatNumber", intent.getStringExtra("return_selected_seat") != null ? intent.getStringExtra("return_selected_seat") : "N/A");
+                f2.put("ticketType", "Chiều về");
+                flightsList.add(f2);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("Booking", "Error parsing flight JSON", e);
+            navigateToFailure("Lỗi dữ liệu chuyến bay: " + e.getMessage());
+            return;
         }
         
+        if (flightsList.isEmpty()) {
+            navigateToFailure("Không tìm thấy thông tin chuyến bay để đặt");
+            return;
+        }
+
         bookingData.put("flights", flightsList);
+        android.util.Log.d("Booking", "Request Body: " + gson.toJson(bookingData));
 
         RetrofitClient.getInstance().createBooking(bookingData).enqueue(new Callback<BaseResponse>() {
             @Override
@@ -152,6 +170,12 @@ public class PaymentOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             intent.putExtras(getIntent().getExtras());
         }
+        // Ensure flight_json and other data are passed for "View My Ticket" button
+        intent.putExtra("flight_json", getIntent().getStringExtra("flight_json"));
+        intent.putExtra("selected_seat", getIntent().getStringExtra("selected_seat"));
+        intent.putExtra("passenger_name", getIntent().getStringExtra("passenger_name"));
+        intent.putExtra("totalAmount", getIntent().getDoubleExtra("totalAmount", 0));
+
         startActivity(intent);
         finish();
     }

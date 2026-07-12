@@ -36,7 +36,8 @@
     <string name="back_to_login">Quay lại đăng nhập</string>
 
     <!-- Flights Strings -->
-    <string name="check_booking_checkin">Kiểm tra đặt chỗ / Làm thủ tục</string>
+    <string name="check_booking">Kiểm tra đặt chỗ</string>
+    <string name="cancel_ticket_label">Hủy vé</string>
     <string name="upcoming_flights">Chuyến bay sắp tới</string>
     <string name="completed_flights">Chuyến bay hoàn thành</string>
     <string name="no_flights_yet">Chưa có chuyến bay nào</string>
@@ -94,7 +95,7 @@
     <string name="member_info_title">Thông tin hội viên</string>
     <string name="member_info_edit">Chỉnh sửa thông tin</string>
     <string name="member_info_change_password">Đổi mật khẩu</string>
-    <string name="member_info_sky_points">Điểm Sky</string>
+    <string name="member_info_sky_points">Sky Points</string>
     <string name="member_info_id">Mã hội viên</string>
     <string name="member_info_tier_silver">Hạng Bạc</string>
     <string name="member_info_benefits">Quyền lợi</string>

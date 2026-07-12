@@ -43,6 +43,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private LinearLayout seatMap;
     private TextView txtSelectedSeat;
     private final List<String> selectedSeats = new ArrayList<>();
+    private final List<String> otherGroupSeats = new ArrayList<>();
     private final List<TextView> selectedViews = new ArrayList<>();
     private int maxRowNumber = 0;
     private String fareType = "";
@@ -71,6 +72,10 @@ public class SeatSelectionActivity extends AppCompatActivity {
             String[] parts = initialSeats.split(", ");
             for (String p : parts) if (!p.isEmpty()) selectedSeats.add(p);
         }
+
+        // Nhận danh sách ghế của người khác trong đoàn
+        List<String> others = intent.getStringArrayListExtra("otherGroupSeats");
+        if (others != null) otherGroupSeats.addAll(others);
         
         fareType = intent.getStringExtra("fareType");
         passengerCount = intent.getIntExtra("passengerCount", 1);
@@ -92,7 +97,13 @@ public class SeatSelectionActivity extends AppCompatActivity {
         setupLegendItem(R.id.legendOccupied, Color.parseColor("#26FFFFFF"));
         setupLegendItem(R.id.legendSelected, themeColor);
 
-        findViewById(R.id.btnClose).setOnClickListener(v -> finish());
+        findViewById(R.id.btnClose).setOnClickListener(v -> {
+            // Khi nhấn X, thực hiện reset dữ liệu (trả về chuỗi rỗng)
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("selectedSeat", "");
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        });
 
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
             if (selectedSeats.size() < passengerCount) {
@@ -112,11 +123,10 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     private void updateSelectedSeatText() {
         if (selectedSeats.isEmpty()) {
-            txtSelectedSeat.setText("Vui lòng chọn " + passengerCount + " ghế");
-            txtSelectedSeat.setTextColor(ContextCompat.getColor(this, R.color.auth_error));
+            txtSelectedSeat.setText("Chưa chọn");
+            txtSelectedSeat.setTextColor(ContextCompat.getColor(this, R.color.skyline_text_secondary));
         } else {
             StringBuilder sb = new StringBuilder();
-            sb.append("Đã chọn (").append(selectedSeats.size()).append("/").append(passengerCount).append("): ");
             for (int i = 0; i < selectedSeats.size(); i++) {
                 sb.append(selectedSeats.get(i)).append(i == selectedSeats.size() - 1 ? "" : ", ");
             }
@@ -231,10 +241,24 @@ public class SeatSelectionActivity extends AppCompatActivity {
         final String cabinClass = found.getCabinClass();
         seat.setText(seatCode);
 
-        if ("OCCUPIED".equalsIgnoreCase(found.getSeatStatus()) || "BOOKED".equalsIgnoreCase(found.getSeatStatus())) {
+        boolean isOccupiedByApi = "OCCUPIED".equalsIgnoreCase(found.getSeatStatus()) || "BOOKED".equalsIgnoreCase(found.getSeatStatus());
+        boolean isOccupiedByGroup = otherGroupSeats.contains(seatCode);
+
+        if (isOccupiedByApi) {
             seat.setBackground(createSeatDrawable(Color.parseColor("#E0E3E5"), Color.parseColor("#E0E3E5")));
             seat.setTextColor(Color.parseColor("#9CA3AF"));
-            seat.setEnabled(false);        } else {
+            seat.setEnabled(false);
+        } else if (isOccupiedByGroup) {
+            // Hiển thị ghế của người khác trong đoàn với màu chủ đạo nhưng làm mờ/có viền khác biệt
+            seat.setBackground(createSeatDrawable(themeColor, Color.parseColor("#AAC9F3")));
+            seat.setAlpha(0.6f); // Làm mờ để biết là của người khác
+            seat.setTextColor(Color.WHITE);
+            seat.setEnabled(true); // Cho phép click để hiện thông báo
+            seat.setOnClickListener(v -> Toast.makeText(this, "Ghế này đã được thành viên khác trong đoàn chọn", Toast.LENGTH_SHORT).show());
+        } else {
+            seat.setAlpha(1.0f);
+            seat.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
+            seat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
             seat.setBackground(createSeatDrawable(Color.WHITE, ContextCompat.getColor(this, R.color.skyline_blue_dark)));
             seat.setTextColor(ContextCompat.getColor(this, R.color.skyline_blue_dark));
             

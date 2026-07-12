@@ -82,6 +82,20 @@ public class FlightResultsActivity extends AppCompatActivity {
         binding.btnSortAsc.setOnClickListener(v -> toggleSort(1));
         binding.btnSortDesc.setOnClickListener(v -> toggleSort(2));
         binding.btnFilter.setOnClickListener(v -> showFilterBottomSheet());
+        
+        binding.btnPrevDate.setOnClickListener(v -> {
+            int currentPos = dateAdapter.getSelectedPosition();
+            if (currentPos > 0) {
+                centerItem(currentPos - 1, true);
+            }
+        });
+        
+        binding.btnNextDate.setOnClickListener(v -> {
+            int currentPos = dateAdapter.getSelectedPosition();
+            if (currentPos < dateItems.size() - 1) {
+                centerItem(currentPos + 1, true);
+            }
+        });
 
         setupDateSelector();
         setupFlightList();

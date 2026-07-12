@@ -44,10 +44,12 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
         holder.binding.tvDestCity.setText(ticket.getDestCity());
         holder.binding.tvTime.setText(ticket.getTime());
         holder.binding.tvSeat.setText(ticket.getSeat());
+        holder.binding.tvTicketType.setText(ticket.getTicketType());
 
         holder.binding.btnDetail.setOnClickListener(v -> listener.onDetailClick(ticket));
         holder.binding.btnCancel.setOnClickListener(v -> listener.onCancelClick(ticket));
         holder.binding.btnChange.setOnClickListener(v -> listener.onChangeClick(ticket));
+        holder.binding.ivQR.setOnClickListener(v -> listener.onDetailClick(ticket));
     }
 
     @Override

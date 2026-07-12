@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    app:cardBackgroundColor="#F7FBFF"
+    app:cardBackgroundColor="#E0F2FE"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
     app:strokeWidth="0dp">
@@ -30,7 +30,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="Môi trường trong lành"
-            android:textColor="@color/black"
+            android:textColor="@color/skyline_blue_dark"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -42,7 +42,7 @@
             android:gravity="center"
             android:lineSpacingExtra="2dp"
             android:text="Không khí sạch, nhiều cây xanh, cảnh quan hài hòa tuyệt đẹp."
-            android:textColor="@color/skyline_text_secondary"
+            android:textColor="@color/skyline_blue_dark"
             android:textSize="13sp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

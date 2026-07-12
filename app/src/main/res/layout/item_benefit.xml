@@ -3,59 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:gravity="top"
+    android:paddingVertical="14dp">
+
+    <ImageView
+        android:id="@+id/imgBenefitIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_action_circle"
+        android:backgroundTint="#F2F5F8"
+        android:padding="7dp"
+        android:src="@drawable/ic_trending_up"
+        app:tint="@color/skyline_blue" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top"
-        android:orientation="horizontal"
-        android:paddingVertical="16dp">
+        android:orientation="vertical"
+        android:layout_marginStart="16dp">
 
-        <ImageView
-            android:id="@+id/imgBenefitIcon"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/bg_action_circle"
-            android:backgroundTint="#F5F7FA"
-            android:padding="8dp"
-            android:src="@drawable/ic_trending_up"
-            app:tint="@color/skyline_blue" />
+        <TextView
+            android:id="@+id/tvBenefitTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/skyline_text"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.02"
+            android:text="TÍCH ĐIỂM 1.2X" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvBenefitDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvBenefitTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/skyline_text"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
-                android:letterSpacing="0.02"
-                android:text="TÍCH ĐIỂM 1.2X" />
-
-            <TextView
-                android:id="@+id/tvBenefitDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:lineSpacingExtra="3dp"
-                android:textColor="@color/skyline_text_secondary"
-                android:textSize="14sp"
-                android:textStyle="normal"
-                android:text="Nhận thêm 20% điểm thưởng cho mỗi giao dịch thành công." />
-        </LinearLayout>
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginTop="4dp"
+            android:text="Nhận thêm 20% điểm thưởng cho mỗi giao dịch thành công." />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="52dp"
-        android:background="#F0F2F5" />
 </LinearLayout>

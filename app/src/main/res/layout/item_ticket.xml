@@ -233,8 +233,8 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:background="#F3F4F6"
-                        android:padding="6dp"
-                        android:src="@drawable/bg_dot_active"
+                        android:padding="4dp"
+                        android:src="@drawable/logo"
                         android:contentDescription="@null" />
                 </RelativeLayout>
 
@@ -264,13 +264,14 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="8dp"
-                        android:layout_weight="0.8"
+                        android:layout_weight="1"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:text="@string/change_ticket"
                         android:textAllCaps="false"
                         android:textColor="@color/skyline_blue_dark"
                         android:textSize="10sp"
+                        android:textStyle="bold"
                         app:cornerRadius="20dp"
                         app:strokeColor="@color/skyline_blue_dark"
                         app:strokeWidth="1.2dp" />
@@ -280,13 +281,14 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="8dp"
-                        android:layout_weight="0.8"
+                        android:layout_weight="1"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:text="@string/cancel_ticket"
+                        android:text="@string/cancel_ticket_label"
                         android:textAllCaps="false"
                         android:textColor="@color/skyline_blue_dark"
                         android:textSize="10sp"
+                        android:textStyle="bold"
                         app:cornerRadius="20dp"
                         app:strokeColor="@color/skyline_blue_dark"
                         app:strokeWidth="1.2dp" />

@@ -8,6 +8,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { sendTicketEmail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
+const PointHistory = require("../models/PointHistory");
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -22,8 +23,36 @@ const verifyToken = (req, res, next) => {
 
 router.post("/create", async (req, res) => {
     try {
-        const { userId, flights, passengerName, totalAmount, paymentMethod, email } = req.body;
-        const bookingCode = "SKL" + Math.floor(100000 + Math.random() * 900000);
+        console.log("📥 Received create booking request:", JSON.stringify(req.body, null, 2));
+        const { userId, flights, passengerName, totalAmount, paymentMethod, email, oldTicketId } = req.body;
+
+        if (!flights || !Array.isArray(flights) || flights.length === 0) {
+            console.error("❌ Flights data is missing or invalid");
+            return res.status(400).json({ success: false, message: "Thông tin chuyến bay không hợp lệ" });
+        }
+
+        // Nếu là đổi vé, tiến hành xóa vé cũ (theo bookingCode)
+        if (oldTicketId) {
+            const deleteResult = await Ticket.deleteMany({ bookingCode: oldTicketId });
+            console.log(`🗑️ Deleted old ticket(s) for exchange: ${oldTicketId}, count: ${deleteResult.deletedCount}`);
+        }
+
+        let bookingCode;
+        let isCodeUnique = false;
+        let retryCount = 0;
+
+        while (!isCodeUnique && retryCount < 5) {
+            bookingCode = "SKL" + Math.floor(100000 + Math.random() * 900000);
+            const existingBooking = await Ticket.findOne({ bookingCode });
+            if (!existingBooking) {
+                isCodeUnique = true;
+            }
+            retryCount++;
+        }
+
+        if (!isCodeUnique) {
+            throw new Error("Không thể tạo mã đặt chỗ duy nhất. Vui lòng thử lại.");
+        }
 
         // 1. Kiểm tra trường hợp khách vãng lai
         let targetUserId = userId;
@@ -57,46 +86,88 @@ router.post("/create", async (req, res) => {
             }
         }
 
-        const createdTickets = [];
+        const ticketDocs = [];
 
         for (let i = 0; i < flights.length; i++) {
             const flight = flights[i];
-            const ticketId = "TKT" + Math.floor(10000000 + Math.random() * 90000000);
+
+            // Tạo ticketId duy nhất
+            let ticketId;
+            let isTicketIdUnique = false;
+            while (!isTicketIdUnique) {
+                ticketId = "TKT" + Math.floor(10000000 + Math.random() * 90000000);
+                const existing = await Ticket.findOne({ ticketId });
+                if (!existing) isTicketIdUnique = true;
+            }
 
             const newTicket = new Ticket({
                 ticketId: ticketId,
                 bookingCode: bookingCode,
-                userId: targetUserId,
+                userId: targetUserId.toString(),
                 flightId: flight.flightId,
                 seatId: flight.seatNumber || "N/A",
                 passengerName: passengerName,
                 passengerType: "Adult",
-                ticketType: flight.ticketType || "OneWay",
+                ticketType: flight.ticketType || (flights.length > 1 ? (i === 0 ? "Chiều đi" : "Chiều về") : "Một chiều"),
                 totalAmount: i === 0 ? totalAmount : 0,
                 paymentStatus: "Paid",
                 ticketStatus: "Booked",
                 bookedAt: new Date()
             });
 
-            await newTicket.save();
+            ticketDocs.push(newTicket);
+        }
 
+        // Lưu tất cả vé
+        const savedTickets = await Ticket.insertMany(ticketDocs);
+        console.log(`✅ Saved ${savedTickets.length} tickets with bookingCode: ${bookingCode}`);
+
+        // 1.5 CỘNG ĐIỂM THÀNH VIÊN: 100.000 VNĐ = 10 điểm
+        if (totalAmount > 0) {
+            const pointsToEarn = Math.floor(totalAmount / 100000) * 10;
+            if (pointsToEarn > 0) {
+                const user = await User.findById(targetUserId);
+                if (user) {
+                    user.skyPoints = (user.skyPoints || 0) + pointsToEarn;
+
+                    // Tự động nâng hạng nếu đủ điểm (Ví dụ đơn giản)
+                    if (user.skyPoints >= 5000) user.rank = "Kim cương";
+                    else if (user.skyPoints >= 2000) user.rank = "Vàng";
+                    else if (user.skyPoints >= 500) user.rank = "Bạc";
+
+                    await user.save();
+
+                    // Lưu lịch sử tích điểm
+                    await PointHistory.create({
+                        userId: targetUserId,
+                        points: pointsToEarn,
+                        type: "EARN",
+                        description: `Tích điểm từ đơn hàng ${bookingCode}`,
+                        bookingCode: bookingCode
+                    });
+                    console.log(`💰 Awarded ${pointsToEarn} points to user ${user.fullName}`);
+                }
+            }
+        }
+
+        const createdTickets = [];
+        for (let savedTicket of savedTickets) {
             // Fetch flight details specifically for the email payload
-            const flightData = await Flight.findOne({ flightId: flight.flightId }).lean();
-            const ticketForEmail = newTicket.toObject();
+            const flightData = await Flight.findOne({ flightId: savedTicket.flightId }).lean();
+            const ticketForEmail = savedTicket.toObject();
 
             if (flightData) {
                 const depAirport = await Airport.findOne({ airportId: flightData.fromAirportId }).lean();
                 const arrAirport = await Airport.findOne({ airportId: flightData.toAirportId }).lean();
                 ticketForEmail.flightDetails = {
                     flightNumber: flightData.flightNumber,
-                    departureCode: depAirport ? depAirport.airportId : "---", // airportId usually is the code (HAN, SGN)
+                    departureCode: depAirport ? depAirport.airportId : "---",
                     arrivalCode: arrAirport ? arrAirport.airportId : "---",
                     departureAirport: depAirport ? depAirport.airportName : "Sân bay đi",
                     arrivalAirport: arrAirport ? arrAirport.airportName : "Sân bay đến",
                     time: flightData.departureAt
                 };
             }
-
             createdTickets.push(ticketForEmail);
         }
 
@@ -123,7 +194,7 @@ router.get("/my-tickets", verifyToken, async (req, res) => {
         console.log(`🎫 Fetching tickets for userId: ${req.userId}`);
 
         // Tìm vé theo userId (hỗ trợ cả String và ObjectId)
-        let tickets = await Ticket.find({ userId: req.userId }).sort({ createdAt: -1 }).lean();
+        let tickets = await Ticket.find({ userId: req.userId }).sort({ bookedAt: -1 }).lean();
 
         for (let ticket of tickets) {
             // Tìm chuyến bay theo flightId (String ID)

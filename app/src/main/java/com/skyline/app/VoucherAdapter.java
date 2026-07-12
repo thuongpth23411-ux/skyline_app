@@ -33,6 +33,17 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         this.userRank = userRank != null ? userRank : "NONE";
         this.listener = listener;
         
+        // Sắp xếp voucher: Cái dùng được lên đầu, giảm nhiều tiền hơn xếp trên
+        this.vouchers.sort((v1, v2) -> {
+            boolean e1 = isEligible(v1);
+            boolean e2 = isEligible(v2);
+            if (e1 != e2) return e1 ? -1 : 1;
+            
+            double d1 = calculatePotentialDiscount(v1);
+            double d2 = calculatePotentialDiscount(v2);
+            return Double.compare(d2, d1); // Giảm nhiều hơn lên trên
+        });
+        
         calculateBestChoiceAndSelection(currentCode);
     }
 

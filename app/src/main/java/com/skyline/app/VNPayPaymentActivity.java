@@ -74,7 +74,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(VNPayPaymentActivity.this, "Không thể gửi OTP. Thử lại sau.", Toast.LENGTH_SHORT).show();
                     binding.btnContinue.setEnabled(true);
-                    binding.btnContinue.setText("XÁC NHẬN ĐÃ QUÉT MÃ THÀNH CÔNG");
+                    binding.btnContinue.setText("XÁC NHẬN THANH TOÁN THÀNH CÔNG");
                 }
             }
 
@@ -82,7 +82,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
                 Toast.makeText(VNPayPaymentActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 binding.btnContinue.setEnabled(true);
-                binding.btnContinue.setText("XÁC NHẬN ĐÃ QUÉT MÃ THÀNH CÔNG");
+                binding.btnContinue.setText("XÁC NHẬN THANH TOÁN THÀNH CÔNG");
             }
         });
     }

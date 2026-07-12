@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.glide)
+    implementation(libs.zxing.core)
     implementation("com.caverock:androidsvg-aar:1.4")
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)

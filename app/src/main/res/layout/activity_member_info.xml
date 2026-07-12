@@ -69,13 +69,21 @@
                     app:strokeColor="@color/white"
                     app:strokeWidth="2dp" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_check_auth"
+                <TextView
+                    android:id="@+id/tv_rank_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_terms_rank"
+                    android:backgroundTint="#ECEFF1"
+                    android:elevation="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="ĐỒNG"
+                    android:textColor="@color/skyline_text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/img_avatar"
-                    app:layout_constraintEnd_toEndOf="@id/img_avatar"
-                    app:tint="@color/skyline_blue" />
+                    app:layout_constraintEnd_toEndOf="@id/img_avatar" />
 
                 <TextView
                     android:id="@+id/tv_username"
@@ -105,22 +113,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/img_avatar"
                     app:layout_constraintTop_toTopOf="@id/img_avatar" />
-
-                <TextView
-                    android:id="@+id/tv_rank_badge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_terms_rank"
-                    android:backgroundTint="#ECEFF1"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="ĐỒNG"
-                    android:textColor="@color/skyline_text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@id/tv_username"
-                    app:layout_constraintTop_toBottomOf="@id/tv_username" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -33,7 +33,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:text="Mì Quảng"
-        android:textColor="@color/black"
+        android:textColor="@color/skyline_blue_dark"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

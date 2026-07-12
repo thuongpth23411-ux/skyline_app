@@ -336,7 +336,7 @@
                     android:id="@+id/cardPaymentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
+                    android:layout_marginBottom="24dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp"
@@ -347,7 +347,7 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CHI TIẾT THANH TOÁN" android:textColor="@color/skyline_teal" android:textSize="15sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CHI TIẾT THANH TOÁN" android:textColor="@color/skyline_teal" android:textSize="15sp" android:textStyle="bold" android:layout_marginBottom="12dp" />
 
                         <TextView android:id="@+id/tvLabelPaymentOutbound" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="LƯỢT ĐI" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
 
@@ -355,7 +355,7 @@
                             android:id="@+id/containerPaymentDetails"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="4dp"
                             android:orientation="vertical" />
 
                         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="8dp" />
@@ -366,12 +366,17 @@
                             <TextView android:id="@+id/txtRoundTripDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
                         </RelativeLayout>
 
+                        <RelativeLayout android:id="@+id/layoutChildDiscount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:visibility="gone">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ƯU ĐÃI TRẺ EM (25% GIÁ VÉ)" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/txtChildDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
+                        </RelativeLayout>
+
                         <RelativeLayout android:id="@+id/layoutVoucherDiscount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:visibility="gone">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GIẢM GIÁ VOUCHER" android:textColor="@color/skyline_teal" android:textSize="11sp" android:textStyle="bold" />
                             <TextView android:id="@+id/txtVoucherDiscount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0 VND" android:textColor="@color/skyline_teal" android:textStyle="bold" />
                         </RelativeLayout>
 
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="12dp" />
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="8dp" />
 
                         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TỔNG CỘNG" android:textColor="@color/skyline_blue_dark" android:textStyle="bold" />

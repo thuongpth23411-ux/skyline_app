@@ -63,7 +63,7 @@
         android:layout_marginTop="32dp"
         android:text="Xác thực"
         android:textAllCaps="false"
-        android:backgroundTint="#0057E7"
+        android:backgroundTint="@color/skyline_blue_dark"
         android:textColor="@android:color/white" />
 
     <TextView
