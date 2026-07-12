@@ -40,13 +40,9 @@ public class OnboardingActivity extends AppCompatActivity {
                 if (position == items.size() - 1) {
                     binding.btnNext.setText(getString(R.string.btn_experience_now));
                     binding.tvSkip.setVisibility(View.GONE);
-                    binding.layoutLang.setVisibility(View.VISIBLE);
-                    binding.tvLangLabel.setVisibility(View.VISIBLE);
                 } else {
                     binding.btnNext.setText(getString(R.string.btn_next));
                     binding.tvSkip.setVisibility(View.VISIBLE);
-                    binding.layoutLang.setVisibility(View.GONE);
-                    binding.tvLangLabel.setVisibility(View.GONE);
                 }
             }
         });
