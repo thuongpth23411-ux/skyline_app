@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const { sendTicketEmail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const PointHistory = require("../models/PointHistory");
+const FlightSeat = require("../models/FlightSeat");
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -131,6 +132,17 @@ router.post("/create", async (req, res) => {
                     ticketStatus: "Booked",
                     bookedAt: new Date()
                 });
+
+                // Cập nhật trạng thái ghế trong database thành OCCUPIED
+                if (currentSeat !== "N/A" && currentSeat !== "Ngẫu nhiên") {
+                    // Xóa phần "(Ngẫu nhiên)" nếu có trong chuỗi ghế
+                    const cleanSeat = currentSeat.split(" ")[0];
+                    await FlightSeat.updateOne(
+                        { flightId: flight.flightId, seatNumber: cleanSeat },
+                        { $set: { seatStatus: "OCCUPIED" } }
+                    );
+                    console.log(`💺 Updated seat ${cleanSeat} for flight ${flight.flightId} to OCCUPIED`);
+                }
 
                 ticketDocs.push(newTicket);
             }
