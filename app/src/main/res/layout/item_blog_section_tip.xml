@@ -21,7 +21,7 @@
         android:layout_marginStart="12dp"
         android:lineSpacingExtra="4dp"
         android:text="Thời điểm đẹp nhất: Tháng 2 - Tháng 8, trời nắng đẹp, biển xanh."
-        android:textColor="@color/black"
+        android:textColor="@color/skyline_blue_dark"
         android:textSize="14sp" />
 
 </LinearLayout>

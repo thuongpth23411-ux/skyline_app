@@ -20,26 +20,34 @@
             android:src="@drawable/img_destination_danang" />
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:id="@+id/tvTitle"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Bà Nà Hills"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="12dp">
 
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:gravity="end"
-        android:text="Hòa Vang, Đà Nẵng"
-        android:textColor="@color/skyline_text_secondary"
-        android:textSize="13sp"
-        android:textStyle="italic" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/tvSubtitle"
+            android:layout_marginEnd="8dp"
+            android:text="Bà Nà Hills"
+            android:textColor="@color/skyline_blue_dark"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBaseline="@id/tvTitle"
+            android:text="Hòa Vang, Đà Nẵng"
+            android:textColor="@color/skyline_blue_dark"
+            android:textSize="13sp"
+            android:textStyle="italic" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tvDescription"
@@ -47,8 +55,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:lineSpacingExtra="4dp"
+        android:justificationMode="inter_word"
         android:text="Điểm đến nổi tiếng với Cầu Vàng, khí hậu mát mẻ và nhiều hoạt động giải trí."
-        android:textColor="@color/skyline_text_secondary"
+        android:textColor="@color/skyline_blue_dark"
         android:textSize="14sp" />
 
 </LinearLayout>

@@ -274,23 +274,6 @@ public class BlogDetailActivity extends AppCompatActivity {
                             ivImage.setVisibility(View.GONE);
                         }
 
-                        if (section.sectionNumber % 2 == 0) {
-                            androidx.constraintlayout.widget.ConstraintSet set = new androidx.constraintlayout.widget.ConstraintSet();
-                            androidx.constraintlayout.widget.ConstraintLayout layout = (androidx.constraintlayout.widget.ConstraintLayout) textView;
-                            set.clone(layout);
-
-                            set.connect(ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.START, androidx.constraintlayout.widget.ConstraintSet.PARENT_ID, androidx.constraintlayout.widget.ConstraintSet.START, 0);
-                            set.connect(ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.END, tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.START, dpToPx(16));
-
-                            set.connect(tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.START, ivImage.getId(), androidx.constraintlayout.widget.ConstraintSet.END, 0);
-                            set.connect(tvDesc.getId(), androidx.constraintlayout.widget.ConstraintSet.END, androidx.constraintlayout.widget.ConstraintSet.PARENT_ID, androidx.constraintlayout.widget.ConstraintSet.END, 0);
-
-                            set.setHorizontalWeight(ivImage.getId(), 0.9f);
-                            set.setHorizontalWeight(tvDesc.getId(), 1.1f);
-
-                            set.applyTo(layout);
-                        }
-
                         binding.sectionsContainer.addView(textView);
                     }
                 }

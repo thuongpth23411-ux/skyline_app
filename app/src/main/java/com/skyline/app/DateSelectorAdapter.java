@@ -99,6 +99,13 @@ public class DateSelectorAdapter extends RecyclerView.Adapter<DateSelectorAdapte
         notifyDataSetChanged();
     }
 
+    public int getSelectedPosition() {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isSelected) return i;
+        }
+        return -1;
+    }
+
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
