@@ -75,6 +75,21 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
+    <style name="LogoutDialogTheme" parent="Theme.Material3.Light.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="shapeAppearance">@style/Rounded24</item>
+        <item name="buttonBarPositiveButtonStyle">@style/LogoutButtonStyle</item>
+    </style>
+
+    <style name="Rounded24" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="LogoutButtonStyle" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">#E53935</item>
+    </style>
+
     <style name="CustomDialogTheme" parent="Theme.Material3.Light.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
