@@ -11,7 +11,9 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.skyline.app.network.Promotion;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHolder> {
 
@@ -21,6 +23,15 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
     private final String userRank;
     private int selectedPosition = -1;
     private int bestChoicePosition = -1;
+
+    private static final Map<String, Integer> rankWeights = new HashMap<>();
+    static {
+        rankWeights.put("NONE", 0);
+        rankWeights.put("Đồng", 1);
+        rankWeights.put("Bạc", 2);
+        rankWeights.put("Vàng", 3);
+        rankWeights.put("Kim cương", 4);
+    }
 
     public interface OnVoucherSelectedListener {
         void onSelected(Promotion promotion);
@@ -71,10 +82,32 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         if (v.getQuantity() <= 0) return false;
         if (currentSubTotal < v.getMinimumOrder()) return false;
         
-        if ("MEMBER".equalsIgnoreCase(v.getCategory())) {
-            if (userRank.equals("NONE")) return false;
+        // --- RANK ELIGIBILITY LOGIC ---
+        String promoCategory = v.getCategory(); // e.g. "BẠC", "VÀNG", "MEMBER"
+        
+        if (promoCategory != null && !promoCategory.isEmpty()) {
+            if ("MEMBER".equalsIgnoreCase(promoCategory)) {
+                return !userRank.equals("NONE");
+            }
+            
+            // Check if category is a rank name
+            Integer promoRankWeight = getRankWeight(promoCategory);
+            if (promoRankWeight > 0) {
+                Integer userRankWeight = getRankWeight(userRank);
+                // User must have rank equal to or higher than the promo rank
+                return userRankWeight >= promoRankWeight;
+            }
         }
+        
         return true;
+    }
+
+    private Integer getRankWeight(String rankName) {
+        if (rankName == null) return 0;
+        for (String key : rankWeights.keySet()) {
+            if (key.equalsIgnoreCase(rankName)) return rankWeights.get(key);
+        }
+        return 0;
     }
 
     private double calculatePotentialDiscount(Promotion v) {
@@ -114,8 +147,12 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
             statusText = "Voucher không khả dụng";
         } else if (currentSubTotal < v.getMinimumOrder()) {
             statusText = "Chưa đạt mức tối thiểu";
-        } else if ("MEMBER".equalsIgnoreCase(v.getCategory()) && userRank.equals("NONE")) {
-            statusText = "Dành riêng cho hội viên";
+        } else {
+            // Rank specific message
+            Integer promoRankWeight = getRankWeight(v.getCategory());
+            if (promoRankWeight > getRankWeight(userRank)) {
+                statusText = "Dành cho hạng " + v.getCategory() + " trở lên";
+            }
         }
 
         holder.tvExpiry.setText(statusText);
@@ -165,7 +202,13 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         if (v.getQuantity() <= 0) return "Voucher này đã hết lượt sử dụng!";
         if (!"Active".equalsIgnoreCase(v.getStatus())) return "Voucher hiện không khả dụng!";
         if (currentSubTotal < v.getMinimumOrder()) return "Đơn hàng chưa đạt mức tối thiểu!";
-        if ("MEMBER".equalsIgnoreCase(v.getCategory()) && userRank.equals("NONE")) return "Vui lòng đăng nhập để sử dụng ưu đãi hội viên!";
+        
+        Integer promoRankWeight = getRankWeight(v.getCategory());
+        if (promoRankWeight > getRankWeight(userRank)) {
+            if (userRank.equals("NONE")) return "Vui lòng đăng nhập để sử dụng ưu đãi!";
+            return "Hạng của bạn chưa đủ để sử dụng mã này!";
+        }
+
         return "Bạn không đủ điều kiện sử dụng mã này!";
     }
 
