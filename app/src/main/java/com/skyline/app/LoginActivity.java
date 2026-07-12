@@ -8,6 +8,7 @@ import com.skyline.app.network.AuthResponse;
 import com.skyline.app.network.LoginRequest;
 import com.skyline.app.network.RetrofitClient;
 import com.skyline.app.utils.SessionManager;
+import com.skyline.app.utils.NotificationHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +32,7 @@ public class LoginActivity extends BaseAuthActivity {
             String password = edtPassword.getText().toString();
 
             if (email.isEmpty() || password.isEmpty()) {
-                showErrorDialog("Vui lòng nhập đầy đủ thông tin");
+                NotificationHelper.showSimpleDialog(this, "Thông báo", "Vui lòng nhập đầy đủ thông tin");
                 return;
             }
 
@@ -45,17 +46,17 @@ public class LoginActivity extends BaseAuthActivity {
                             sessionManager.saveAuthToken(authResponse.getToken());
                             sessionManager.saveUser(authResponse.getUser());
                         }
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        NotificationHelper.showSimpleDialog(LoginActivity.this, "Thành công", "Đăng nhập thành công");
                         goHome();
                     } else {
                         String errorMsg = response.body() != null ? response.body().getMessage() : "Đăng nhập thất bại";
-                        showErrorDialog(errorMsg);
+                        NotificationHelper.showSimpleDialog(LoginActivity.this, "Lỗi đăng nhập", errorMsg);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
-                    showErrorDialog("Lỗi kết nối server!\nChi tiết: " + t.getMessage());
+                    NotificationHelper.showSimpleDialog(LoginActivity.this, "Lỗi kết nối", "Lỗi kết nối server!\nChi tiết: " + t.getMessage());
                 }
             });
         });

@@ -425,12 +425,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void showLoginRequiredDialog() {
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Yêu cầu đăng nhập")
-            .setMessage("Vui lòng đăng nhập hoặc đăng ký tài khoản để xem các thông báo cá nhân và ưu đãi từ Skyline.")
-            .setPositiveButton("Đăng nhập", (dialog, which) -> startActivity(new Intent(requireContext(), LoginActivity.class)))
-            .setNegativeButton("Để sau", null)
-            .show();
+        NotificationHelper.showDropDownNotification(
+            requireActivity(),
+            null,
+            "Yêu cầu đăng nhập",
+            "Vui lòng đăng nhập hoặc đăng ký tài khoản để xem các thông báo cá nhân và ưu đãi từ Skyline.",
+            NotificationHelper.NotifType.SYSTEM,
+            null
+        );
     }
 
     private void createDots(LinearLayout container, int count) {

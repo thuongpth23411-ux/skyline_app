@@ -28,21 +28,14 @@ public class NotificationHelper {
 
         SessionManager sm = new SessionManager(activity);
 
-        // Chỉ hiện thông báo nếu đã đăng nhập
-        if (!sm.isLoggedIn()) {
-            return;
-        }
-        
-        // Nếu có ID và đã nhận rồi thì không hiện nữa
+        // Chỉ hiện thông báo nếu đã đăng nhập và là thông báo thật (có id)
         if (id != null && !id.isEmpty()) {
-            if (sm.isNotificationReceived(id)) {
-                return;
-            }
-            // Đánh dấu đã nhận NGAY LẬP TỨC để tránh lặp khi gọi post/delay
+            if (!sm.isLoggedIn()) return;
+            if (sm.isNotificationReceived(id)) return;
             sm.markNotificationAsReceived(id);
         }
 
-        // Tạo Dialog popup thay vì PopupWindow
+        // Tạo Dialog popup
         android.app.Dialog dialog = new android.app.Dialog(activity);
         dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         
@@ -52,30 +45,55 @@ public class NotificationHelper {
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
         TextView tvContent = dialogView.findViewById(R.id.tv_dialog_content);
         ImageView imgIcon = dialogView.findViewById(R.id.img_dialog_icon);
-        View btnAction = dialogView.findViewById(R.id.btn_dialog_action);
+        com.google.android.material.button.MaterialButton btnAction = dialogView.findViewById(R.id.btn_dialog_action);
         View btnClose = dialogView.findViewById(R.id.btn_dialog_close);
 
         tvTitle.setText(title);
         tvContent.setText(content);
 
-        // Đổi icon theo loại
+        // Đổi icon và màu sắc theo loại
         int iconRes = R.drawable.ic_notifications;
+        int colorRes = R.color.skyline_blue_dark;
+
         switch (type) {
-            case PROMOTION: iconRes = R.drawable.ic_gift; break;
-            case TICKET: iconRes = R.drawable.ic_ticket; break;
-            case PROFILE: iconRes = R.drawable.ic_profile; break;
+            case PROMOTION: 
+                iconRes = R.drawable.ic_gift; 
+                btnAction.setText("XEM ƯU ĐÃI");
+                break;
+            case TICKET: 
+                iconRes = R.drawable.ic_ticket; 
+                btnAction.setText("XEM VÉ");
+                break;
+            case PROFILE: 
+                iconRes = R.drawable.ic_profile; 
+                btnAction.setText("XEM HỒ SƠ");
+                break;
+            case SYSTEM:
+                if (title.toLowerCase().contains("lỗi") || title.toLowerCase().contains("thất bại")) {
+                    colorRes = R.color.auth_error;
+                }
+                btnAction.setText("ĐỒNG Ý");
+                break;
         }
-        if (imgIcon != null) imgIcon.setImageResource(iconRes);
+        
+        if (imgIcon != null) {
+            imgIcon.setImageResource(iconRes);
+            imgIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activity.getResources().getColor(colorRes)));
+        }
+        btnAction.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activity.getResources().getColor(colorRes)));
 
         btnAction.setOnClickListener(v -> {
             dialog.dismiss();
             
+            // Nếu là thông báo hệ thống thông thường, không cần mở trang chi tiết
+            if (type == NotifType.SYSTEM) return;
+
             // Mở màn hình chi tiết thông báo
             Intent intent = new Intent(activity, com.skyline.app.NotificationDetailActivity.class);
             com.skyline.model.Notification notif = new com.skyline.model.Notification(id, title, content, 
@@ -87,11 +105,16 @@ public class NotificationHelper {
 
         btnClose.setOnClickListener(v -> dialog.dismiss());
 
-        activity.runOnUiThread(() -> {
-            dialog.show();
-            // Lưu vào danh sách hiển thị
+        activity.runOnUiThread(dialog::show);
+        
+        // Lưu vào danh sách hiển thị nếu có id
+        if (id != null && !id.isEmpty()) {
             sm.addLocalNotification(id, title, content, type.name(), targetData);
-        });
+        }
+    }
+
+    public static void showSimpleDialog(Activity activity, String title, String content) {
+        showDropDownNotification(activity, null, title, content, NotifType.SYSTEM, null);
     }
 
     public static void handleNotificationClick(Activity activity, NotifType type, String targetData) {

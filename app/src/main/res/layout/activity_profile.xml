@@ -113,10 +113,24 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
+                        <ImageView
+                            android:id="@+id/imgLogoCard"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:alpha="0.25"
+                            android:contentDescription="@null"
+                            android:src="@drawable/logo_horizontal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/white"
+                            android:clickable="true"
+                            android:focusable="true"/>
+
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/layout_card_qr"
                             android:layout_width="44dp"
                             android:layout_height="44dp"
+                            android:layout_marginTop="52dp"
                             app:cardCornerRadius="8dp"
                             app:cardElevation="0dp"
                             app:cardBackgroundColor="@color/white"

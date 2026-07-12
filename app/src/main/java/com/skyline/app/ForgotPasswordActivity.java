@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.skyline.app.network.BaseResponse;
 import com.skyline.app.network.ForgotPasswordRequest;
 import com.skyline.app.network.RetrofitClient;
+import com.skyline.app.utils.NotificationHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,7 +24,7 @@ public class ForgotPasswordActivity extends BaseAuthActivity {
         findViewById(R.id.btnOtp).setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             if (email.isEmpty()) {
-                showErrorDialog("Vui lòng nhập email");
+                NotificationHelper.showSimpleDialog(this, "Thông báo", "Vui lòng nhập email");
                 return;
             }
 
@@ -31,18 +32,19 @@ public class ForgotPasswordActivity extends BaseAuthActivity {
                 @Override
                 public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                        Toast.makeText(ForgotPasswordActivity.this, "Mã OTP đã được gửi", Toast.LENGTH_SHORT).show();
+                        NotificationHelper.showSimpleDialog(ForgotPasswordActivity.this, "Thành công", "Mã OTP đã được gửi");
                         Intent intent = new Intent(ForgotPasswordActivity.this, ForgotOtpActivity.class);
                         intent.putExtra("EMAIL", email);
                         startActivity(intent);
                     } else {
-                        showErrorDialog(response.body() != null ? response.body().getMessage() : "Gửi OTP thất bại");
+                        String errorMsg = response.body() != null ? response.body().getMessage() : "Gửi OTP thất bại";
+                        NotificationHelper.showSimpleDialog(ForgotPasswordActivity.this, "Lỗi", errorMsg);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<BaseResponse> call, Throwable t) {
-                    showErrorDialog("Lỗi gửi OTP!\nChi tiết: " + t.getMessage());
+                    NotificationHelper.showSimpleDialog(ForgotPasswordActivity.this, "Lỗi kết nối", "Lỗi gửi OTP!\nChi tiết: " + t.getMessage());
                 }
             });
         });

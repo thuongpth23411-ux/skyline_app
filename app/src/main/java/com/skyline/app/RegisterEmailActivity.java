@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.skyline.app.network.BaseResponse;
 import com.skyline.app.network.ForgotPasswordRequest;
 import com.skyline.app.network.RetrofitClient;
+import com.skyline.app.utils.NotificationHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,11 +25,11 @@ public class RegisterEmailActivity extends BaseAuthActivity {
         findViewById(R.id.btnContinue).setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             if (email.isEmpty()) {
-                showErrorDialog("Vui lòng nhập email");
+                NotificationHelper.showSimpleDialog(this, "Thông báo", "Vui lòng nhập email");
                 return;
             }
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                showErrorDialog("Email không hợp lệ. Vui lòng kiểm tra lại.");
+                NotificationHelper.showSimpleDialog(this, "Lỗi", "Email không hợp lệ. Vui lòng kiểm tra lại.");
                 return;
             }
 
@@ -38,7 +39,7 @@ public class RegisterEmailActivity extends BaseAuthActivity {
                 public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
                     v.setEnabled(true);
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                        Toast.makeText(RegisterEmailActivity.this, "Mã OTP đã được gửi đến email", Toast.LENGTH_SHORT).show();
+                        NotificationHelper.showSimpleDialog(RegisterEmailActivity.this, "Thành công", "Mã OTP đã được gửi đến email");
                         Intent intent = new Intent(RegisterEmailActivity.this, PhoneOtpActivity.class);
                         intent.putExtra("EMAIL", email);
                         intent.putExtra("IS_REGISTER", true);
@@ -58,29 +59,42 @@ public class RegisterEmailActivity extends BaseAuthActivity {
                         }
                         
                         String errorMsg = response.body() != null ? response.body().getMessage() : "Gửi OTP thất bại";
-                        showErrorDialog(errorMsg);
+                        NotificationHelper.showSimpleDialog(RegisterEmailActivity.this, "Lỗi", errorMsg);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<BaseResponse> call, Throwable t) {
                     v.setEnabled(true);
-                    showErrorDialog("Lỗi kết nối: " + t.getMessage());
+                    NotificationHelper.showSimpleDialog(RegisterEmailActivity.this, "Lỗi kết nối", "Lỗi kết nối: " + t.getMessage());
                 }
             });
         });
     }
 
     private void showRegisteredEmailDialog() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Thông báo")
-            .setMessage("Email này đã được đăng ký. Bạn có muốn chuyển qua trang đăng nhập?")
-            .setPositiveButton("Đăng nhập", (dialog, which) -> {
-                Intent intent = new Intent(RegisterEmailActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            })
-            .setNegativeButton("Hủy", null)
-            .show();
+        android.app.Dialog dialog = new android.app.Dialog(this);
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+        View view = getLayoutInflater().inflate(R.layout.dialog_custom_notification, null);
+        dialog.setContentView(view);
+        
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        ((android.widget.TextView)view.findViewById(R.id.tv_dialog_title)).setText("Thông báo");
+        ((android.widget.TextView)view.findViewById(R.id.tv_dialog_content)).setText("Email này đã được đăng ký. Bạn có muốn chuyển qua trang đăng nhập?");
+        
+        com.google.android.material.button.MaterialButton btnLogin = view.findViewById(R.id.btn_dialog_action);
+        btnLogin.setText("ĐĂNG NHẬP");
+        btnLogin.setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent intent = new Intent(RegisterEmailActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        view.findViewById(R.id.btn_dialog_close).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 }
