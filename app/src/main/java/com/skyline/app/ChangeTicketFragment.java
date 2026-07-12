@@ -128,11 +128,13 @@ public class ChangeTicketFragment extends Fragment {
     }
 
     private void searchFlights(String date) {
+        if (binding == null || oldTicket == null) return;
         binding.progressBar.setVisibility(View.VISIBLE);
         RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(oldTicket.getOriginCode(), oldTicket.getDestCode(), date))
             .enqueue(new Callback<List<Flight>>() {
                 @Override
                 public void onResponse(@NonNull Call<List<Flight>> call, @NonNull Response<List<Flight>> response) {
+                    if (binding == null) return;
                     binding.progressBar.setVisibility(View.GONE);
                     if (response.isSuccessful() && response.body() != null) {
                         allFlightsForDay.clear();
@@ -141,7 +143,11 @@ public class ChangeTicketFragment extends Fragment {
                     }
                 }
                 @Override public void onFailure(@NonNull Call<List<Flight>> call, @NonNull Throwable t) {
+                    if (binding == null) return;
                     binding.progressBar.setVisibility(View.GONE);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Lỗi tải chuyến bay", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
     }

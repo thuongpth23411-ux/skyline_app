@@ -278,11 +278,19 @@ public class FlightsFragment2 extends Fragment {
 
                 @Override
                 public void onCancelClick(Ticket ticket) {
+                    if (!canPerformAction(ticket)) {
+                        showActionDeniedDialog("hủy vé");
+                        return;
+                    }
                     openCancel(ticket);
                 }
 
                 @Override
                 public void onChangeClick(Ticket ticket) {
+                    if (!canPerformAction(ticket)) {
+                        showActionDeniedDialog("đổi vé");
+                        return;
+                    }
                     openChange(ticket);
                 }
             }));
@@ -322,6 +330,46 @@ public class FlightsFragment2 extends Fragment {
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit();
+    }
+
+    private boolean canPerformAction(Ticket ticket) {
+        if (ticket == null || ticket.getFullDate() == null || ticket.getTime() == null) return true;
+        try {
+            String timeOnly = ticket.getTime().split(" - ")[0].trim();
+            String departureDateTimeStr = ticket.getFullDate() + " " + timeOnly;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            Date departureDate = sdf.parse(departureDateTimeStr);
+
+            if (departureDate != null) {
+                long diffInMillis = departureDate.getTime() - System.currentTimeMillis();
+                return diffInMillis >= (24L * 60 * 60 * 1000);
+            }
+        } catch (Exception e) {
+            Log.e("FlightsFragment2", "Error checking action time: " + e.getMessage());
+        }
+        return true;
+    }
+
+    private void showActionDeniedDialog(String action) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        android.widget.TextView tvTitle = dialogView.findViewById(R.id.tvTitle);
+        android.widget.TextView tvMsg = dialogView.findViewById(R.id.tvMessage);
+        com.google.android.material.button.MaterialButton btnOk = dialogView.findViewById(R.id.btnOk);
+
+        tvTitle.setText("Không thể " + action);
+        tvMsg.setText("Rất tiếc, quý khách chỉ có thể thực hiện " + action + " trước giờ khởi hành ít nhất 24 tiếng. Vui lòng liên hệ tổng đài để được hỗ trợ thêm.");
+
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     private void setupTabs() {

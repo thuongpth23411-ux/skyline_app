@@ -46,6 +46,11 @@ public class RankDetailsActivity extends AppCompatActivity {
             updateTabUI(false);
             loadBenefits(getNextRank(currentRank));
         });
+
+        binding.cardPointHistory.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(this, PointHistoryActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void updateTabUI(boolean isCurrentSelected) {

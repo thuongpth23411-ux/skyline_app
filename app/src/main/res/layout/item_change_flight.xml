@@ -4,7 +4,7 @@
     android:id="@+id/cardFlight"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="16dp"
     android:layout_marginHorizontal="2dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
@@ -16,13 +16,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="16dp">
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="20dp">
 
         <!-- Top Section: Times and Path -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/tvOriginTime"
@@ -123,44 +123,19 @@
                 app:layout_constraintTop_toBottomOf="@id/tvDestTime" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Airline Info Section -->
+        <!-- Airline Info Section (Reduced/Spaced) -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardAirlineLogo"
-                android:layout_width="64dp"
-                android:layout_height="36dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="0dp"
-                app:strokeColor="#F3F4F6"
-                app:strokeWidth="1dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/ivAirlineLogo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="2dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/logo"
-                    android:contentDescription="@null" />
-            </com.google.android.material.card.MaterialCardView>
+            android:layout_marginTop="20dp">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="8dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/layoutPriceDiff"
-                app:layout_constraintStart_toEndOf="@id/cardAirlineLogo"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -170,7 +145,7 @@
                     android:text="QH215"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
@@ -178,9 +153,10 @@
                     android:id="@+id/tvClassName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Sky Eco"
                     android:textColor="@color/skyline_text_secondary"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:maxLines="1"
                     android:ellipsize="end" />
             </LinearLayout>
@@ -200,15 +176,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/price_difference_label"
                     android:textColor="@color/skyline_text_secondary"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/tvPriceDiff"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="+ 0 VNĐ"
                     android:textColor="@color/skyline_blue_dark"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

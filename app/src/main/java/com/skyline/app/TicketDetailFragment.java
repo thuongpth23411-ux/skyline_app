@@ -20,7 +20,10 @@ import com.skyline.app.network.RetrofitClient;
 import com.skyline.model.Ticket;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -66,6 +69,7 @@ public class TicketDetailFragment extends Fragment {
     }
 
     private void loadTicketData(Ticket ticket) {
+        if (binding == null) return;
         binding.tvTicketId.setText(ticket.getFlightNo());
         binding.tvOriginCode.setText(ticket.getOriginCode());
         binding.tvOriginCity.setText(ticket.getOriginCity());
@@ -77,8 +81,18 @@ public class TicketDetailFragment extends Fragment {
         binding.tvSeatClass.setText(ticket.getSeat() + " / " + ticket.getFlightClass());
         binding.tvBaggage.setText(ticket.getBaggage() != null ? ticket.getBaggage() : "Không có hành lý mua thêm");
 
-        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=SKYLINE_" + ticket.getFlightNo();
-        Glide.with(this).load(qrUrl).placeholder(R.drawable.bg_square_placeholder).into(binding.ivQR);
+        String bookingId = ticket.getFlightNo();
+        if (bookingId == null || bookingId.isEmpty()) bookingId = "SKYLINE_TICKET";
+        
+        // Encode URL and increase resolution for better quality
+        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" + android.net.Uri.encode("SKYLINE_TICKET_" + bookingId);
+        
+        if (isAdded()) {
+            Glide.with(this)
+                .load(qrUrl)
+                .placeholder(R.drawable.bg_square_placeholder)
+                .into(binding.ivQR);
+        }
     }
 
     private void setupClickListeners() {
@@ -110,6 +124,10 @@ public class TicketDetailFragment extends Fragment {
 
         binding.btnCancel.setOnClickListener(v -> {
             if (ticketData != null) {
+                if (!canPerformAction()) {
+                    showActionDeniedDialog("hủy vé");
+                    return;
+                }
                 CancelTicketFragment fragment = CancelTicketFragment.newInstance(
                     ticketData.getFlightNo(),
                     ticketData.getOriginCode(),
@@ -132,6 +150,10 @@ public class TicketDetailFragment extends Fragment {
 
         binding.btnEdit.setOnClickListener(v -> {
             if (ticketData != null) {
+                if (!canPerformAction()) {
+                    showActionDeniedDialog("đổi vé");
+                    return;
+                }
                 ChangeTicketFragment fragment = ChangeTicketFragment.newInstance(ticketData);
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragmentContainer, fragment)
@@ -139,6 +161,48 @@ public class TicketDetailFragment extends Fragment {
                     .commit();
             }
         });
+    }
+
+    private boolean canPerformAction() {
+        if (ticketData == null || ticketData.getFullDate() == null || ticketData.getTime() == null) return true;
+        try {
+            // fullDate is yyyy-MM-dd, time is HH:mm
+            String timeOnly = ticketData.getTime().split(" - ")[0].trim();
+            String departureDateTimeStr = ticketData.getFullDate() + " " + timeOnly;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            Date departureDate = sdf.parse(departureDateTimeStr);
+            
+            if (departureDate != null) {
+                long diffInMillis = departureDate.getTime() - System.currentTimeMillis();
+                // 24 hours in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+                return diffInMillis >= (24L * 60 * 60 * 1000);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("TicketDetail", "Error checking action time: " + e.getMessage());
+        }
+        return true; 
+    }
+
+    private void showActionDeniedDialog(String action) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tvTitle);
+        TextView tvMsg = dialogView.findViewById(R.id.tvMessage);
+        com.google.android.material.button.MaterialButton btnOk = dialogView.findViewById(R.id.btnOk);
+
+        tvTitle.setText("Không thể " + action);
+        tvMsg.setText("Rất tiếc, quý khách chỉ có thể thực hiện " + action + " trước giờ khởi hành ít nhất 24 tiếng. Vui lòng liên hệ tổng đài để được hỗ trợ thêm.");
+
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     private void showCustomConfirmDialog(String title, String message, String negBtn, String posBtn, Runnable onPositive) {

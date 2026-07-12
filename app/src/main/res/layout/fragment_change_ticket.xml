@@ -230,10 +230,7 @@
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:cornerRadius="27dp"
-            app:icon="@drawable/ic_arrow_right"
-            app:iconGravity="textEnd"
-            app:iconTint="@color/white" />
+            app:cornerRadius="27dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

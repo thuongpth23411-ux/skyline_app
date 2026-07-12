@@ -384,8 +384,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             int month = cal.get(Calendar.MONTH) + 1;
             int year = cal.get(Calendar.YEAR);
             String formattedMonth = String.format(Locale.getDefault(), "%02d", month);
-            String formattedYear = String.valueOf(year).substring(2);
-            binding.etExpiry.setText(formattedMonth + "/" + formattedYear);
+            binding.etExpiry.setText(formattedMonth + "/" + year);
         });
         picker.show(getSupportFragmentManager(), "ExpiryPicker");
     }

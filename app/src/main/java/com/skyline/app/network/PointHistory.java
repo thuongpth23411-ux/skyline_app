@@ -12,6 +12,8 @@ public class PointHistory implements Serializable {
     private double amount;
     private String description;
     private String bookingCode;
+    private String status; // COMPLETED, CANCELLED, PENDING
+    private String transactionDate;
     private String date;
 
     public String getId() { return id; }
@@ -21,5 +23,7 @@ public class PointHistory implements Serializable {
     public double getAmount() { return amount; }
     public String getDescription() { return description; }
     public String getBookingCode() { return bookingCode; }
+    public String getStatus() { return status; }
+    public String getTransactionDate() { return transactionDate; }
     public String getDate() { return date; }
 }

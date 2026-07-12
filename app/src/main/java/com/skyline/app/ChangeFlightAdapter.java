@@ -75,16 +75,6 @@ public class ChangeFlightAdapter extends RecyclerView.Adapter<ChangeFlightAdapte
         holder.binding.tvOriginCode.setText(f.getDepartureAirport() != null ? f.getDepartureAirport().getCode() : "---");
         holder.binding.tvDestCode.setText(f.getArrivalAirport() != null ? f.getArrivalAirport().getCode() : "---");
 
-        if (f.getAirline() != null && f.getAirline().getLogo() != null) {
-            Glide.with(holder.itemView.getContext())
-                .load(RetrofitClient.formatUrl(f.getAirline().getLogo()))
-                .placeholder(R.drawable.logo)
-                .error(R.drawable.logo)
-                .into(holder.binding.ivAirlineLogo);
-        } else {
-            holder.binding.ivAirlineLogo.setImageResource(R.drawable.logo);
-        }
-
         try {
             Date dep = isoParser.parse(f.getDepartureAt());
             Date arr = isoParser.parse(f.getArrivalAt());

@@ -65,6 +65,20 @@
                 android:text="Số tiền: 2,450,000 VND"
                 android:textColor="@color/skyline_text_secondary"
                 android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="#F3F4F6"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="Hoàn thành"
+                android:textColor="#6B7280"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
