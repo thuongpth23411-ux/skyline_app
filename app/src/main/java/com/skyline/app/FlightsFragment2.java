@@ -129,6 +129,10 @@ public class FlightsFragment2 extends Fragment {
                     target.getPassengerName(),
                     target.getTicketType()
                 );
+                if (target.getFlight() != null && target.getFlight().getAirline() != null) {
+                    ticket.setAirlineLogoUrl(RetrofitClient.formatUrl(target.getFlight().getAirline().getLogo()));
+                }
+                ticket.setBaggage(target.getBaggage() != null ? target.getBaggage() : "Đã bao gồm 7kg xách tay");
                 openDetail(ticket);
             } catch (Exception e) {
                 Toast.makeText(requireContext(), "Lỗi khi xử lý dữ liệu vé", Toast.LENGTH_SHORT).show();
@@ -183,8 +187,29 @@ public class FlightsFragment2 extends Fragment {
         for (TicketResponse res : allTickets) {
             String status = res.getStatus() != null ? res.getStatus() : "Booked";
             
-            if (isUpcomingTab && "Completed".equalsIgnoreCase(status)) continue;
-            if (!isUpcomingTab && !"Completed".equalsIgnoreCase(status)) continue;
+            // Log logic status based on current date
+            boolean isPast = false;
+            try {
+                if (res.getFlight() != null && res.getFlight().getDepartureAt() != null) {
+                    Date depDate = inputFormat.parse(res.getFlight().getDepartureAt());
+                    if (depDate != null && depDate.before(new Date())) {
+                        isPast = true;
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            String effectiveStatus = status;
+            if ("Booked".equalsIgnoreCase(status) && isPast) {
+                effectiveStatus = "Completed";
+            }
+
+            if (isUpcomingTab) {
+                // Tab Sắp tới: Chỉ hiện "Booked" mà chưa quá ngày
+                if (!"Booked".equalsIgnoreCase(effectiveStatus)) continue;
+            } else {
+                // Tab Hoàn thành: Hiện Completed, Cancelled, Disabled
+                if ("Booked".equalsIgnoreCase(effectiveStatus)) continue;
+            }
 
             try {
                 if (res.getFlight() == null) continue;
@@ -211,10 +236,10 @@ public class FlightsFragment2 extends Fragment {
                 }
 
                 String displayTicketType = "Một chiều";
-                if ("Return".equalsIgnoreCase(res.getTicketType())) {
-                    displayTicketType = "Lượt về";
-                } else if ("Departure".equalsIgnoreCase(res.getTicketType())) {
-                    displayTicketType = "Lượt đi";
+                if ("Return".equalsIgnoreCase(res.getTicketType()) || "Khứ hồi - Về".equalsIgnoreCase(res.getTicketType())) {
+                    displayTicketType = "Khứ hồi - Về";
+                } else if ("Departure".equalsIgnoreCase(res.getTicketType()) || "Khứ hồi - Đi".equalsIgnoreCase(res.getTicketType())) {
+                    displayTicketType = "Khứ hồi - Đi";
                 }
 
                 Ticket ticket = new Ticket(
@@ -227,7 +252,12 @@ public class FlightsFragment2 extends Fragment {
                     res.getPassengerName() != null ? res.getPassengerName() : "Hành khách",
                     displayTicketType
                 );
+                if (res.getFlight() != null && res.getFlight().getAirline() != null) {
+                    ticket.setAirlineLogoUrl(RetrofitClient.formatUrl(res.getFlight().getAirline().getLogo()));
+                }
                 ticket.setFullDate(apiDateFormat.format(depDate));
+                ticket.setStatus(effectiveStatus);
+                ticket.setBaggage(res.getBaggage() != null ? res.getBaggage() : "Đã bao gồm 7kg xách tay");
                 displayTickets.add(ticket);
             } catch (Exception ignored) {}
         }

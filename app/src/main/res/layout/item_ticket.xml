@@ -101,13 +101,17 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                     <TextView
-                        android:id="@+id/tvFlightNo"
+                        android:id="@+id/tvStatusTag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:background="@drawable/bg_ticket_type_tag"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="3dp"
                         android:text="--"
-                        android:textColor="@color/skyline_text_secondary"
-                        android:textSize="11sp" />
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
                 <!-- City Codes -->
@@ -182,9 +186,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardLogo"
+                        android:layout_width="56dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#F3F4F6"
+                        app:strokeWidth="1dp">
+
+                        <ImageView
+                            android:id="@+id/ivQR"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_plane"
+                            app:tint="@color/skyline_text_secondary"
+                            android:contentDescription="@null" />
+                    </com.google.android.material.card.MaterialCardView>
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/cardLogo"
+                        android:layout_marginEnd="8dp"
                         android:orientation="horizontal">
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -226,16 +257,6 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
-                    <ImageView
-                        android:id="@+id/ivQR"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="#F3F4F6"
-                        android:padding="4dp"
-                        android:src="@drawable/logo"
-                        android:contentDescription="@null" />
                 </RelativeLayout>
 
                 <!-- Actions -->

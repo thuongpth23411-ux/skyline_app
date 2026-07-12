@@ -8,6 +8,7 @@ const RankBenefit = require("../models/RankBenefit");
 const Promotion = require("../models/Promotion");
 const Blog = require("../models/Blog");
 const PassengerDirectory = require("../models/PassengerDirectory");
+const PointHistory = require("../models/PointHistory");
 
 // Middleware to verify JWT
 const verifyToken = (req, res, next) => {
@@ -424,6 +425,16 @@ router.delete("/passenger-delete/:id", verifyToken, async (req, res) => {
         res.json({ success: true, message: "Xóa thành công" });
     } catch (error) {
         res.status(500).json({ success: false });
+    }
+});
+
+// 5. Get point history
+router.get("/point-history", verifyToken, async (req, res) => {
+    try {
+        const history = await PointHistory.find({ userId: req.userId }).sort({ date: -1 });
+        res.json(history);
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
 });
 

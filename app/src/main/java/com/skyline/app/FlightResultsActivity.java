@@ -35,6 +35,8 @@ public class FlightResultsActivity extends AppCompatActivity {
     private DateSelectorAdapter dateAdapter;
     private String fromCode, toCode, selectedDateStr, returnDateStr;
     private boolean isRoundTrip, isSelectingReturn;
+    private boolean isExchange;
+    private String oldTicketId, endDateStr;
     private int adults, children;
     private final List<DateSelectorAdapter.DateItem> dateItems = new ArrayList<>();
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -63,6 +65,9 @@ public class FlightResultsActivity extends AppCompatActivity {
         returnDateStr = getIntent().getStringExtra("returnDate");
         isRoundTrip = getIntent().getBooleanExtra("isRoundTrip", false);
         isSelectingReturn = getIntent().getBooleanExtra("isSelectingReturn", false);
+        isExchange = getIntent().getBooleanExtra("isExchange", false);
+        oldTicketId = getIntent().getStringExtra("oldTicketId");
+        endDateStr = getIntent().getStringExtra("endDate");
         adults = getIntent().getIntExtra("adults", 1);
         children = getIntent().getIntExtra("children", 0);
 
@@ -245,10 +250,24 @@ public class FlightResultsActivity extends AppCompatActivity {
         long todayMillis = todayCal.getTimeInMillis();
 
         Calendar cal = (Calendar) todayCal.clone();
-        cal.add(Calendar.DAY_OF_MONTH, -7);
+        
+        int range = 98;
+        if (isExchange && endDateStr != null) {
+            try {
+                Date start = apiDateFormat.parse(selectedDateStr);
+                Date end = apiDateFormat.parse(endDateStr);
+                if (start != null && end != null) {
+                    cal.setTime(start);
+                    long diff = end.getTime() - start.getTime();
+                    range = (int) (diff / (24 * 60 * 60 * 1000)) + 1;
+                }
+            } catch (Exception ignored) {}
+        } else {
+            cal.add(Calendar.DAY_OF_MONTH, -7);
+        }
 
         int initialPos = -1;
-        for (int i = 0; i < 98; i++) {
+        for (int i = 0; i < range; i++) {
             Date d = cal.getTime();
             String dStr = apiDateFormat.format(d);
 
@@ -260,8 +279,8 @@ public class FlightResultsActivity extends AppCompatActivity {
         }
 
         if (initialPos == -1) {
-            initialPos = 7;
-            selectedDateStr = apiDateFormat.format(dateItems.get(7).date);
+            initialPos = 0;
+            selectedDateStr = apiDateFormat.format(dateItems.get(0).date);
         }
 
         dateAdapter = new DateSelectorAdapter(dateItems, (date, pos) -> {
@@ -395,6 +414,9 @@ public class FlightResultsActivity extends AppCompatActivity {
         i.putExtra("toName", binding.tvToCity.getText().toString());
         i.putExtra("adults", adults);
         i.putExtra("children", children);
+        
+        i.putExtra("isExchange", isExchange);
+        i.putExtra("oldTicketId", oldTicketId);
 
         if (isSelectingReturn) {
             i.putExtra("outbound_flight", getIntent().getStringExtra("outbound_flight"));

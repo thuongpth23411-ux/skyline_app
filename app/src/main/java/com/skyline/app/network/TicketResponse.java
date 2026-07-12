@@ -13,6 +13,7 @@ public class TicketResponse {
     private String ticketType;
     private String passengerName;
     private double totalAmount;
+    private String baggage;
     
     @SerializedName("flightData")
     private Flight flight;
@@ -25,5 +26,6 @@ public class TicketResponse {
     public String getPassengerName() { return passengerName; }
     public double getTotalAmount() { return totalAmount; }
     public String getTicketType() { return ticketType; }
+    public String getBaggage() { return baggage; }
     public Flight getFlight() { return flight; }
 }

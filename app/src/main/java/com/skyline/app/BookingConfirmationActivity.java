@@ -1072,35 +1072,36 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         intent.putExtra("totalAmount", grandTotal);
         intent.putExtra("passenger_email", binding.edtEmail.getText().toString().trim());
         intent.putExtra("passenger_phone", binding.edtPhone.getText().toString().trim());
+        intent.putExtra("passenger_name", names.get(0)); // Pass first passenger for simpler logic
         intent.putExtra("passenger_names", names);
         intent.putExtra("adults", adults);
         intent.putExtra("children", children);
         intent.putExtra("fare_type", fareType);
         intent.putExtra("isRoundTrip", isRoundTrip);
         intent.putExtra("flight_json", gson.toJson(flight));
-        
-        // Chuỗi ghế cách nhau dấu phẩy cho ConfirmPaymentActivity xử lý
-        StringBuilder sbSeats = new StringBuilder();
-        for (int i = 0; i < selectedSeats.size(); i++) {
-            sbSeats.append(selectedSeats.get(i)).append(i == selectedSeats.size() - 1 ? "" : ", ");
-        }
-        intent.putExtra("selected_seat", sbSeats.toString());
 
-        // Pass detailed fees for Price Detail dialog
-        intent.putExtra("baseFare", (baseFarePrice * totalPax) + (isRoundTrip ? returnBasePrice * totalPax : 0));
-        intent.putExtra("taxes", (baseFarePrice * 0.1 * totalPax) + (isRoundTrip ? returnBasePrice * 0.1 * totalPax : 0));
-        intent.putExtra("airportFees", (450000.0 * totalPax) + (isRoundTrip ? 450000.0 * totalPax : 0));
-        intent.putExtra("addonPrice", totalAddons);
-        intent.putExtra("voucher_discount", voucherDiscountAmount);
-        intent.putExtra("roundTripDiscount", roundTripDiscount);
+        // Construct baggage summary for the first passenger
+        int firstPaxB10 = b10s.get(0);
+        int firstPaxB23 = b23s.get(0);
+        String baggageDesc = "Đã bao gồm 7kg xách tay";
+        if (firstPaxB10 > 0 || firstPaxB23 > 0) {
+            StringBuilder sb = new StringBuilder(baggageDesc);
+            if (firstPaxB10 > 0) sb.append(", +").append(firstPaxB10 * 10).append("kg");
+            if (firstPaxB23 > 0) sb.append(", +").append(firstPaxB23 * 23).append("kg");
+            baggageDesc = sb.toString();
+        }
+        intent.putExtra("baggage_desc", baggageDesc);
+        
+        // Pass arrays/lists
+        intent.putStringArrayListExtra("selectedSeats", new ArrayList<>(selectedSeats));
+        intent.putIntegerArrayListExtra("baggage10s", new ArrayList<>(b10s));
+        intent.putIntegerArrayListExtra("baggage23s", new ArrayList<>(b23s));
 
         if (isRoundTrip) {
             intent.putExtra("return_flight_json", gson.toJson(returnFlight));
-            StringBuilder sbRetSeats = new StringBuilder();
-            for (int i = 0; i < returnSelectedSeats.size(); i++) {
-                sbRetSeats.append(returnSelectedSeats.get(i)).append(i == returnSelectedSeats.size() - 1 ? "" : ", ");
-            }
-            intent.putExtra("returnSelectedSeat", sbRetSeats.toString());
+            intent.putStringArrayListExtra("returnSelectedSeats", new ArrayList<>(returnSelectedSeats));
+            intent.putIntegerArrayListExtra("returnB10s", new ArrayList<>(rb10s));
+            intent.putIntegerArrayListExtra("returnB23s", new ArrayList<>(rb23s));
         }
 
         startActivity(intent);

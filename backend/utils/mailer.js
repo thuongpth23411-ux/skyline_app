@@ -38,9 +38,29 @@ const sendOTP = async (email, otp) => {
 };
 
 const sendTicketEmail = async (email, ticketInfo) => {
-    const { bookingCode, passengerName, tickets, tempAccount } = ticketInfo;
+    const { bookingCode, passengerName, tickets, tempAccount, isExchange, isCancel } = ticketInfo;
 
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingCode}`;
+
+    let subjectPrefix = "Đặt vé thành công";
+    let statusLabel = "THANH TOÁN THÀNH CÔNG";
+    let mainHeading = "Hành trình của bạn đã sẵn sàng!";
+    let headerColor = "#0B4DA2";
+    let statusColor = "#22C55E";
+
+    if (isExchange) {
+        subjectPrefix = "Thay đổi hành trình thành công";
+        statusLabel = "ĐỔI VÉ THÀNH CÔNG";
+        mainHeading = "Vé mới của bạn đã được cập nhật!";
+        headerColor = "#0284c7"; // Blue-600
+        statusColor = "#0284c7";
+    } else if (isCancel) {
+        subjectPrefix = "Hủy vé thành công";
+        statusLabel = "XÁC NHẬN HỦY VÉ";
+        mainHeading = "Yêu cầu hủy vé đã được xử lý!";
+        headerColor = "#475569"; // Gray-600
+        statusColor = "#dc2626"; // Red-600
+    }
 
     let ticketsHtml = tickets.map(t => {
         const details = t.flightDetails || {};
@@ -48,7 +68,7 @@ const sendTicketEmail = async (email, ticketInfo) => {
             <table width="100%" style="margin-bottom: 15px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; border-collapse: separate; border-spacing: 0;">
                 <tr>
                     <td style="padding: 10px 15px; background: #F9F9F9; border-bottom: 1px dashed #e2e8f0; border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                        <span style="font-size: 10px; color: #0B4DA2; font-weight: bold; text-transform: uppercase;">${t.ticketType}</span>
+                        <span style="font-size: 10px; color: ${headerColor}; font-weight: bold; text-transform: uppercase;">${t.ticketType}</span>
                     </td>
                     <td style="padding: 10px 15px; background: #F9F9F9; border-bottom: 1px dashed #e2e8f0; text-align: right;">
                         <span style="font-size: 10px; color: #64748b;">Số hiệu: <strong>${details.flightNumber || "---"}</strong></span>
@@ -59,18 +79,18 @@ const sendTicketEmail = async (email, ticketInfo) => {
                         <table width="100%">
                             <tr>
                                 <td width="42%" style="font-size: 14px; font-weight: bold; color: #143E7A; line-height: 1.2;">
-                                    <div style="font-size: 18px; color: #0B4DA2;">${details.departureCode || "---"}</div>
+                                    <div style="font-size: 18px; color: ${headerColor};">${details.departureCode || "---"}</div>
                                     <div style="font-size: 10px; font-weight: normal; color: #496A98; margin-top: 2px;">${details.departureAirport || "---"}</div>
                                 </td>
-                                <td width="16%" style="text-align: center; color: #0B4DA2; font-size: 18px;">✈</td>
+                                <td width="16%" style="text-align: center; color: ${headerColor}; font-size: 18px;">✈</td>
                                 <td width="42%" style="font-size: 14px; font-weight: bold; color: #143E7A; text-align: right; line-height: 1.2;">
-                                    <div style="font-size: 18px; color: #0B4DA2;">${details.arrivalCode || "---"}</div>
+                                    <div style="font-size: 18px; color: ${headerColor};">${details.arrivalCode || "---"}</div>
                                     <div style="font-size: 10px; font-weight: normal; color: #496A98; margin-top: 2px;">${details.arrivalAirport || "---"}</div>
                                 </td>
                             </tr>
                         </table>
                         <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; font-size: 11px; color: #496A98;">
-                            Ghế: <strong style="color: #0B4DA2;">${t.seatId}</strong> | Mã vé: <strong>${t.ticketId}</strong>
+                            Ghế: <strong style="color: ${headerColor};">${t.seatId}</strong> | Mã vé: <strong>${t.ticketId}</strong>
                         </div>
                     </td>
                 </tr>
@@ -104,11 +124,11 @@ const sendTicketEmail = async (email, ticketInfo) => {
     const mailOptions = {
         from: `"SKYLINE" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: `[SKYLINE] Đặt vé thành công - PNR: ${bookingCode}`,
+        subject: `[SKYLINE] ${subjectPrefix} - PNR: ${bookingCode}`,
         html: `
             <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 550px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 <!-- Header -->
-                <div style="background-color: #0B4DA2; padding: 25px; text-align: center;">
+                <div style="background-color: ${headerColor}; padding: 25px; text-align: center;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 22px; letter-spacing: 6px; font-weight: 800;">SKYLINE</h1>
                     <p style="margin: 5px 0 0 0; font-size: 9px; letter-spacing: 3px; color: #DDEEFF; text-transform: uppercase;">Trải nghiệm bay đẳng cấp</p>
                 </div>
@@ -116,17 +136,18 @@ const sendTicketEmail = async (email, ticketInfo) => {
                 <div style="padding: 30px 25px;">
                     <!-- Success Header -->
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <p style="margin: 0; color: #22C55E; font-weight: bold; font-size: 12px; letter-spacing: 0.5px;">THANH TOÁN THÀNH CÔNG</p>
-                        <h2 style="margin: 5px 0; font-size: 16px; color: #143E7A;">Hành trình của bạn đã sẵn sàng!</h2>
-                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #496A98;">Chào <strong>${passengerName}</strong>, cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi.</p>
+                        <p style="margin: 0; color: ${statusColor}; font-weight: bold; font-size: 12px; letter-spacing: 0.5px;">${statusLabel}</p>
+                        <h2 style="margin: 5px 0; font-size: 16px; color: #143E7A;">${mainHeading}</h2>
+                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #496A98;">Chào <strong>${passengerName}</strong>, ${isCancel ? "yêu cầu hoàn vé của bạn đã được xác nhận." : "cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi."}</p>
                     </div>
 
+                    ${isCancel ? "" : `
                     <!-- PNR & QR Section -->
                     <table width="100%" style="background-color: #F9F9F9; border: 1px solid #EDF4FF; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
                         <tr>
                             <td align="center">
                                 <p style="margin: 0; font-size: 9px; color: #496A98; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">Mã đặt chỗ (PNR)</p>
-                                <p style="margin: 4px 0 15px 0; font-size: 24px; color: #0B4DA2; font-weight: bold; letter-spacing: 3px;">${bookingCode}</p>
+                                <p style="margin: 4px 0 15px 0; font-size: 24px; color: ${headerColor}; font-weight: bold; letter-spacing: 3px;">${bookingCode}</p>
                                 <div style="background: #ffffff; display: inline-block; padding: 10px; border-radius: 12px; border: 1px solid #DDEEFF;">
                                     <img src="${qrCodeUrl}" width="130" height="130" style="display: block;" alt="QR" />
                                 </div>
@@ -134,15 +155,24 @@ const sendTicketEmail = async (email, ticketInfo) => {
                             </td>
                         </tr>
                     </table>
+                    `}
 
                     <!-- Ticket List -->
                     <div style="margin-bottom: 10px;">
-                        <p style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #143E7A; border-bottom: 1px solid #F0F0F0; padding-bottom: 5px; text-transform: uppercase;">Chi tiết chuyến bay</p>
+                        <p style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #143E7A; border-bottom: 1px solid #F0F0F0; padding-bottom: 5px; text-transform: uppercase;">${isCancel ? "Thông tin vé đã hủy" : "Chi tiết chuyến bay"}</p>
                         ${ticketsHtml}
                     </div>
 
                     ${accountHtml}
 
+                    ${isCancel ? `
+                    <div style="background-color: #FEF2F2; border-radius: 8px; padding: 15px; margin-top: 20px; border: 1px solid #FEE2E2;">
+                        <p style="margin: 0 0 5px 0; font-size: 11px; color: #991B1B; font-weight: bold;">Thông tin hoàn tiền:</p>
+                        <p style="margin: 0; font-size: 10px; color: #B91C1C; line-height: 1.6;">
+                            Số tiền hoàn lại sẽ được chuyển vào tài khoản thanh toán ban đầu của quý khách trong vòng 3-5 ngày làm việc tùy theo ngân hàng.
+                        </p>
+                    </div>
+                    ` : `
                     <!-- Notice -->
                     <div style="background-color: #F9F9F9; border-radius: 8px; padding: 15px; margin-top: 20px;">
                         <p style="margin: 0 0 5px 0; font-size: 11px; color: #143E7A; font-weight: bold;">Lưu ý quan trọng:</p>
@@ -152,13 +182,14 @@ const sendTicketEmail = async (email, ticketInfo) => {
                             <li>Làm thủ tục trực tuyến trước 24h để chọn chỗ ngồi ưng ý.</li>
                         </ul>
                     </div>
+                    `}
 
                     <!-- Thank you -->
                     <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #F0F0F0; text-align: center;">
                         <p style="margin: 0; font-style: italic; color: #496A98; font-size: 13px; line-height: 1.6;">
                             "Một lần nữa, SKYLINE xin chân thành cảm ơn Quý khách. Chúc Quý khách có một hành trình an toàn và đầy thú vị!"
                         </p>
-                        <p style="margin: 15px 0 0 0; font-weight: bold; color: #0B4DA2; font-size: 13px;">Đội ngũ SKYLINE</p>
+                        <p style="margin: 15px 0 0 0; font-weight: bold; color: ${headerColor}; font-size: 13px;">Đội ngũ SKYLINE</p>
                     </div>
                 </div>
 

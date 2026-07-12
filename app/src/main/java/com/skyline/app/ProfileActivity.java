@@ -168,6 +168,14 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(ProfileActivity.this, RankDetailsActivity.class));
         });
 
+        binding.layoutSkyPoints.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, PointHistoryActivity.class));
+        });
+
+        binding.layoutSkyPoints.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, PointHistoryActivity.class));
+        });
+
         binding.btnMyVouchers.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, MyVouchersActivity.class));
         });

@@ -270,6 +270,16 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         intent.putExtra("passenger_name", passengerName);
         intent.putExtra("passenger_email", passengerEmail);
         intent.putExtra("selected_seat", selectedSeat);
+        intent.putExtra("baggage_desc", getIntent().getStringExtra("baggage_desc"));
+        
+        // Pass arrays forward
+        intent.putStringArrayListExtra("passenger_names", getIntent().getStringArrayListExtra("passenger_names"));
+        intent.putStringArrayListExtra("selectedSeats", getIntent().getStringArrayListExtra("selectedSeats"));
+        intent.putStringArrayListExtra("returnSelectedSeats", getIntent().getStringArrayListExtra("returnSelectedSeats"));
+        intent.putIntegerArrayListExtra("baggage10s", getIntent().getIntegerArrayListExtra("baggage10s"));
+        intent.putIntegerArrayListExtra("baggage23s", getIntent().getIntegerArrayListExtra("baggage23s"));
+        intent.putIntegerArrayListExtra("returnB10s", getIntent().getIntegerArrayListExtra("returnB10s"));
+        intent.putIntegerArrayListExtra("returnB23s", getIntent().getIntegerArrayListExtra("returnB23s"));
 
         if ("card".equals(selectedMethodName)) {
             String cardNo = binding.etCardNumber.getText().toString().replaceAll("\\s", "");

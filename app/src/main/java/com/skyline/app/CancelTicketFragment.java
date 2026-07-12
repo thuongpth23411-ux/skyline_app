@@ -106,12 +106,14 @@ public class CancelTicketFragment extends Fragment {
         binding.btnBackAction.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         binding.btnConfirmCancel.setOnClickListener(v -> {
+            String bookingId = getArguments() != null ? getArguments().getString("bookingId") : null;
+            if (bookingId == null) return;
+
             new AlertDialog.Builder(requireContext())
                 .setTitle("Xác nhận hủy vé")
                 .setMessage("Bạn có chắc chắn muốn hủy vé máy bay này không? Số tiền hoàn lại sẽ được chuyển vào tài khoản của bạn trong 3-5 ngày làm việc.")
                 .setPositiveButton("Xác nhận hủy", (dialog, which) -> {
-                    Toast.makeText(requireContext(), "Yêu cầu hủy vé đã được gửi thành công.", Toast.LENGTH_LONG).show();
-                    getParentFragmentManager().popBackStack();
+                    performCancel(bookingId);
                 })
                 .setNegativeButton("Quay lại", null)
                 .show();
@@ -122,6 +124,29 @@ public class CancelTicketFragment extends Fragment {
                 .replace(R.id.fragmentContainer, new TicketPolicyFragment())
                 .addToBackStack(null)
                 .commit();
+        });
+    }
+
+    private void performCancel(String bookingCode) {
+        String token = "Bearer " + new com.skyline.app.utils.SessionManager(requireContext()).fetchAuthToken();
+        java.util.Map<String, String> body = new java.util.HashMap<>();
+        body.put("bookingCode", bookingCode);
+
+        com.skyline.app.network.RetrofitClient.getInstance().cancelTicket(token, body).enqueue(new retrofit2.Callback<com.skyline.app.network.BaseResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.skyline.app.network.BaseResponse> call, retrofit2.Response<com.skyline.app.network.BaseResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(requireContext(), "Đã hủy vé thành công.", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().popBackStack();
+                } else {
+                    Toast.makeText(requireContext(), "Không thể hủy vé. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.skyline.app.network.BaseResponse> call, Throwable t) {
+                Toast.makeText(requireContext(), "Lỗi kết nối máy chủ", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

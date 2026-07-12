@@ -24,17 +24,20 @@ const verifyToken = (req, res, next) => {
 router.post("/create", async (req, res) => {
     try {
         console.log("📥 Received create booking request:", JSON.stringify(req.body, null, 2));
-        const { userId, flights, passengerName, totalAmount, paymentMethod, email, oldTicketId } = req.body;
+        const { userId, flights, passengerName, passengerNames, totalAmount, paymentMethod, email, oldTicketId } = req.body;
 
         if (!flights || !Array.isArray(flights) || flights.length === 0) {
             console.error("❌ Flights data is missing or invalid");
             return res.status(400).json({ success: false, message: "Thông tin chuyến bay không hợp lệ" });
         }
 
-        // Nếu là đổi vé, tiến hành xóa vé cũ (theo bookingCode)
+        // Nếu là đổi vé, tiến hành cập nhật vé cũ thành Disabled
         if (oldTicketId) {
-            const deleteResult = await Ticket.deleteMany({ bookingCode: oldTicketId });
-            console.log(`🗑️ Deleted old ticket(s) for exchange: ${oldTicketId}, count: ${deleteResult.deletedCount}`);
+            const updateResult = await Ticket.updateMany(
+                { bookingCode: oldTicketId },
+                { $set: { ticketStatus: "Disabled" } }
+            );
+            console.log(`🚫 Disabled old ticket(s) for exchange: ${oldTicketId}, count: ${updateResult.modifiedCount}`);
         }
 
         let bookingCode;
@@ -88,34 +91,49 @@ router.post("/create", async (req, res) => {
 
         const ticketDocs = [];
 
-        for (let i = 0; i < flights.length; i++) {
-            const flight = flights[i];
+        // Lấy danh sách tên hành khách nếu có (từ mảng names hoặc đơn lẻ)
+        const namesList = Array.isArray(passengerNames) ? passengerNames : [passengerName];
 
-            // Tạo ticketId duy nhất
-            let ticketId;
-            let isTicketIdUnique = false;
-            while (!isTicketIdUnique) {
-                ticketId = "TKT" + Math.floor(10000000 + Math.random() * 90000000);
-                const existing = await Ticket.findOne({ ticketId });
-                if (!existing) isTicketIdUnique = true;
+        for (let j = 0; j < namesList.length; j++) {
+            const currentPassengerName = namesList[j];
+
+            for (let i = 0; i < flights.length; i++) {
+                const flight = flights[i];
+
+                // Lấy ghế tương ứng cho hành khách này
+                let currentSeat = "N/A";
+                if (flight.seatNumbers && Array.isArray(flight.seatNumbers)) {
+                    currentSeat = flight.seatNumbers[j] || "N/A";
+                } else {
+                    currentSeat = flight.seatNumber || "N/A";
+                }
+
+                // Tạo ticketId duy nhất cho từng vé
+                let ticketId;
+                let isTicketIdUnique = false;
+                while (!isTicketIdUnique) {
+                    ticketId = "TKT" + Math.floor(10000000 + Math.random() * 90000000);
+                    const existing = await Ticket.findOne({ ticketId });
+                    if (!existing) isTicketIdUnique = true;
+                }
+
+                const newTicket = new Ticket({
+                    ticketId: ticketId,
+                    bookingCode: bookingCode,
+                    userId: targetUserId.toString(),
+                    flightId: flight.flightId,
+                    seatId: currentSeat,
+                    passengerName: currentPassengerName,
+                    passengerType: j < (req.body.adults || 1) ? "Adult" : "Child",
+                    ticketType: flight.ticketType || (flights.length > 1 ? (i === 0 ? "Chiều đi" : "Chiều về") : "Một chiều"),
+                    totalAmount: (i === 0 && j === 0) ? totalAmount : 0, // Gán tổng tiền vào vé đầu tiên
+                    paymentStatus: "Paid",
+                    ticketStatus: "Booked",
+                    bookedAt: new Date()
+                });
+
+                ticketDocs.push(newTicket);
             }
-
-            const newTicket = new Ticket({
-                ticketId: ticketId,
-                bookingCode: bookingCode,
-                userId: targetUserId.toString(),
-                flightId: flight.flightId,
-                seatId: flight.seatNumber || "N/A",
-                passengerName: passengerName,
-                passengerType: "Adult",
-                ticketType: flight.ticketType || (flights.length > 1 ? (i === 0 ? "Chiều đi" : "Chiều về") : "Một chiều"),
-                totalAmount: i === 0 ? totalAmount : 0,
-                paymentStatus: "Paid",
-                ticketStatus: "Booked",
-                bookedAt: new Date()
-            });
-
-            ticketDocs.push(newTicket);
         }
 
         // Lưu tất cả vé
@@ -141,6 +159,7 @@ router.post("/create", async (req, res) => {
                     await PointHistory.create({
                         userId: targetUserId,
                         points: pointsToEarn,
+                        amount: totalAmount,
                         type: "EARN",
                         description: `Tích điểm từ đơn hàng ${bookingCode}`,
                         bookingCode: bookingCode
@@ -178,7 +197,8 @@ router.post("/create", async (req, res) => {
                 bookingCode,
                 passengerName,
                 tickets: createdTickets,
-                tempAccount
+                tempAccount,
+                isExchange: !!oldTicketId // Nếu có oldTicketId thì đây là luồng ĐỔI VÉ
             });
         }
 
@@ -258,6 +278,89 @@ router.post("/share", async (req, res) => {
     } catch (error) {
         console.error("❌ Error sharing ticket:", error);
         res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+router.post("/cancel", verifyToken, async (req, res) => {
+    try {
+        const { bookingCode } = req.body;
+        if (!bookingCode) return res.status(400).json({ success: false, message: "Thiếu mã đặt chỗ" });
+
+        // 1. Tìm thông tin tích điểm từ mã đặt chỗ này
+        const history = await PointHistory.findOne({ bookingCode, userId: req.userId, type: "EARN" });
+
+        const result = await Ticket.updateMany(
+            { bookingCode, userId: req.userId },
+            { $set: { ticketStatus: "Cancelled" } }
+        );
+
+        if (result.modifiedCount > 0) {
+            // 2. Thu hồi điểm nếu có
+            if (history) {
+                const user = await User.findById(req.userId);
+                if (user) {
+                    const pointsToDeduct = history.points;
+                    user.skyPoints = Math.max(0, (user.skyPoints || 0) - pointsToDeduct);
+
+                    // Cập nhật lại hạng (nếu cần)
+                    if (user.skyPoints < 500) user.rank = "Đồng";
+                    else if (user.skyPoints < 2000) user.rank = "Bạc";
+                    else if (user.skyPoints < 5000) user.rank = "Vàng";
+
+                    await user.save();
+
+                    // Lưu lịch sử thu hồi
+                    await PointHistory.create({
+                        userId: req.userId,
+                        points: pointsToDeduct,
+                        amount: history.amount || 0,
+                        type: "REVOKE",
+                        description: `Thu hồi điểm do hủy đơn hàng ${bookingCode}`,
+                        bookingCode: bookingCode
+                    });
+                    console.log(`♻️ Revoked ${pointsToDeduct} points from user ${user.fullName} due to cancellation`);
+                }
+            }
+
+            // 3. Gửi Email thông báo hủy vé
+            const user = await User.findById(req.userId);
+            if (user && user.email) {
+                // Lấy thông tin vé chi tiết để gửi mail
+                const cancelledTickets = await Ticket.find({ bookingCode, userId: req.userId }).lean();
+                const ticketList = [];
+                for (const t of cancelledTickets) {
+                    const flightData = await Flight.findOne({ flightId: t.flightId }).lean();
+                    const ticketObj = { ...t };
+                    if (flightData) {
+                        const depAirport = await Airport.findOne({ airportId: flightData.fromAirportId }).lean();
+                        const arrAirport = await Airport.findOne({ airportId: flightData.toAirportId }).lean();
+                        ticketObj.flightDetails = {
+                            flightNumber: flightData.flightNumber,
+                            departureCode: depAirport ? depAirport.airportId : "---",
+                            arrivalCode: arrAirport ? arrAirport.airportId : "---",
+                            departureAirport: depAirport ? depAirport.airportName : "Sân bay đi",
+                            arrivalAirport: arrAirport ? arrAirport.airportName : "Sân bay đến",
+                            time: flightData.departureAt
+                        };
+                    }
+                    ticketList.push(ticketObj);
+                }
+
+                await sendTicketEmail(user.email, {
+                    bookingCode,
+                    passengerName: user.fullName,
+                    tickets: ticketList,
+                    isCancel: true
+                });
+            }
+
+            res.json({ success: true, message: "Đã hủy vé thành công và thu hồi điểm tích lũy" });
+        } else {
+            res.status(404).json({ success: false, message: "Không tìm thấy vé hoặc không có quyền hủy" });
+        }
+    } catch (error) {
+        console.error("❌ Error cancelling ticket:", error);
+        res.status(500).json({ success: false, message: "Lỗi hệ thống" });
     }
 });
 
