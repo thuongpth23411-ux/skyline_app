@@ -146,7 +146,7 @@ public class MemberInfoActivity extends AppCompatActivity {
         int targetPoints;
         int badgeColor;
 
-        // Tính toán hạng DỰA TRÊN ĐIỂM thực tế
+        // CẬP NHẬT LOGIC CHUẨN: Dưới 1000 là ĐỒNG
         if (points < 1000) {
             actualRank = "ĐỒNG";
             targetPoints = 1000;
@@ -176,6 +176,17 @@ public class MemberInfoActivity extends AppCompatActivity {
         binding.tvRankBadge.setTextColor(Color.WHITE);
         binding.tvMemberTier.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_medal, 0, 0, 0);
         androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(binding.tvMemberTier, ColorStateList.valueOf(badgeColor));
+
+        // Load Avatar via Glide
+        String avatarUrl = user.getAvatarUrl();
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            if (avatarUrl.startsWith("/")) avatarUrl = "http://10.0.2.2:3000" + avatarUrl;
+            com.bumptech.glide.Glide.with(this)
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.img_team1)
+                    .error(R.drawable.img_team1)
+                    .into(binding.imgAvatar);
+        }
 
         binding.itemEmail.fieldValue.setText(user.getEmail());
         binding.itemEmail.imgLock.setVisibility(View.GONE);
@@ -312,6 +323,9 @@ public class MemberInfoActivity extends AppCompatActivity {
         body.put("dob", binding.itemDob.fieldValue.getText().toString());
         body.put("country", binding.itemCountry.fieldValue.getText().toString());
         body.put("gender", binding.itemGender.fieldValue.getText().toString());
+        
+        // Gửi URL ảnh demo để kiểm tra tính năng đồng bộ
+        body.put("avatarUrl", "https://i.pravatar.cc/300?u=" + name);
 
         RetrofitClient.getInstance().updateProfile(token, body).enqueue(new Callback<BaseResponse>() {
             @Override

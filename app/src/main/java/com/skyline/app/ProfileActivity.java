@@ -52,44 +52,69 @@ public class ProfileActivity extends AppCompatActivity {
 
         binding.btnLogoutItem.setVisibility(View.VISIBLE);
         
-        // Hiển thị dữ liệu tạm thời từ SharedPreferences trong lúc tải
+        // 1. HIỂN THỊ TỨC THÌ TỪ BỘ NHỚ MÁY (Tránh trễ)
         binding.tvUsername.setText(sessionManager.getUserName());
         binding.tvCardNumber.setText(sessionManager.getMemberCode());
+        int savedPoints = sessionManager.getUserPoints();
+        binding.tvSkyPoints.setText(String.valueOf(savedPoints));
+        updateRankUI(savedPoints);
+        
+        String savedAvatar = sessionManager.getUserAvatar();
+        loadAvatar(savedAvatar);
 
+        // 2. TẢI DỮ LIỆU MỚI NHẤT TỪ SERVER ĐỂ ĐỒNG BỘ
         String token = "Bearer " + sessionManager.fetchAuthToken();
-
-        // Load dữ liệu mới nhất từ MongoDB qua API
         RetrofitClient.getInstance().getProfile(token).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     User user = response.body();
-                    
-                    // Cập nhật lại SessionManager với dữ liệu mới nhất
                     sessionManager.saveUser(user);
                     
-                    // Cập nhật UI dựa trên ĐIỂM thực tế
-                    int points = user.getSkyPoints();
-                    String actualRank = (points < 1000) ? "ĐỒNG" : (points < 5000) ? "BẠC" : "VÀNG";
-                    
                     binding.tvUsername.setText(user.getName());
-                    binding.tvUserRank.setText("HẠNG " + actualRank);
-                    binding.tvSkyPoints.setText(String.valueOf(points));
                     binding.tvCardNumber.setText(user.getMemberCode());
+                    binding.tvSkyPoints.setText(String.valueOf(user.getSkyPoints()));
+                    updateRankUI(user.getSkyPoints());
+                    loadAvatar(user.getAvatarUrl());
 
-                    // Generate Mini QR for the card
                     if (user.getMemberCode() != null) {
                         android.graphics.Bitmap qr = QrGenerator.generateQrCode(user.getMemberCode(), 200);
                         if (qr != null) binding.imgCardQr.setImageBitmap(qr);
                     }
                 }
             }
-
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                // Nếu lỗi, vẫn giữ dữ liệu cũ để người dùng không thấy trống
-            }
+            public void onFailure(Call<User> call, Throwable t) {}
         });
+    }
+
+    private void loadAvatar(String url) {
+        if (url == null || url.isEmpty()) return;
+        String fullUrl = url.startsWith("/") ? "http://10.0.2.2:3000" + url : url;
+        com.bumptech.glide.Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.img_team1)
+                .error(R.drawable.img_team1)
+                .into(binding.imgAvatar);
+    }
+
+    private void updateRankUI(int points) {
+        String actualRank;
+        String nextRank;
+        if (points < 1000) {
+            actualRank = "ĐỒNG";
+            nextRank = "BẠC";
+        } else if (points < 5000) {
+            actualRank = "BẠC";
+            nextRank = "VÀNG";
+        } else {
+            actualRank = "VÀNG";
+            nextRank = "KIM CƯƠNG";
+        }
+
+        binding.tvUserRank.setText("HẠNG " + actualRank);
+        binding.tvCurrentRankCard.setText(actualRank);
+        binding.tvNextRankCard.setText(nextRank);
     }
 
     private void setupBottomNavigation() {
