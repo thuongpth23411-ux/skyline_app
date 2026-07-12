@@ -59,8 +59,10 @@ router.post("/send-otp-reg", async (req, res) => {
         }
 
         await sendOTP(email, otp);
+        console.log(`✅ OTP sent to ${email}: ${otp}`);
         res.json({ success: true, message: "Mã OTP đã được gửi vào email của bạn" });
     } catch (error) {
+        console.error("❌ Send OTP Error:", error);
         res.status(500).json({ success: false, message: "Lỗi máy chủ" });
     }
 });

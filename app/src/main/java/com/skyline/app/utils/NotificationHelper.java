@@ -91,6 +91,12 @@ public class NotificationHelper {
         btnAction.setOnClickListener(v -> {
             dialog.dismiss();
             
+            // Nếu là yêu cầu đăng nhập
+            if (title.equals("Yêu cầu đăng nhập")) {
+                activity.startActivity(new Intent(activity, com.skyline.app.LoginActivity.class));
+                return;
+            }
+
             // Nếu là thông báo hệ thống thông thường, không cần mở trang chi tiết
             if (type == NotifType.SYSTEM) return;
 
