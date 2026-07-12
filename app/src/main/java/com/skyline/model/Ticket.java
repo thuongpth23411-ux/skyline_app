@@ -17,6 +17,9 @@ public class Ticket implements Serializable {
     private final double totalAmount;
     private final String passengerName;
     private String fullDate; // yyyy-MM-dd
+    private String status;
+    private String airlineLogoUrl;
+    private String baggage;
 
     public Ticket(String day, String monthYear, String flightClass, String flightNo, String originCode, String originCity, String destCode, String destCity, String time, String seat, double totalAmount, String passengerName, String ticketType) {
         this.day = day;
@@ -50,4 +53,13 @@ public class Ticket implements Serializable {
     
     public String getFullDate() { return fullDate; }
     public void setFullDate(String fullDate) { this.fullDate = fullDate; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getAirlineLogoUrl() { return airlineLogoUrl; }
+    public void setAirlineLogoUrl(String airlineLogoUrl) { this.airlineLogoUrl = airlineLogoUrl; }
+
+    public String getBaggage() { return baggage; }
+    public void setBaggage(String baggage) { this.baggage = baggage; }
 }

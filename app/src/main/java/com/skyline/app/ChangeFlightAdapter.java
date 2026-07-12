@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.skyline.app.databinding.ItemChangeFlightBinding;
 import com.skyline.app.network.Flight;
+import com.skyline.app.network.RetrofitClient;
+import com.bumptech.glide.Glide;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +21,7 @@ public class ChangeFlightAdapter extends RecyclerView.Adapter<ChangeFlightAdapte
     private final List<Flight> flights;
     private final OnFlightSelectedListener listener;
     private final double oldBasePrice;
+    private final String targetClass;
     private int selectedPos = -1;
     private final SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -27,9 +30,10 @@ public class ChangeFlightAdapter extends RecyclerView.Adapter<ChangeFlightAdapte
         void onFlightSelected(Flight flight);
     }
 
-    public ChangeFlightAdapter(List<Flight> flights, double oldBasePrice, OnFlightSelectedListener listener) {
+    public ChangeFlightAdapter(List<Flight> flights, double oldBasePrice, String targetClass, OnFlightSelectedListener listener) {
         this.flights = flights;
         this.oldBasePrice = oldBasePrice;
+        this.targetClass = targetClass;
         this.listener = listener;
         isoParser.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -45,10 +49,27 @@ public class ChangeFlightAdapter extends RecyclerView.Adapter<ChangeFlightAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Flight f = flights.get(position);
         holder.binding.tvFlightInfo.setText(String.format("%s • %s", f.getFlightNumber(), f.getAircraftModel()));
-        holder.binding.tvClassName.setText("Sky Eco"); 
+        
+        String displayClass = "Phổ thông";
+        double newPrice = f.getBasePrice();
+        
+        if (targetClass != null && targetClass.contains("Thương gia")) {
+            displayClass = "Thương gia";
+            // Tìm giá Thương gia trong priceOptions
+            if (f.getPriceOptions() != null) {
+                for (Flight.PriceOption opt : f.getPriceOptions()) {
+                    if ("BUSINESS".equalsIgnoreCase(opt.getType())) {
+                        newPrice = opt.getPrice();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        holder.binding.tvClassName.setText(displayClass); 
         
         DecimalFormat df = new DecimalFormat("#,###");
-        double diff = Math.max(0, f.getBasePrice() - oldBasePrice);
+        double diff = Math.max(0, newPrice - oldBasePrice);
         holder.binding.tvPriceDiff.setText(String.format("+ %s VNĐ", df.format(diff)));
 
         holder.binding.tvOriginCode.setText(f.getDepartureAirport() != null ? f.getDepartureAirport().getCode() : "---");

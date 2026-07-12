@@ -66,7 +66,11 @@ public class FlightAdapter extends RecyclerView.Adapter<FlightAdapter.ViewHolder
 
         holder.tvDepCode.setText(flight.getDepartureAirport() != null ? flight.getDepartureAirport().getCode() : "");
         holder.tvArrCode.setText(flight.getArrivalAirport() != null ? flight.getArrivalAirport().getCode() : "");
-        holder.tvAirlineName.setText(flight.getFlightNumber());
+        
+        String airlineName = (flight.getAirline() != null && flight.getAirline().getName() != null) 
+                            ? flight.getAirline().getName() 
+                            : flight.getFlightNumber();
+        holder.tvAirlineName.setText(airlineName);
         holder.tvAircraft.setText(flight.getAircraftModel());
         holder.tvPrice.setText(priceFormat.format(flight.getBasePrice()) + " VND");
 

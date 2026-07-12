@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.skyline.app.databinding.ActivityPaymentSuccessBinding;
+import com.skyline.app.network.RetrofitClient;
 import com.skyline.model.Ticket;
 
 public class PaymentSuccessActivity extends AppCompatActivity {
@@ -60,6 +61,11 @@ public class PaymentSuccessActivity extends AppCompatActivity {
                         passengerName != null ? passengerName : "Khách hàng",
                         "Chiều đi"
                     );
+                    if (flight.getAirline() != null) {
+                        ticket.setAirlineLogoUrl(RetrofitClient.formatUrl(flight.getAirline().getLogo()));
+                    }
+                    String baggage = getIntent().getStringExtra("baggage_desc");
+                    ticket.setBaggage(baggage != null ? baggage : "Đã bao gồm 7kg xách tay");
 
                     // Open Detail Fragment via HomeActivity
                     Intent intent = new Intent(this, HomeActivity.class);

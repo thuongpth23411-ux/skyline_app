@@ -82,6 +82,9 @@ public interface ApiService {
     @POST("tickets/share")
     Call<BaseResponse> shareTicket(@Body Map<String, String> body);
 
+    @POST("tickets/cancel")
+    Call<BaseResponse> cancelTicket(@Header("Authorization") String token, @Body Map<String, String> body);
+
     @GET("flights/{flightId}/seats")
     Call<List<FlightSeat>> getFlightSeats(@Path("flightId") String flightId);
 
@@ -105,4 +108,7 @@ public interface ApiService {
 
     @DELETE("auth/passenger-delete/{id}")
     Call<BaseResponse> deletePassenger(@Header("Authorization") String token, @Path("id") String id);
+
+    @GET("auth/point-history")
+    Call<List<PointHistory>> getPointHistory(@Header("Authorization") String token);
 }

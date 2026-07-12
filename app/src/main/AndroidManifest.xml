@@ -93,6 +93,9 @@
             android:name=".RankDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".PointHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".PromotionsActivity"
             android:exported="false" />
         <activity

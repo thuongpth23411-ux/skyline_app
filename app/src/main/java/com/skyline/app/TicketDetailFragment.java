@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -18,7 +20,10 @@ import com.skyline.app.network.RetrofitClient;
 import com.skyline.model.Ticket;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -64,6 +69,7 @@ public class TicketDetailFragment extends Fragment {
     }
 
     private void loadTicketData(Ticket ticket) {
+        if (binding == null) return;
         binding.tvTicketId.setText(ticket.getFlightNo());
         binding.tvOriginCode.setText(ticket.getOriginCode());
         binding.tvOriginCity.setText(ticket.getOriginCity());
@@ -73,9 +79,20 @@ public class TicketDetailFragment extends Fragment {
         binding.tvTimeRange.setText(ticket.getTime());
         binding.tvPassenger.setText(ticket.getPassengerName());
         binding.tvSeatClass.setText(ticket.getSeat() + " / " + ticket.getFlightClass());
+        binding.tvBaggage.setText(ticket.getBaggage() != null ? ticket.getBaggage() : "Không có hành lý mua thêm");
 
-        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=SKYLINE_" + ticket.getFlightNo();
-        Glide.with(this).load(qrUrl).placeholder(R.drawable.bg_square_placeholder).into(binding.ivQR);
+        String bookingId = ticket.getFlightNo();
+        if (bookingId == null || bookingId.isEmpty()) bookingId = "SKYLINE_TICKET";
+        
+        // Encode URL and increase resolution for better quality
+        String qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" + android.net.Uri.encode("SKYLINE_TICKET_" + bookingId);
+        
+        if (isAdded()) {
+            Glide.with(this)
+                .load(qrUrl)
+                .placeholder(R.drawable.bg_square_placeholder)
+                .into(binding.ivQR);
+        }
     }
 
     private void setupClickListeners() {
@@ -92,28 +109,25 @@ public class TicketDetailFragment extends Fragment {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            new AlertDialog.Builder(requireContext())
-                .setTitle("Lưu vé điện tử")
-                .setMessage("Quý khách có muốn lưu hình ảnh vé này vào thư viện ảnh của thiết bị không?")
-                .setPositiveButton("Lưu ngay", (dialog, which) -> saveTicketToGallery())
-                .setNegativeButton("Bỏ qua", null)
-                .show();
+            showCustomConfirmDialog("Lưu vé điện tử", 
+                "Quý khách có muốn lưu hình ảnh vé này vào thư viện ảnh để dễ dàng sử dụng khi làm thủ tục không?",
+                "Để sau", "Lưu ngay", () -> saveTicketToGallery());
         });
 
         binding.btnShare.setOnClickListener(v -> {
             com.skyline.app.utils.SessionManager sm = new com.skyline.app.utils.SessionManager(requireContext());
             String targetEmail = sm.getUserEmail();
-            
-            new AlertDialog.Builder(requireContext())
-                .setTitle("Chia sẻ vé")
-                .setMessage("Hệ thống sẽ gửi bản sao vé điện tử đến email " + targetEmail + ". Tiếp tục?")
-                .setPositiveButton("Gửi email", (dialog, which) -> shareTicketViaEmail(targetEmail))
-                .setNegativeButton("Hủy", null)
-                .show();
+            showCustomConfirmDialog("Gửi vé qua Email",
+                "Skyline sẽ gửi một bản sao vé điện tử đến email " + targetEmail + " của quý khách. Bạn có muốn thực hiện không?",
+                "Hủy", "Gửi ngay", () -> shareTicketViaEmail(targetEmail));
         });
 
         binding.btnCancel.setOnClickListener(v -> {
             if (ticketData != null) {
+                if (!canPerformAction()) {
+                    showActionDeniedDialog("hủy vé");
+                    return;
+                }
                 CancelTicketFragment fragment = CancelTicketFragment.newInstance(
                     ticketData.getFlightNo(),
                     ticketData.getOriginCode(),
@@ -136,6 +150,10 @@ public class TicketDetailFragment extends Fragment {
 
         binding.btnEdit.setOnClickListener(v -> {
             if (ticketData != null) {
+                if (!canPerformAction()) {
+                    showActionDeniedDialog("đổi vé");
+                    return;
+                }
                 ChangeTicketFragment fragment = ChangeTicketFragment.newInstance(ticketData);
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragmentContainer, fragment)
@@ -143,6 +161,77 @@ public class TicketDetailFragment extends Fragment {
                     .commit();
             }
         });
+    }
+
+    private boolean canPerformAction() {
+        if (ticketData == null || ticketData.getFullDate() == null || ticketData.getTime() == null) return true;
+        try {
+            // fullDate is yyyy-MM-dd, time is HH:mm
+            String timeOnly = ticketData.getTime().split(" - ")[0].trim();
+            String departureDateTimeStr = ticketData.getFullDate() + " " + timeOnly;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            Date departureDate = sdf.parse(departureDateTimeStr);
+            
+            if (departureDate != null) {
+                long diffInMillis = departureDate.getTime() - System.currentTimeMillis();
+                // 24 hours in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+                return diffInMillis >= (24L * 60 * 60 * 1000);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("TicketDetail", "Error checking action time: " + e.getMessage());
+        }
+        return true; 
+    }
+
+    private void showActionDeniedDialog(String action) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tvTitle);
+        TextView tvMsg = dialogView.findViewById(R.id.tvMessage);
+        com.google.android.material.button.MaterialButton btnOk = dialogView.findViewById(R.id.btnOk);
+
+        tvTitle.setText("Không thể " + action);
+        tvMsg.setText("Rất tiếc, quý khách chỉ có thể thực hiện " + action + " trước giờ khởi hành ít nhất 24 tiếng. Vui lòng liên hệ tổng đài để được hỗ trợ thêm.");
+
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void showCustomConfirmDialog(String title, String message, String negBtn, String posBtn, Runnable onPositive) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_custom_confirm, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tvTitle);
+        TextView tvMsg = dialogView.findViewById(R.id.tvMessage);
+        com.google.android.material.button.MaterialButton btnNeg = dialogView.findViewById(R.id.btnNegative);
+        com.google.android.material.button.MaterialButton btnPos = dialogView.findViewById(R.id.btnPositive);
+
+        tvTitle.setText(title);
+        tvMsg.setText(message);
+        btnNeg.setText(negBtn);
+        btnPos.setText(posBtn);
+
+        btnNeg.setOnClickListener(v -> dialog.dismiss());
+        btnPos.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (onPositive != null) onPositive.run();
+        });
+
+        dialog.show();
     }
 
     private void shareTicketViaEmail(String email) {

@@ -96,71 +96,86 @@ public class PaymentOtpActivity extends AppCompatActivity {
         String flightJson = intent.getStringExtra("flight_json");
         String returnFlightJson = intent.getStringExtra("return_flight_json");
         
-        android.util.Log.d("Booking", "Total Amount: " + total);
-        android.util.Log.d("Booking", "Flight JSON: " + flightJson);
-
-        Map<String, Object> bookingData = new HashMap<>();
-        bookingData.put("userId", userId != null ? userId : "guest_" + System.currentTimeMillis());
-        bookingData.put("passengerName", name != null ? name : "Khách hàng");
-        bookingData.put("email", intent.getStringExtra("passenger_email"));
-        bookingData.put("totalAmount", total);
-        bookingData.put("paymentMethod", intent.getStringExtra("payment_method") != null ? intent.getStringExtra("payment_method") : "Unknown");
-        bookingData.put("oldTicketId", intent.getStringExtra("old_ticket_id"));
+        List<String> names = intent.getStringArrayListExtra("passenger_names");
+        List<String> seats = intent.getStringArrayListExtra("selectedSeats");
+        List<String> returnSeats = intent.getStringArrayListExtra("returnSelectedSeats");
         
-        List<Map<String, String>> flightsList = new ArrayList<>();
         com.google.gson.Gson gson = new com.google.gson.Gson();
         
         try {
-            // Flight 1 (Departure)
-            if (flightJson != null && !flightJson.isEmpty()) {
-                com.skyline.app.network.Flight flight = gson.fromJson(flightJson, com.skyline.app.network.Flight.class);
-                Map<String, String> f1 = new HashMap<>();
-                f1.put("flightId", flight.getId());
-                f1.put("seatNumber", intent.getStringExtra("selected_seat") != null ? intent.getStringExtra("selected_seat") : "N/A");
-                f1.put("ticketType", returnFlightJson != null ? "Chiều đi" : "Một chiều");
-                flightsList.add(f1);
-            }
-            
-            // Flight 2 (Return - if any)
-            if (returnFlightJson != null && !returnFlightJson.isEmpty()) {
-                com.skyline.app.network.Flight returnFlight = gson.fromJson(returnFlightJson, com.skyline.app.network.Flight.class);
-                Map<String, String> f2 = new HashMap<>();
-                f2.put("flightId", returnFlight.getId());
-                f2.put("seatNumber", intent.getStringExtra("return_selected_seat") != null ? intent.getStringExtra("return_selected_seat") : "N/A");
-                f2.put("ticketType", "Chiều về");
-                flightsList.add(f2);
-            }
-        } catch (Exception e) {
-            android.util.Log.e("Booking", "Error parsing flight JSON", e);
-            navigateToFailure("Lỗi dữ liệu chuyến bay: " + e.getMessage());
-            return;
-        }
-        
-        if (flightsList.isEmpty()) {
-            navigateToFailure("Không tìm thấy thông tin chuyến bay để đặt");
-            return;
-        }
+            int totalPax = names != null ? names.size() : 1;
+            final int[] successCount = {0};
+            final int totalRequests = totalPax * (returnFlightJson != null ? 2 : 1);
+            final boolean[] hasFailed = {false};
 
-        bookingData.put("flights", flightsList);
-        android.util.Log.d("Booking", "Request Body: " + gson.toJson(bookingData));
-
-        RetrofitClient.getInstance().createBooking(bookingData).enqueue(new Callback<BaseResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    navigateToSuccess();
-                } else {
-                    String error = "Lỗi lưu thông tin vé";
-                    if (response.body() != null && response.body().getMessage() != null) {
-                        error = response.body().getMessage();
-                    }
-                    navigateToFailure(error);
+            for (int i = 0; i < totalPax; i++) {
+                String pName = (names != null && i < names.size()) ? names.get(i) : (name != null ? name : "Khách hàng");
+                
+                // Flight 1 (Departure)
+                if (flightJson != null && !flightJson.isEmpty()) {
+                    String seat = (seats != null && i < seats.size()) ? seats.get(i) : "N/A";
+                    createSingleTicket(userId, pName, intent.getStringExtra("passenger_email"), 
+                        total / totalRequests, intent.getStringExtra("payment_method"),
+                        flightJson, seat,
+                        returnFlightJson != null ? "Khứ hồi - Đi" : "Một chiều",
+                        successCount, totalRequests, hasFailed);
+                }
+                
+                // Flight 2 (Return)
+                if (returnFlightJson != null && !returnFlightJson.isEmpty()) {
+                    String returnSeat = (returnSeats != null && i < returnSeats.size()) ? returnSeats.get(i) : "N/A";
+                    createSingleTicket(userId, pName, intent.getStringExtra("passenger_email"), 
+                        total / totalRequests, intent.getStringExtra("payment_method"),
+                        returnFlightJson, returnSeat,
+                        "Khứ hồi - Về",
+                        successCount, totalRequests, hasFailed);
                 }
             }
+        } catch (Exception e) {
+            navigateToFailure("Lỗi xử lý: " + e.getMessage());
+        }
+    }
 
+    private void createSingleTicket(String userId, String pName, String email, double amount, String method,
+                                   String flightJson, String seat, String type, 
+                                   int[] successCount, int totalRequests, boolean[] hasFailed) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", userId != null ? userId : "guest_" + System.currentTimeMillis());
+        data.put("passengerName", pName);
+        data.put("email", email);
+        data.put("totalAmount", amount);
+        data.put("paymentMethod", method != null ? method : "Unknown");
+        
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        com.skyline.app.network.Flight flight = gson.fromJson(flightJson, com.skyline.app.network.Flight.class);
+        
+        List<Map<String, String>> flightsList = new ArrayList<>();
+        Map<String, String> f = new HashMap<>();
+        f.put("flightId", flight.getId());
+        f.put("seatNumber", seat != null ? seat : "N/A");
+        f.put("ticketType", type);
+        flightsList.add(f);
+        data.put("flights", flightsList);
+
+        RetrofitClient.getInstance().createBooking(data).enqueue(new Callback<BaseResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+                if (hasFailed[0]) return;
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    successCount[0]++;
+                    if (successCount[0] == totalRequests) {
+                        navigateToSuccess();
+                    }
+                } else {
+                    hasFailed[0] = true;
+                    navigateToFailure("Lỗi khi tạo vé cho " + pName);
+                }
+            }
             @Override
             public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
-                navigateToFailure("Lỗi mạng: " + t.getMessage());
+                if (hasFailed[0]) return;
+                hasFailed[0] = true;
+                navigateToFailure("Lỗi mạng khi tạo vé cho " + pName);
             }
         });
     }

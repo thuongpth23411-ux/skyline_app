@@ -36,6 +36,8 @@ public class FareSelectionActivity extends AppCompatActivity {
     private String outboundFareType;
     private String fromName, toName;
     private int adults, children;
+    private boolean isExchange = false;
+    private String oldTicketId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,9 @@ public class FareSelectionActivity extends AppCompatActivity {
         toName = intent.getStringExtra("toName");
         adults = intent.getIntExtra("adults", 1);
         children = intent.getIntExtra("children", 0);
+        
+        isExchange = intent.getBooleanExtra("isExchange", false);
+        oldTicketId = intent.getStringExtra("oldTicketId");
         
         if (isSelectingReturn) {
             outboundFlightJson = intent.getStringExtra("outbound_flight");
@@ -198,6 +203,26 @@ public class FareSelectionActivity extends AppCompatActivity {
     }
 
     private void navigateToAddon(String fareType, double price) {
+        if (isExchange) {
+            Intent intent = new Intent(this, ConfirmPaymentActivity.class);
+            intent.putExtra("is_exchange", true);
+            intent.putExtra("old_ticket_id", oldTicketId);
+            intent.putExtra("flight_json", gson.toJson(flight));
+            intent.putExtra("fare_type", fareType);
+            
+            // Fixed exchange fee
+            double fee = fareType.equalsIgnoreCase("Business") ? 0 : 300000;
+            intent.putExtra("exchange_fee", fee);
+            intent.putExtra("totalAmount", price + fee); 
+            intent.putExtra("price_diff", price);
+            
+            // User email for receipt
+            intent.putExtra("passenger_email", new com.skyline.app.utils.SessionManager(this).getUserEmail());
+            
+            startActivity(intent);
+            return;
+        }
+
         if (isRoundTrip && !isSelectingReturn) {
             // ĐI TIẾP ĐẾN CHỌN CHUYẾN BAY VỀ
             Intent intent = new Intent(this, FlightResultsActivity.class);

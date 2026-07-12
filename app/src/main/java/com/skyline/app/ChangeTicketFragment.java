@@ -120,7 +120,7 @@ public class ChangeTicketFragment extends Fragment {
 
     private void setupRecyclerView() {
         binding.rvFlights.setLayoutManager(new LinearLayoutManager(requireContext()));
-        flightAdapter = new ChangeFlightAdapter(filteredFlights, oldBasePrice, flight -> {
+        flightAdapter = new ChangeFlightAdapter(filteredFlights, oldBasePrice, oldTicket.getFlightClass(), flight -> {
             selectedFlight = flight;
             updateSummary();
         });
@@ -128,11 +128,13 @@ public class ChangeTicketFragment extends Fragment {
     }
 
     private void searchFlights(String date) {
+        if (binding == null || oldTicket == null) return;
         binding.progressBar.setVisibility(View.VISIBLE);
         RetrofitClient.getInstance().searchFlights(new FlightSearchRequest(oldTicket.getOriginCode(), oldTicket.getDestCode(), date))
             .enqueue(new Callback<List<Flight>>() {
                 @Override
                 public void onResponse(@NonNull Call<List<Flight>> call, @NonNull Response<List<Flight>> response) {
+                    if (binding == null) return;
                     binding.progressBar.setVisibility(View.GONE);
                     if (response.isSuccessful() && response.body() != null) {
                         allFlightsForDay.clear();
@@ -141,7 +143,11 @@ public class ChangeTicketFragment extends Fragment {
                     }
                 }
                 @Override public void onFailure(@NonNull Call<List<Flight>> call, @NonNull Throwable t) {
+                    if (binding == null) return;
                     binding.progressBar.setVisibility(View.GONE);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Lỗi tải chuyến bay", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
     }
@@ -158,9 +164,21 @@ public class ChangeTicketFragment extends Fragment {
         if (selectedFlight == null || oldTicket == null) return;
 
         double newPrice = selectedFlight.getBasePrice();
+        String tClass = oldTicket.getFlightClass();
+        if (tClass != null && tClass.contains("Thương gia")) {
+            if (selectedFlight.getPriceOptions() != null) {
+                for (Flight.PriceOption opt : selectedFlight.getPriceOptions()) {
+                    if ("BUSINESS".equalsIgnoreCase(opt.getType())) {
+                        newPrice = opt.getPrice();
+                        break;
+                    }
+                }
+            }
+        }
+        
         currentDiff = Math.max(0, newPrice - oldBasePrice);
         
-        currentFee = (oldTicket.getFlightClass() != null && oldTicket.getFlightClass().contains("Thương gia")) ? 600000.0 : 300000.0;
+        currentFee = (tClass != null && tClass.contains("Thương gia")) ? 600000.0 : 300000.0;
         currentTotal = currentDiff + currentFee;
 
         DecimalFormat df = new DecimalFormat("#,###");
@@ -181,10 +199,8 @@ public class ChangeTicketFragment extends Fragment {
                 return;
             }
 
-            // Gán ghế ngẫu nhiên: ví dụ hàng 10, ghế A-F
-            String randomSeat = (selectedFlight.getArrivalAirport() != null ? selectedFlight.getArrivalAirport().getCode() : "SGN") 
-                                + "_" + (10 + (int)(Math.random() * 20)) 
-                                + (char)('A' + (int)(Math.random() * 6));
+            // Gán ghế ngẫu nhiên: ví dụ 12B, 15A
+            String randomSeat = (10 + (int)(Math.random() * 20)) + "" + (char)('A' + (int)(Math.random() * 6));
 
             Intent intent = new Intent(requireContext(), ConfirmPaymentActivity.class);
             intent.putExtra("totalAmount", currentTotal);

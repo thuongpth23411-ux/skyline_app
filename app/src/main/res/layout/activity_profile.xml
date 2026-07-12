@@ -160,8 +160,12 @@
 
                     <!-- Points and Tier Section -->
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_sky_points"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:padding="24dp">
 
                         <TextView
@@ -231,6 +235,7 @@
                                     android:textSize="12sp" />
 
                                 <TextView
+                                    android:id="@+id/tv_current_rank_card"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/profile_member"
@@ -254,6 +259,7 @@
                                     android:textSize="12sp" />
 
                                 <TextView
+                                    android:id="@+id/tv_next_rank_card"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/profile_silver"

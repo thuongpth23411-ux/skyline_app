@@ -40,6 +40,7 @@ public class MemberInfoActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private boolean isEditMode = false;
     private Uri cameraImageUri;
+    private Uri selectedImageUri; // Thêm biến lưu ảnh đã chọn
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
@@ -56,6 +57,7 @@ public class MemberInfoActivity extends AppCompatActivity {
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
+                    selectedImageUri = uri; // Lưu lại URI
                     binding.imgAvatar.setImageURI(uri);
                 }
             }
@@ -65,6 +67,7 @@ public class MemberInfoActivity extends AppCompatActivity {
             new ActivityResultContracts.TakePicture(),
             success -> {
                 if (success && cameraImageUri != null) {
+                    selectedImageUri = cameraImageUri; // Lưu lại URI
                     binding.imgAvatar.setImageURI(cameraImageUri);
                 }
             }
@@ -146,7 +149,7 @@ public class MemberInfoActivity extends AppCompatActivity {
         int targetPoints;
         int badgeColor;
 
-        // Tính toán hạng DỰA TRÊN ĐIỂM thực tế
+        // CẬP NHẬT LOGIC CHUẨN: Dưới 1000 là ĐỒNG
         if (points < 1000) {
             actualRank = "ĐỒNG";
             targetPoints = 1000;
@@ -176,6 +179,17 @@ public class MemberInfoActivity extends AppCompatActivity {
         binding.tvRankBadge.setTextColor(Color.WHITE);
         binding.tvMemberTier.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_medal, 0, 0, 0);
         androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(binding.tvMemberTier, ColorStateList.valueOf(badgeColor));
+
+        // Load Avatar via Glide
+        String avatarUrl = user.getAvatarUrl();
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            if (avatarUrl.startsWith("/")) avatarUrl = "http://10.0.2.2:3000" + avatarUrl;
+            com.bumptech.glide.Glide.with(this)
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.img_team1)
+                    .error(R.drawable.img_team1)
+                    .into(binding.imgAvatar);
+        }
 
         binding.itemEmail.fieldValue.setText(user.getEmail());
         binding.itemEmail.imgLock.setVisibility(View.GONE);
@@ -312,6 +326,14 @@ public class MemberInfoActivity extends AppCompatActivity {
         body.put("dob", binding.itemDob.fieldValue.getText().toString());
         body.put("country", binding.itemCountry.fieldValue.getText().toString());
         body.put("gender", binding.itemGender.fieldValue.getText().toString());
+        
+        // Chuyển ảnh sang Base64 để lưu vào database thực tế
+        if (selectedImageUri != null) {
+            String base64Image = encodeImageToBase64(selectedImageUri);
+            if (base64Image != null) {
+                body.put("avatarUrl", "data:image/jpeg;base64," + base64Image);
+            }
+        }
 
         RetrofitClient.getInstance().updateProfile(token, body).enqueue(new Callback<BaseResponse>() {
             @Override
@@ -331,6 +353,28 @@ public class MemberInfoActivity extends AppCompatActivity {
                 toast("Lỗi kết nối");
             }
         });
+    }
+
+    private String encodeImageToBase64(Uri uri) {
+        try {
+            android.graphics.Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            // Resize ảnh xuống để tránh quá nặng (Max 500px)
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+            float ratio = (float) width / height;
+            if (width > 500) {
+                width = 500;
+                height = (int) (width / ratio);
+            }
+            android.graphics.Bitmap resized = android.graphics.Bitmap.createScaledBitmap(bitmap, width, height, true);
+            
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            resized.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, baos);
+            byte[] b = baos.toByteArray();
+            return android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void showCountryPicker() {
