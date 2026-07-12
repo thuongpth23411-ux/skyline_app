@@ -75,6 +75,12 @@
             android:name=".SupportActivity"
             android:exported="false" />
         <activity
+            android:name=".MemberQrActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChangePasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".PassengerDirectoryActivity"
             android:exported="false" />
         <activity

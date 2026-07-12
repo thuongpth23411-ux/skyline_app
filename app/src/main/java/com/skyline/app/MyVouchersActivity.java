@@ -23,10 +23,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.inputmethod.InputMethodManager;
+
 public class MyVouchersActivity extends AppCompatActivity {
     private ActivityPromotionsBinding binding;
     private SessionManager sessionManager;
     private FullPromotionAdapter adapter;
+    private List<Promotion> allVouchers = new ArrayList<>();
     private Set<String> savedVoucherIds = new HashSet<>();
 
     @Override
@@ -42,8 +47,62 @@ public class MyVouchersActivity extends AppCompatActivity {
         binding.featuredCard.setVisibility(View.GONE);
         ((View)binding.chipGroup.getParent()).setVisibility(View.GONE);
 
+        setupSearch();
         setupRecyclerView();
         loadMyVouchers();
+    }
+
+    private void setupSearch() {
+        binding.btnSearch.setOnClickListener(v -> toggleSearch(true));
+        
+        binding.btnActionSearch.setOnClickListener(v -> {
+            String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
+            performSearch(query);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(binding.edtHeaderSearch.getWindowToken(), 0);
+        });
+
+        binding.btnCloseSearch.setOnClickListener(v -> {
+            binding.edtHeaderSearch.setText("");
+            toggleSearch(false);
+            adapter.setItems(allVouchers, savedVoucherIds);
+        });
+
+        binding.edtHeaderSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                performSearch(s.toString().toLowerCase().trim());
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void toggleSearch(boolean show) {
+        binding.layoutDefaultHeader.setVisibility(show ? View.GONE : View.VISIBLE);
+        binding.layoutSearchHeader.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            binding.edtHeaderSearch.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.showSoftInput(binding.edtHeaderSearch, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    private void performSearch(String query) {
+        if (query.isEmpty()) {
+            adapter.setItems(allVouchers, savedVoucherIds);
+            return;
+        }
+
+        List<Promotion> filtered = new ArrayList<>();
+        for (Promotion p : allVouchers) {
+            if (p.getTitle().toLowerCase().contains(query) || p.getCode().toLowerCase().contains(query)) {
+                filtered.add(p);
+            }
+        }
+        adapter.setItems(filtered, savedVoucherIds);
     }
 
     private void setupRecyclerView() {
@@ -102,10 +161,10 @@ public class MyVouchersActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Promotion>> call, Response<List<Promotion>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Promotion> list = response.body();
+                    allVouchers = response.body();
                     savedVoucherIds.clear();
-                    for (Promotion p : list) savedVoucherIds.add(p.getId());
-                    adapter.setItems(list, savedVoucherIds);
+                    for (Promotion p : allVouchers) savedVoucherIds.add(p.getId());
+                    adapter.setItems(allVouchers, savedVoucherIds);
                 } else {
                     Toast.makeText(MyVouchersActivity.this, "Không có voucher nào", Toast.LENGTH_SHORT).show();
                 }

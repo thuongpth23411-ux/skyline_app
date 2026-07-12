@@ -281,6 +281,35 @@ router.post("/update-profile", async (req, res) => {
     }
 });
 
+// Change Password
+router.post("/change-password", verifyToken, async (req, res) => {
+    try {
+        console.log("Password change attempt for user:", req.userId);
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: "Vui lòng nhập đầy đủ mật khẩu" });
+        }
+
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ success: false, message: "Người dùng không tồn tại" });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Mật khẩu hiện tại không chính xác" });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        console.log("Password changed successfully for:", user.email);
+        res.json({ success: true, message: "Đổi mật khẩu thành công" });
+    } catch (error) {
+        console.error("Change Password Error:", error);
+        res.status(500).json({ success: false, message: "Lỗi máy chủ: " + error.message });
+    }
+});
+
 // Get Rank Benefits
 router.get("/rank-benefits", async (req, res) => {
     try {

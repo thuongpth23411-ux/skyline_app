@@ -233,7 +233,7 @@ public class MemberInfoActivity extends AppCompatActivity {
         });
 
         binding.btnBenefits.setOnClickListener(v -> startActivity(new Intent(this, RankDetailsActivity.class)));
-        binding.btnChangePassword.setOnClickListener(v -> startActivity(new Intent(this, ForgotPasswordActivity.class)));
+        binding.btnChangePassword.setOnClickListener(v -> startActivity(new Intent(this, ChangePasswordActivity.class)));
     }
 
     private void showImageSourceDialog() {
