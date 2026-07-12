@@ -1065,14 +1065,30 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             farePartIn = (adultTotalIn - 450000) * adults + (childTotalIn - 450000) * children;
         }
 
-        double roundTripDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
-        double grandTotal = (adultTotalOut * adults + childTotalOut * children) + totalAddons;
-        if (isRoundTrip) grandTotal += (adultTotalIn * adults + childTotalIn * children) - roundTripDiscount;
+        double totalTicketPrice = (adultTotalOut * adults + childTotalOut * children);
+        double totalBaseFare = ((adultTotalOut - 450000) / 1.1) * adults + ((childTotalOut - 450000) / 1.1) * children;
         
-        // Trừ thêm tiền Voucher
-        grandTotal -= voucherDiscountAmount;
+        if (isRoundTrip) {
+            totalTicketPrice += (adultTotalIn * adults + childTotalIn * children);
+            double baseIn = ((adultTotalIn - 450000) / 1.1) * adults + ((childTotalIn - 450000) / 1.1) * children;
+            totalBaseFare += baseIn;
+        }
+
+        double totalTaxes = totalBaseFare * 0.1;
+        double totalAirportFees = 450000 * totalPax * (isRoundTrip ? 2 : 1);
+        
+        double roundTripDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
+        double grandTotal = totalTicketPrice + totalAddons - roundTripDiscount - voucherDiscountAmount;
 
         intent.putExtra("totalAmount", grandTotal);
+        intent.putExtra("baseFare", totalBaseFare);
+        intent.putExtra("taxes", totalTaxes);
+        intent.putExtra("airportFees", totalAirportFees);
+        intent.putExtra("seatPrice", 0.0); // Assume free
+        intent.putExtra("addonPrice", totalAddons);
+        intent.putExtra("voucher_discount", voucherDiscountAmount);
+        intent.putExtra("roundTripDiscount", roundTripDiscount);
+
         intent.putExtra("passenger_email", binding.edtEmail.getText().toString().trim());
         intent.putExtra("passenger_phone", binding.edtPhone.getText().toString().trim());
         intent.putExtra("passenger_name", names.get(0)); // Pass first passenger for simpler logic
@@ -1403,10 +1419,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         DecimalFormat df = new DecimalFormat("#,###");
 
         TextView tvTitle = view.findViewById(R.id.tvTitle);
-        TextView tvAdultLabel = view.findViewById(R.id.tvAdultLabel);
-        TextView tvAdultPriceTotal = view.findViewById(R.id.tvAdultPriceTotal);
-        TextView tvPricePerPerson = view.findViewById(R.id.tvPricePerPerson);
-        TextView tvBaseLabel = view.findViewById(R.id.tvBaseLabel);
+        LinearLayout containerTicketRows = view.findViewById(R.id.containerTicketRows);
         TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
         TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
         TextView tvAirportFeeValue = view.findViewById(R.id.tvAirportFeeValue);
@@ -1426,46 +1439,46 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             if (isRoundTrip) totalAddons += rb10s.get(i) * 200000 + rb23s.get(i) * 450000;
         }
 
-        double adultTotalOut = baseFarePrice;
-        double childTotalOut = 0.75 * (adultTotalOut - 450000) + 450000;
+        double adultPriceOut = baseFarePrice;
+        double childPriceOut = 0.75 * (adultPriceOut - 450000) + 450000;
         
-        double totalTicketPrice = (adultTotalOut * adults + childTotalOut * children);
-        double totalBaseFare = ((adultTotalOut - 450000) / 1.1) * adults + ((childTotalOut - 450000) / 1.1) * children;
-        double totalTaxes = (totalBaseFare * 0.1);
-        double totalAirportFees = 450000 * totalPax;
+        double adultPriceIn = isRoundTrip ? returnBasePrice : 0;
+        double childPriceIn = isRoundTrip ? (0.75 * (adultPriceIn - 450000) + 450000) : 0;
 
-        if (isRoundTrip) {
-            double adultTotalIn = returnBasePrice;
-            double childTotalIn = 0.75 * (adultTotalIn - 450000) + 450000;
+        // Populate Ticket Rows (xN)
+        if (containerTicketRows != null) {
+            containerTicketRows.removeAllViews();
             
-            totalTicketPrice += (adultTotalIn * adults + childTotalIn * children);
+            // Adult Row
+            double adultTotal = (adultPriceOut + adultPriceIn) * adults;
+            addPriceDetailRow(containerTicketRows, "Người lớn x" + adults, df.format(adultTotal) + " VND");
             
-            double baseIn = ((adultTotalIn - 450000) / 1.1) * adults + ((childTotalIn - 450000) / 1.1) * children;
-            totalBaseFare += baseIn;
-            totalTaxes += (baseIn * 0.1);
-            totalAirportFees += 450000 * totalPax;
+            // Child Row
+            if (children > 0) {
+                double childTotal = (childPriceOut + childPriceIn) * children;
+                addPriceDetailRow(containerTicketRows, "Trẻ em x" + children, df.format(childTotal) + " VND");
+            }
         }
 
+        double totalBaseFare = ((adultPriceOut - 450000) / 1.1) * adults + ((childPriceOut - 450000) / 1.1) * children;
+        if (isRoundTrip) {
+            totalBaseFare += ((adultPriceIn - 450000) / 1.1) * adults + ((childPriceIn - 450000) / 1.1) * children;
+        }
+        double totalTaxes = (totalBaseFare * 0.1);
+        double totalAirportFees = 450000 * totalPax * (isRoundTrip ? 2 : 1);
+
         // Apply Round Trip Discount (5% on pure fares)
-        double farePartOut = (adultTotalOut - 450000) * adults + (childTotalOut - 450000) * children;
-        double farePartIn = isRoundTrip ? ((returnBasePrice - 450000) * adults + (0.75 * (returnBasePrice - 450000) + 450000 - 450000) * children) : 0;
+        double farePartOut = (adultPriceOut - 450000) * adults + (childPriceOut - 450000) * children;
+        double farePartIn = isRoundTrip ? ((adultPriceIn - 450000) * adults + (childPriceIn - 450000) * children) : 0;
         double rtDiscount = isRoundTrip ? (farePartOut + farePartIn) * 0.05 : 0;
 
-        double finalGrandTotal = totalTicketPrice + totalAddons - rtDiscount - voucherDiscountAmount;
+        double finalGrandTotal = (adultPriceOut * adults + childPriceOut * children) + 
+                                 (isRoundTrip ? (adultPriceIn * adults + childPriceIn * children) : 0) + 
+                                 totalAddons - rtDiscount - voucherDiscountAmount;
 
-        // Populate Dialog
-        String label = "Giá vé";
-        if (totalPax > 1) label += " (x" + totalPax + ")";
-        else if (adults == 1) label = "Giá vé người lớn x1";
-        
-        if (tvAdultLabel != null) tvAdultLabel.setText(label);
-        if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(totalTicketPrice) + " VND");
-        if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(totalTicketPrice / totalPax) + " VND/Người");
-        
         if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(totalBaseFare) + " VND");
         if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(totalTaxes) + " VND");
         if (tvAirportFeeValue != null) tvAirportFeeValue.setText(df.format(totalAirportFees) + " VND");
-        
         if (tvSeatFeeValue != null) tvSeatFeeValue.setText("Miễn phí");
         if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(totalAddons) + " VND");
         
@@ -1485,6 +1498,13 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         view.findViewById(R.id.btnConfirm).setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void addPriceDetailRow(LinearLayout container, String label, String value) {
+        View row = getLayoutInflater().inflate(R.layout.item_price_detail_row, container, false);
+        ((TextView)row.findViewById(R.id.tvLabel)).setText(label);
+        ((TextView)row.findViewById(R.id.tvValue)).setText(value);
+        container.addView(row);
     }
 
     private void showVoucherDetailPopup(com.skyline.app.network.Promotion item) {

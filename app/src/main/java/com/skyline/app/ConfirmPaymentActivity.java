@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -304,10 +305,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         DecimalFormat df = new DecimalFormat("#,###");
 
         TextView tvTitle = view.findViewById(R.id.tvTitle);
-        TextView tvAdultLabel = view.findViewById(R.id.tvAdultLabel);
-        TextView tvAdultPriceTotal = view.findViewById(R.id.tvAdultPriceTotal);
-        TextView tvPricePerPerson = view.findViewById(R.id.tvPricePerPerson);
-        TextView tvBaseLabel = view.findViewById(R.id.tvBaseLabel);
+        LinearLayout containerTicketRows = view.findViewById(R.id.containerTicketRows);
         TextView tvBaseFareValue = view.findViewById(R.id.tvBaseFareValue);
         TextView tvTaxFeesTotal = view.findViewById(R.id.tvTaxFeesTotal);
         TextView tvAirportFeeValue = view.findViewById(R.id.tvAirportFeeValue);
@@ -322,29 +320,31 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
         if (isExchange) {
             if (tvTitle != null) tvTitle.setText("Chi tiết chi phí đổi vé");
-            if (tvAdultLabel != null) tvAdultLabel.setText("Phí đổi vé cố định");
-            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(exchangeFee) + " VND");
-            if (tvPricePerPerson != null) tvPricePerPerson.setText("Hạng vé: " + (fareType != null ? fareType : "Eco"));
-            if (tvBaseLabel != null) tvBaseLabel.setText("Chênh lệch giá vé");
+            if (containerTicketRows != null) {
+                addPriceDetailRow(view, containerTicketRows, "Phí đổi vé cố định", df.format(exchangeFee) + " VND");
+            }
             if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(priceDiff) + " VND");
             
             View taxLayout = view.findViewById(R.id.layoutTaxFees);
             if (taxLayout != null) taxLayout.setVisibility(View.GONE);
             if (layoutRoundTrip != null) layoutRoundTrip.setVisibility(View.GONE);
         } else {
-            // Hiển thị tổng số lượng vé thực tế
-            String label = "Giá vé";
-            if (totalPax > 1) {
-                label += " (x" + totalPax + ")";
-            } else if (adults == 1 && children == 0) {
-                label = "Giá vé người lớn x1";
-            }
-            if (tvAdultLabel != null) tvAdultLabel.setText(label);
+            // Populate Ticket Rows (xN)
+            if (containerTicketRows != null) {
+                containerTicketRows.removeAllViews();
+                
+                // We don't have individual prices here easily, so we estimate based on baseFare+taxes+airportFees
+                double ticketTotal = baseFare + taxes + airportFees;
+                double adultWeight = adults + (children * 0.75);
+                double adultPrice = ticketTotal / adultWeight;
+                double childPrice = adultPrice * 0.75;
 
-            double ticketSum = baseFare + taxes + airportFees;
-            if (tvAdultPriceTotal != null) tvAdultPriceTotal.setText(df.format(ticketSum) + " VND");
-            if (tvPricePerPerson != null) tvPricePerPerson.setText(df.format(ticketSum / (totalPax > 0 ? totalPax : 1)) + " VND/Người");
-            
+                addPriceDetailRow(view, containerTicketRows, "Người lớn x" + adults, df.format(adultPrice * adults) + " VND");
+                if (children > 0) {
+                    addPriceDetailRow(view, containerTicketRows, "Trẻ em x" + children, df.format(childPrice * children) + " VND");
+                }
+            }
+
             if (tvBaseFareValue != null) tvBaseFareValue.setText(df.format(baseFare) + " VND");
             if (tvTaxFeesTotal != null) tvTaxFeesTotal.setText(df.format(taxes) + " VND");
             if (tvAirportFeeValue != null) tvAirportFeeValue.setText(df.format(airportFees) + " VND");
@@ -359,11 +359,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         if (tvAddonFeeValue != null) tvAddonFeeValue.setText(df.format(addonPrice) + " VND");
         
         if (tvVoucherValue != null) {
-            if (voucherDiscount > 0) {
-                tvVoucherValue.setText("- " + df.format(voucherDiscount) + " VND");
-            } else {
-                tvVoucherValue.setText("0 VND");
-            }
+            tvVoucherValue.setText(voucherDiscount > 0 ? "- " + df.format(voucherDiscount) + " VND" : "0 VND");
         }
         if (tvGrandTotal != null) tvGrandTotal.setText(df.format(totalAmount) + " VND");
 
@@ -372,6 +368,13 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         view.findViewById(R.id.btnConfirm).setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void addPriceDetailRow(View root, LinearLayout container, String label, String value) {
+        View row = getLayoutInflater().inflate(R.layout.item_price_detail_row, container, false);
+        ((TextView)row.findViewById(R.id.tvLabel)).setText(label);
+        ((TextView)row.findViewById(R.id.tvValue)).setText(value);
+        container.addView(row);
     }
 
     private void showExpiryPicker() {
