@@ -152,12 +152,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:drawablePadding="8dp"
                         android:text="Còn 750 điểm để lên Hạng Vàng"
                         android:textColor="@color/skyline_teal"
-                        android:textSize="13sp"
-                        app:drawableStartCompat="@drawable/ic_notifications"
-                        app:drawableTint="@color/skyline_teal" />
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

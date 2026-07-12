@@ -1,39 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingBottom="12dp">
+    android:gravity="top"
+    android:paddingVertical="14dp">
 
     <ImageView
         android:id="@+id/imgBenefitIcon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:src="@drawable/ic_baggage_small" />
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_action_circle"
+        android:backgroundTint="#F2F5F8"
+        android:padding="7dp"
+        android:src="@drawable/ic_trending_up"
+        app:tint="@color/skyline_blue" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="14dp">
+        android:layout_marginStart="16dp">
 
         <TextView
             android:id="@+id/tvBenefitTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/skyline_text_secondary"
-            android:textSize="12sp"
+            android:textColor="@color/skyline_text"
+            android:textSize="17sp"
             android:textStyle="bold"
-            android:textAllCaps="true" />
+            android:textAllCaps="true"
+            android:letterSpacing="0.02"
+            android:text="TÍCH ĐIỂM 1.2X" />
 
         <TextView
             android:id="@+id/tvBenefitDesc"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/skyline_text"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginTop="1dp" />
+            android:textColor="@color/skyline_text_secondary"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginTop="4dp"
+            android:text="Nhận thêm 20% điểm thưởng cho mỗi giao dịch thành công." />
     </LinearLayout>
 </LinearLayout>

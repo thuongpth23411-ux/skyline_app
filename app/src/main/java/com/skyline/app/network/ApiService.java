@@ -40,6 +40,9 @@ public interface ApiService {
     @POST("auth/update-profile")
     Call<BaseResponse> updateProfile(@Header("Authorization") String token, @Body Map<String, String> body);
 
+    @POST("auth/change-password")
+    Call<BaseResponse> changePassword(@Header("Authorization") String token, @Body Map<String, String> body);
+
     @GET("auth/rank-benefits")
     Call<List<RankBenefit>> getRankBenefits(@Query("rank") String rank);
 

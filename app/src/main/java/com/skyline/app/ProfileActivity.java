@@ -68,10 +68,13 @@ public class ProfileActivity extends AppCompatActivity {
                     // Cập nhật lại SessionManager với dữ liệu mới nhất
                     sessionManager.saveUser(user);
                     
-                    // Cập nhật UI từ MongoDB
+                    // Cập nhật UI dựa trên ĐIỂM thực tế
+                    int points = user.getSkyPoints();
+                    String actualRank = (points < 1000) ? "ĐỒNG" : (points < 5000) ? "BẠC" : "VÀNG";
+                    
                     binding.tvUsername.setText(user.getName());
-                    binding.tvUserRank.setText("HẠNG " + (user.getRank() != null ? user.getRank().toUpperCase() : "ĐỒNG"));
-                    binding.tvSkyPoints.setText(String.valueOf(user.getSkyPoints()));
+                    binding.tvUserRank.setText("HẠNG " + actualRank);
+                    binding.tvSkyPoints.setText(String.valueOf(points));
                     binding.tvCardNumber.setText(user.getMemberCode());
 
                     // Generate Mini QR for the card

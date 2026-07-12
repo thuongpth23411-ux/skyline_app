@@ -87,32 +87,48 @@ public class RankDetailsActivity extends AppCompatActivity {
     private void displayUserInfo(User user) {
         if (user == null) return;
         
-        String rank = user.getRank() != null ? user.getRank() : "Đồng";
+        int points = user.getSkyPoints();
+        String rank;
+        String nextRank;
+        int targetPoints;
+
+        // Tính toán hạng dựa trên điểm thực tế
+        if (points < 1000) {
+            rank = "Đồng";
+            nextRank = "Bạc";
+            targetPoints = 1000;
+        } else if (points < 5000) {
+            rank = "Bạc";
+            nextRank = "Vàng";
+            targetPoints = 5000;
+        } else {
+            rank = "Vàng";
+            nextRank = "Kim cương";
+            targetPoints = 5000;
+        }
+
         binding.tvRankName.setText("Hạng " + rank);
-        binding.tvPoints.setText(String.valueOf(user.getSkyPoints()));
-        binding.tvStartRank.setText("Hạng " + rank);
-        String nextRank = getNextRank(rank);
-        binding.tvEndRank.setText("Hạng " + nextRank);
+        binding.tvStartRank.setText(rank);
+        binding.tvEndRank.setText(nextRank);
         binding.tabCurrent.setText("Hạng hiện tại (" + rank + ")");
         binding.tabNext.setText("Hạng kế tiếp (" + nextRank + ")");
 
-        // Set Background Gradient and Colors based on Rank
+        // Cập nhật màu sắc thẻ theo hạng thực tế
         updateRankCardStyle(rank);
 
-        // Progress logic
-        int points = user.getSkyPoints();
-        int maxPoints = 1000;
-        if ("Bạc".equalsIgnoreCase(rank)) maxPoints = 3000;
-        else if ("Vàng".equalsIgnoreCase(rank)) maxPoints = 5000;
-        
-        int needed = maxPoints - points;
-        if (needed > 0) {
+        int needed = targetPoints - points;
+        if (needed > 0 && !"Vàng".equalsIgnoreCase(rank)) {
             binding.tvPointsNeeded.setText("Còn " + needed + " điểm để lên Hạng " + nextRank);
-            binding.progressRank.setProgress(points * 100 / maxPoints);
+            binding.progressRank.setProgress(points * 100 / targetPoints);
+            binding.tvPoints.setText(points + " / " + targetPoints);
         } else {
-            binding.tvPointsNeeded.setText("Bạn đã đạt hạng cao nhất");
+            binding.tvPointsNeeded.setText("Bạn đã đạt hạng hội viên cao nhất");
             binding.progressRank.setProgress(100);
+            binding.tvPoints.setText(String.valueOf(points));
         }
+        
+        currentRank = rank;
+        loadBenefits(rank);
     }
 
     private void updateRankCardStyle(String rank) {

@@ -4,35 +4,38 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.skyline.app.databinding.ActivityPromotionsBinding;
+import com.skyline.app.network.BaseResponse;
 import com.skyline.app.network.Promotion;
 import com.skyline.app.network.RetrofitClient;
 import com.skyline.app.utils.SessionManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.inputmethod.InputMethodManager;
 
 public class MyVouchersActivity extends AppCompatActivity {
     private ActivityPromotionsBinding binding;
     private SessionManager sessionManager;
     private FullPromotionAdapter adapter;
     private List<Promotion> allVouchers = new ArrayList<>();
-    private Set<String> savedVoucherIds = new HashSet<>();
+    private final Set<String> savedVoucherIds = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,11 @@ public class MyVouchersActivity extends AppCompatActivity {
         binding.tvHeaderTitle.setText("Voucher của tôi");
         binding.btnBack.setOnClickListener(v -> finish());
         
+        // Ẩn các phần không cần thiết của layout Promotions
         binding.featuredCard.setVisibility(View.GONE);
-        ((View)binding.chipGroup.getParent()).setVisibility(View.GONE);
+        if (binding.chipGroup.getParent() instanceof View) {
+            ((View)binding.chipGroup.getParent()).setVisibility(View.GONE);
+        }
 
         setupSearch();
         setupRecyclerView();
@@ -58,8 +64,7 @@ public class MyVouchersActivity extends AppCompatActivity {
         binding.btnActionSearch.setOnClickListener(v -> {
             String query = binding.edtHeaderSearch.getText().toString().toLowerCase().trim();
             performSearch(query);
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) imm.hideSoftInputFromWindow(binding.edtHeaderSearch.getWindowToken(), 0);
+            hideKeyboard();
         });
 
         binding.btnCloseSearch.setOnClickListener(v -> {
@@ -87,6 +92,8 @@ public class MyVouchersActivity extends AppCompatActivity {
             binding.edtHeaderSearch.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) imm.showSoftInput(binding.edtHeaderSearch, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            hideKeyboard();
         }
     }
 
@@ -98,7 +105,9 @@ public class MyVouchersActivity extends AppCompatActivity {
 
         List<Promotion> filtered = new ArrayList<>();
         for (Promotion p : allVouchers) {
-            if (p.getTitle().toLowerCase().contains(query) || p.getCode().toLowerCase().contains(query)) {
+            String title = p.getTitle() != null ? p.getTitle().toLowerCase() : "";
+            String code = p.getCode() != null ? p.getCode().toLowerCase() : "";
+            if (title.contains(query) || code.contains(query)) {
                 filtered.add(p);
             }
         }
@@ -109,10 +118,7 @@ public class MyVouchersActivity extends AppCompatActivity {
         adapter = new FullPromotionAdapter(new ArrayList<>(), new FullPromotionAdapter.OnPromotionClickListener() {
             @Override
             public void onCopyCode(String code) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Promo Code", code);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(MyVouchersActivity.this, "Đã sao chép mã: " + code, Toast.LENGTH_SHORT).show();
+                copyToClipboard(code);
             }
 
             @Override
@@ -133,22 +139,22 @@ public class MyVouchersActivity extends AppCompatActivity {
         if (!sessionManager.isLoggedIn()) return;
 
         String token = "Bearer " + sessionManager.fetchAuthToken();
-        java.util.Map<String, String> body = new java.util.HashMap<>();
+        Map<String, String> body = new HashMap<>();
         String promoId = item.getId();
         body.put("promotionId", promoId);
 
-        RetrofitClient.getInstance().toggleSaveVoucher(token, body).enqueue(new Callback<com.skyline.app.network.BaseResponse>() {
+        RetrofitClient.getInstance().toggleSaveVoucher(token, body).enqueue(new Callback<BaseResponse>() {
             @Override
-            public void onResponse(Call<com.skyline.app.network.BaseResponse> call, Response<com.skyline.app.network.BaseResponse> response) {
+            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(MyVouchersActivity.this, "Đã bỏ lưu voucher", Toast.LENGTH_SHORT).show();
-                    loadMyVouchers(); // Refresh list to remove the item
+                    loadMyVouchers(); // Refresh list
                 }
             }
 
             @Override
-            public void onFailure(Call<com.skyline.app.network.BaseResponse> call, Throwable t) {
-                Toast.makeText(MyVouchersActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                toast("Lỗi kết nối");
             }
         });
     }
@@ -159,28 +165,31 @@ public class MyVouchersActivity extends AppCompatActivity {
         String token = "Bearer " + sessionManager.fetchAuthToken();
         RetrofitClient.getInstance().getMyVouchers(token).enqueue(new Callback<List<Promotion>>() {
             @Override
-            public void onResponse(Call<List<Promotion>> call, Response<List<Promotion>> response) {
+            public void onResponse(@NonNull Call<List<Promotion>> call, @NonNull Response<List<Promotion>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     allVouchers = response.body();
                     savedVoucherIds.clear();
                     for (Promotion p : allVouchers) savedVoucherIds.add(p.getId());
                     adapter.setItems(allVouchers, savedVoucherIds);
-                } else {
-                    Toast.makeText(MyVouchersActivity.this, "Không có voucher nào", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Promotion>> call, Throwable t) {
-                Toast.makeText(MyVouchersActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<List<Promotion>> call, @NonNull Throwable t) {
+                toast("Lỗi tải voucher");
             }
         });
     }
 
     private void showPromotionDetail(Promotion item) {
-        BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        android.app.Dialog dialog = new android.app.Dialog(this);
         View view = getLayoutInflater().inflate(R.layout.layout_promotion_detail, null);
         dialog.setContentView(view);
+        
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
 
         TextView tvTitle = view.findViewById(R.id.tv_title);
         TextView tvDesc = view.findViewById(R.id.tv_desc);
@@ -189,8 +198,6 @@ public class MyVouchersActivity extends AppCompatActivity {
         ImageView imgPromo = view.findViewById(R.id.img_promo);
         
         tvTitle.setText(item.getTitle());
-        
-        // Làm đẹp nội dung mô tả: tự động xuống dòng sau mỗi dấu chấm
         String rawDesc = item.getDescription();
         String formattedDesc = (rawDesc != null) ? rawDesc.replace("\\n", "\n").replace(". ", ".\n\n") : "";
         tvDesc.setText(formattedDesc);
@@ -198,32 +205,32 @@ public class MyVouchersActivity extends AppCompatActivity {
         tvCode.setText(item.getCode());
         tvExpiry.setText("Hạn dùng: " + item.getExpiryDate());
 
-        int placeholderRes = R.drawable.img_brand_banner;
-        String category = item.getCategory() != null ? item.getCategory() : "";
-        if (category.contains("MEMBER")) placeholderRes = R.drawable.img_experience_first;
-        else if (category.contains("EXCLUSIVE")) placeholderRes = R.drawable.bg_member_card_gradient;
-        else if (category.contains("NEW_USER")) placeholderRes = R.drawable.img_experience_economy;
-        
         String imageUrl = item.getImageUrl();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             if (imageUrl.startsWith("/")) imageUrl = "http://10.0.2.2:3000" + imageUrl;
-            com.bumptech.glide.Glide.with(this)
-                    .load(imageUrl)
-                    .placeholder(placeholderRes)
-                    .error(placeholderRes)
-                    .into(imgPromo);
-        } else {
-            imgPromo.setImageResource(placeholderRes);
+            com.bumptech.glide.Glide.with(this).load(imageUrl).into(imgPromo);
         }
 
-        view.findViewById(R.id.btn_copy).setOnClickListener(v -> {
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Promo Code", item.getCode());
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(this, "Đã sao chép mã", Toast.LENGTH_SHORT).show();
-        });
-
+        view.findViewById(R.id.btn_copy).setOnClickListener(v -> copyToClipboard(item.getCode()));
         view.findViewById(R.id.btn_close).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
+    }
+
+    private void copyToClipboard(String code) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Promo Code", code);
+        clipboard.setPrimaryClip(clip);
+        toast("Đã sao chép mã: " + code);
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && binding.edtHeaderSearch.getWindowToken() != null) {
+            imm.hideSoftInputFromWindow(binding.edtHeaderSearch.getWindowToken(), 0);
+        }
+    }
+
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
